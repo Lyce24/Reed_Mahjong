@@ -4,6 +4,9 @@ from django.views.generic import CreateView, TemplateView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
+import random
+import string
+from django.shortcuts import redirect
 # df = getting_data.get_historical_data("AAPL", "2019-01-01", "2020-01-01", "1d")
 
 # def hello(request):
@@ -15,6 +18,11 @@ def search_form(request):
  
 class HomeView(TemplateView):
     template_name = 'home.html'
+    def create_room(request):
+        # Generate random room code
+        room_code = ''.join(random.choices(string.ascii_uppercase, k=6))
+        # Redirect user to new room URL
+        return redirect(f'/room/{room_code}')
  
 class CreateUserView(CreateView):
     template_name = 'register.html'
