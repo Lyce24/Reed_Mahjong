@@ -7,3 +7,8 @@ TODO:
 
 Useful Resourse:
 1. https://codyparker.com/django-channels-with-react/2/
+
+How to test:
+1. Install Django
+2. cd Reed_Mah_Jong
+3. python3 manage.py runserver
