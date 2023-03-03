@@ -11,4 +11,5 @@ Useful Resourse:
 How to test:
 1. Install Django
 2. cd Reed_Mahjong
-3. python3 manage.py runserver
+3. python3 manage.py migrate
+4. python3 manage.py runserver
