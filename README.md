@@ -8,7 +8,9 @@ TODO (03.03):
 2. For backends:
 
 	(1) Figure out how do we present the tiles to the users.
+	
 	(2) How many objects do we need (game, consumer, ... )?
+	
 	(3) Rules of Mahjong.
 
 Useful Resourse:
