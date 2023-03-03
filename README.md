@@ -1,9 +1,15 @@
 # Mahjong
 
-TODO:
-1. Building create_room in views (find a method to generate a random string and add that string to urls to represent a room of 4 players.
-2. Update search_form.html to add a "Create" button to call that create_room function. The original search line allows users to enter the rooms that already existed.
-3. Figure out basic rules of Mahjong.
+TODO (03.03):
+1. For frontends:
+
+	(1) In the home page, I have implemented 2 buttons. For "Create a room!" button, we want the home page sends back signal to the backends when the users press the button. The backends will generate a random string and add new url into urls.py.
+
+2. For backends:
+
+	(1) Figure out how do we present the tiles to the users.
+	(2) How many objects do we need (game, consumer, ... )?
+	(3) Rules of Mahjong.
 
 Useful Resourse:
 1. https://codyparker.com/django-channels-with-react/2/
