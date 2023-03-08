@@ -17,6 +17,7 @@ TODO (03.03):
 
 Useful Resourse:
 1. https://codyparker.com/django-channels-with-react/2/
+2. https://www.digitalocean.com/community/tutorials/build-a-to-do-application-using-django-and-react
 
 How to test:
 1. Install Django
