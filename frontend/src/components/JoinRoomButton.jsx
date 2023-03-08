@@ -1,28 +1,45 @@
 import React from 'react';
 
 class JoinRoomButton extends React.Component {
-    handleClick() {
-    // Send request to backend to create a new room
-    console.log('Clicked');
-    window.location.href = "/room/000"
-    console.log('Navigated');
-    /* fetch('/api/create-room')
-      .then(response => response.json())
-      .then(data => {
-        // Redirect user to new room URL
-        window.location.href = `/room/${data.roomCode}`;
-        //window.location.href = "/room/000"
-        console.log('Navigated');
-      }); */
+  constructor(props) {
+    super(props);
+    this.state = {value: ''};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  // Updates state.value to what user inputs
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  // Posts state.value when user clicks button
+  handleSubmit(event) {
+    event.preventDefault();
+    console.log('Submitted',  JSON.stringify(this.state));
+    /* fetch('/api/get-room', {
+        method: "POST",
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(this.state)
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            window.location.href = `/room/${data.roomCode}`;
+        }) */
   }
 
   render() {
     return (
-        <div className="joinRoomButton">
-            <label htmlFor="roomCode">Room Code: </label>
-            <input type="number" id='roomCode' />
-            <button onClick={this.handleClick}>Join a Game!</button>
-        </div>
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Room Code:
+          <input type="number" value={this.state.value} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
     );
   }
 }
