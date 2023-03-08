@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link, Navigate, redirect } from "react-router-dom";
 
-class CreateRoomButton extends React.Component {
+class JoinRoomButton extends React.Component {
     handleClick() {
     // Send request to backend to create a new room
     console.log('Clicked');
@@ -19,11 +18,11 @@ class CreateRoomButton extends React.Component {
 
   render() {
     return (
-        <div className="createRoomButton">
-            <button onClick={this.handleClick}>Create Room</button>
+        <div className="joinRoomButton">
+            <button onClick={this.handleClick}>Join a Game!</button>
         </div>
     );
   }
 }
 
-export default CreateRoomButton;
+export default JoinRoomButton;
