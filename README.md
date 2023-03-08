@@ -5,6 +5,8 @@ TODO (03.03):
 
 	(1) In the home page, I have implemented 2 buttons. For "Create a room!" button, we want the home page sends back signal to the backends when the users press the button. The backends will generate a random string and add new url into urls.py.
 
+	(2) I am implementing the frontend in a React framework under ```frontend``` folder. After it is completed, it should contain all the contents under ```static``` and ```template``` folders, and those folders can be deleted.  
+
 2. For backends:
 
 	(1) Figure out how do we present the tiles to the users.
