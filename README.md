@@ -23,3 +23,10 @@ How to test:
 2. cd Reed_Mahjong
 3. python3 manage.py migrate
 4. python3 manage.py runserver
+
+How to test frontend:
+1. Install Node.js
+2. cd Reed_Mahjong
+3. cd frontend
+4. npm install (this installs all dependencies from package.json)
+5. npm start 
