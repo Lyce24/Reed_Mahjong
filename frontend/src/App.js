@@ -6,7 +6,7 @@ function App(prop) {
     return (
       <Routes>
         <Route path='/' element={<MainPage />}/>
-        <Route path='/room/:roomid' element={<Room />}/>
+        <Route path='/room/:roomid' element={<Room/>}/>
       </Routes>
     );
 }
