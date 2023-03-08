@@ -1,14 +1,20 @@
 import React from 'react';
+import { Link, Navigate, redirect } from "react-router-dom";
 
 class CreateRoomButton extends React.Component {
     handleClick() {
     // Send request to backend to create a new room
-    fetch('/api/create-room')
+    console.log('Clicked');
+    window.location.href = "/room/000"
+    console.log('Navigated');
+    /* fetch('/api/create-room')
       .then(response => response.json())
       .then(data => {
         // Redirect user to new room URL
         window.location.href = `/room/${data.roomCode}`;
-      });
+        //window.location.href = "/room/000"
+        console.log('Navigated');
+      }); */
   }
 
   render() {
