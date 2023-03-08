@@ -19,6 +19,8 @@ class JoinRoomButton extends React.Component {
   render() {
     return (
         <div className="joinRoomButton">
+            <label htmlFor="roomCode">Room Code: </label>
+            <input type="number" id='roomCode' />
             <button onClick={this.handleClick}>Join a Game!</button>
         </div>
     );
