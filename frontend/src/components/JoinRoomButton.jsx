@@ -1,5 +1,5 @@
 import React from 'react';
-import { axios } from 'axios';
+import axios from 'axios';
 
 class JoinRoomButton extends React.Component {
   constructor(props) {
@@ -20,9 +20,8 @@ class JoinRoomButton extends React.Component {
     event.preventDefault();
     console.log('Submitted',  JSON.stringify(this.state));
 
-    axios.get(`https://localhost:8000`)
+    axios.get(`http://localhost:8000/api/todos/`)
       .then(res => {
-        console.log(res);
         console.log(res.data);
       });
     /* fetch('/api/get-room', {
