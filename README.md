@@ -1,6 +1,6 @@
 Start backend:
 
-1. `cd backend`
+1. `pip install pipenv`
 2. `pipenv shell`
 3. `pipenv install django djangorestframework django-cors-headers`
 4. `python manage.py runserver`
