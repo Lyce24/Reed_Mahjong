@@ -2,7 +2,7 @@ Start backend:
 
 1. `cd backend`
 2. `pipenv shell`
-3. `pipenv install django djangorestframework django-cors-headers django`
+3. `pipenv install django djangorestframework django-cors-headers`
 4. `python manage.py runserver`
 
 When updating Model:
