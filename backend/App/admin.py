@@ -8,7 +8,7 @@ class RoomAdmin(admin.ModelAdmin):
     list_display = ('id', 'room_id')
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'document', 'phone', 'registrationDate')
+    list_display = ('id', 'name', 'email', 'document', 'phone', 'registrationDate')
 # Register your models here.
 
 admin.site.register(Todo, TodoAdmin)
