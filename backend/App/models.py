@@ -1,5 +1,4 @@
 from django.db import models
-import random
 # Create your models here.
 
 class Todo(models.Model):
@@ -11,16 +10,10 @@ class Todo(models.Model):
         return self.title
 
 class Room(models.Model):
-    room_id = models.CharField(max_length=120)
+    room_id = models.CharField(max_length=8) 
     
     def _str_(self):
         return self.room_id
-    
-    def create_room(self):
-        room_id = random.randint(100000, 999999)
-        self.room_id = room_id
-        self.save()
-        return room_id
     
 class Student(models.Model):
     name = models.CharField("Name", max_length=240)

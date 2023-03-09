@@ -14,4 +14,5 @@ urlpatterns = [
     path('', views.welcome_page),
     re_path(r'^api/students/$', views.students_list),
     re_path(r'^api/students/([0-9])$', views.students_detail),
+    # re_path(r'^api/rooms/[0-9]{8}$', views.create_room),
 ]

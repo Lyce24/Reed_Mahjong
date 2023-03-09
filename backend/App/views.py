@@ -6,9 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 
-from .models import Student
 from .serializers import *
-from .models import Todo, Room  
+from .models import Todo, Room, Student
 
 # Create your views here.
 
@@ -57,3 +56,20 @@ def students_detail(request, pk):
     elif request.method == 'DELETE':
         student.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET', 'POST'])
+def create_room(request):
+    if request.method == 'GET':
+        data = Room.objects.all()
+
+        serializer = RoomSerializer(data, context={'request': request}, many=True)
+
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = RoomSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
