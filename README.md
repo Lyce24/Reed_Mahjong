@@ -1,17 +1,15 @@
 Start backend:
 
-1. `pip install pipenv`
-2. `pipenv shell`
-3. `pipenv install django djangorestframework django-cors-headers`
-4. `python manage.py runserver`
+1. `pip install django djangorestframework django-cors-headers`
+2. `python3 manage.py runserver`
 
 When updating Model:
 
-1. `python manage.py makemigrations`
-2. `python manage.py migrate`
+1. `python3 manage.py makemigrations`
+2. `python3 manage.py migrate`
 
 If we want to run certain operation after migrating, run:
 
-`python manage.py makemigrations --empty --name some_model App`
+`python3 manage.py makemigrations --empty --name some_model App`
 
-then run `python manage.py migrate` again.
+then run `python3 manage.py migrate` again.
