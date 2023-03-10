@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 
-const Room = () => {
+const RoomPage = () => {
     // Get roomid from url
     let { roomid } = useParams();
     
@@ -11,4 +11,4 @@ const Room = () => {
     )
   };
   
-export default Room;
+export default RoomPage;
