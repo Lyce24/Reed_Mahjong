@@ -10,8 +10,17 @@ class Todo(models.Model):
         return self.title
 
 class Room(models.Model):
+    STATUS_VALID = 0
+    STATUS_INVALID = 1
+    STATUS_TYPES = [
+        (STATUS_VALID, "Valid"),
+        (STATUS_INVALID, "Invalid")
+    ]
     room_id = models.CharField(max_length=8) 
-    
+    status = models.IntegerField(
+        choices = STATUS_TYPES,
+        default = STATUS_VALID
+    )
     def _str_(self):
         return self.room_id
     
@@ -24,3 +33,10 @@ class Student(models.Model):
 
     def __str__(self):
         return self.name
+
+class Tile(models.Model):
+    suite = models.CharField("Suite", max_length=10)
+    number = models.IntegerField()
+
+    def __str__(self):
+        return self.suite

@@ -7,7 +7,7 @@ from rest_framework import status
 
 
 from .serializers import *
-from .models import Todo, Room, Student
+from .models import *
 
 # Create your views here.
 
@@ -22,6 +22,10 @@ class RoomView(viewsets.ModelViewSet):
 class StudentView(viewsets.ModelViewSet):
     serializer_class = StudentSerializer
     queryset = Student.objects.all()
+
+class TileView(viewsets.ModelViewSet):
+    serializer_class = TileSerializer
+    queryset = Tile.objects.all()
     
 def welcome_page(request):
     return HttpResponse("Hello world ! ")
