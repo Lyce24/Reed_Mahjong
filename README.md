@@ -34,5 +34,6 @@ Frontend
 - Populate room page
   - Create tile component
   - Create game board component
+  - Create user component
 - Get image resources
   - Get tile images

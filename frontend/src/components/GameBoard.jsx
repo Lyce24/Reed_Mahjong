@@ -1,12 +1,20 @@
 import React from 'react';
-import Tile from './Tile';
+import PlayerBoard from './PlayerBoard';
+import OtherBoard from './OtherBoard';
+import '../index.css';
 
 class GameBoard extends React.Component {
 
     render() {
         return(
-            <div>
-                <Tile suite="bamboo" number="10" />
+            <div className='gameBoard'>
+                <PlayerBoard />
+                <br />
+                <OtherBoard />
+                <br />
+                <OtherBoard />
+                <br />
+                <OtherBoard />
             </div>            
         )
     }

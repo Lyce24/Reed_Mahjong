@@ -26,3 +26,28 @@ code {
 .joinRoomButton .button {
   background-color: plum;
 }
+
+/* Style tiles */
+.tile {
+  margin: 5px;
+  border: blue 1px solid;
+}
+
+.tile.faceDown {
+  border: blue 5px solid;
+}
+
+/* Style boards */
+.playerBoard {
+  border: red 1px solid;
+  /* position: fixed;
+  bottom: 20%; */
+  display: flex;
+}
+
+.other {
+  border: orange 5px solid;
+  /* position: fixed;
+  bottom: 20%; */
+}
+
