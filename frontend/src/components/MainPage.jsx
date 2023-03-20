@@ -4,10 +4,11 @@ import JoinRoomButton from './JoinRoomButton';
 
 function MainPage() {
     return (
-        <div>
+        <div className='mainPage'>
             <h3>Welcome to Reed Mahjong!</h3>
             <hr></hr>
-            <CreateRoomButton />
+            <CreateRoomButton /> 
+            <br />
             <JoinRoomButton />
         </div>
     )

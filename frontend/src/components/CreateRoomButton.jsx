@@ -1,4 +1,5 @@
 import React from 'react';
+import '../index.css';
 
 class CreateRoomButton extends React.Component {
     handleClick() {
@@ -18,9 +19,10 @@ class CreateRoomButton extends React.Component {
 
   render() {
     return (
-        <div className="createRoomButton">
-            <button type="button" onClick={this.handleClick}>Create a Game!</button>
-        </div>
+      <div className="createRoomButton">
+          <button type="button" onClick={this.handleClick} className='button'>Create a Game!</button>
+      </div>
+       
     );
   }
 }

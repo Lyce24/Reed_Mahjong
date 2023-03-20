@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import '../index.css';
 
 class JoinRoomButton extends React.Component {
   constructor(props) {
@@ -39,13 +40,16 @@ class JoinRoomButton extends React.Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
-          Room Code:
-          <input type="number" value={this.state.value} onChange={this.handleChange} />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+      <div className='joinRoomButton'>
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            <span>Room Code: </span> 
+            <input type="number" value={this.state.value} onChange={this.handleChange} />
+          </label>
+          <input type="submit" value="Submit" className='button' />
+        </form>
+      </div>
+      
     );
   }
 }
