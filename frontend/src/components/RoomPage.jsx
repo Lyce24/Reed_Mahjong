@@ -7,7 +7,7 @@ const RoomPage = () => {
     
     return (
       <div>
-        <h1>Room {roomid}</h1>
+        <h1>Room {roomid} </h1>
         <Tile suite="bamboo" number="10"></Tile>
       </div>
     )

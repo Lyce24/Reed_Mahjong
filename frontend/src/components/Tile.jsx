@@ -4,7 +4,11 @@ class Tile extends React.Component {
 
     render() {
         return(
-            <p>Tile {this.props.suite} {this.props.number}</p>
+            <div className='Tile'>
+                <p>Tile {this.props.suite} {this.props.number}</p>
+                <img src="./images/tile" alt={`Tile ${this.props.suite} ${this.props.number}`} />
+            </div>
+            
         )
     }
 }
