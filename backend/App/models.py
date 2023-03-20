@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 class Todo(models.Model):
@@ -36,7 +37,7 @@ class Student(models.Model):
 
 class Tile(models.Model):
     suite = models.CharField("Suite", max_length=10)
-    number = models.IntegerField()
+    number = models.IntegerField(validators=[MaxValueValidator(10),MinValueValidator(1)])
 
     def __str__(self):
         return self.suite
