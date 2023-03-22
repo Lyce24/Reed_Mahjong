@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-
+import random
 
 from .serializers import *
 from .models import *
@@ -54,3 +54,10 @@ def room_detail(request, pk):
     
     
     
+@api_view(['GET'])
+def create_room(request):
+    if request.method == 'GET':
+        random_room_id = random.randint(10000000, 99999999)
+        room = Room.objects.create(room_id= random_room_id)
+        serializer = RoomSerializer(room, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)

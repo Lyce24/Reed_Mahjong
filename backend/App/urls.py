@@ -12,6 +12,7 @@ import re
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.welcome_page),    
+    path("create_room/", views.create_room),
     re_path(r'^room/(\d{8})$', views.room_detail),
     re_path(r'^room/$', views.RoomView.as_view({'get': 'list', 'post': 'create'})),
     
