@@ -26,6 +26,8 @@ Useful Resourse:
 2. https://www.digitalocean.com/community/tutorials/build-a-to-do-application-using-django-and-react
 3. https://blog.logrocket.com/using-react-django-create-app-tutorial/ 
 4. https://reactjs.org/tutorial/tutorial.html 
+5. MVC in Django. https://medium.com/shecodeafrica/understanding-the-mvc-pattern-in-django-edda05b9f43f, https://techvidvan.com/tutorials/django-mvc-architecture/
+6. Some examples. https://github.com/learningnoobi/django_channels_bingo_game
 
 ### Todo
 
