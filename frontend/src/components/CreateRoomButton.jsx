@@ -6,16 +6,12 @@ export default function CreateRoomButton() {
   function handleClick() {
     // TODO: Send request to backend to create a new room
     console.log('Clicked');
-    window.location.href = "/room/000";
-    console.log('Navigated');
-    /* fetch('/api/create-room')
+    fetch('http://localhost:8000/create_room/')
       .then(response => response.json())
       .then(data => {
         // Redirect user to new room URL
-        window.location.href = `/room/${data.roomCode}`;
-        //window.location.href = "/room/000"
-        console.log('Navigated');
-      }); */
+        window.location.href = `/room/${data.room_id}`;
+      });
   }
 
   return (
