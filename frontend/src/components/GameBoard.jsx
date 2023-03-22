@@ -3,21 +3,17 @@ import PlayerBoard from './PlayerBoard';
 import OtherBoard from './OtherBoard';
 import '../index.css';
 
-class GameBoard extends React.Component {
+export default function GameBoard() {
 
-    render() {
-        return(
-            <div className='gameBoard'>
-                <PlayerBoard />
-                <br />
-                <OtherBoard />
-                <br />
-                <OtherBoard />
-                <br />
-                <OtherBoard />
-            </div>            
-        )
-    }
+    return (
+        <div className='gameBoard'>
+            <PlayerBoard />
+            <br />
+            <OtherBoard />
+            <br />
+            <OtherBoard />
+            <br />
+            <OtherBoard />
+        </div>
+    );
 }
-
-export default GameBoard;
