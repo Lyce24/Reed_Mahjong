@@ -10,9 +10,13 @@ import re
 # router.register(r'room',views.RoomView, 'rooms')
 
 urlpatterns = [ 
-    path('admin/', admin.site.urls),
-    path('', views.PlayerView.as_view({'get': 'list', 'post': 'create'})),   
-    path("create_room/", views.create_room),
-    re_path(r'^room/$', views.RoomView.as_view({'get': 'list', 'post': 'create'})),
-    re_path(r'^room/(\d{8})$', views.room_detail),
+    # it creates a room by calling the create_room function in views.py
+    path("create_room/", views.CreateRoomView.as_view()),
+    path('join_room/', views.JoinRoom.as_view()),
+    path('show_all_rooms/', views.RoomView.as_view({'get': 'list', 'post': 'create'})),
+    
+    # the following urls are for the API - viewsets
+    re_path(r'^player/$', views.PlayerView.as_view({'get': 'list', 'post': 'create'})),  
+    # actual room for players
+    re_path(r'^room/(\d{8})$', views.RoomDetail.as_view()),
 ]

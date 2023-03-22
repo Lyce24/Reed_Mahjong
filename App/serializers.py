@@ -7,6 +7,7 @@ class RoomSerializer(serializers.ModelSerializer):
         model = Room
         fields = ('id', 'room_id')
         
+        
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player 

@@ -4,7 +4,7 @@ from django.conf import settings
 from django.views.static import serve
 
 urlpatterns = [
-    # path('admin/',admin.site.urls),
-    path('', include('App.urls')),
+    path('admin/',admin.site.urls),
+    path('api/', include('App.urls')),
 ] 
 

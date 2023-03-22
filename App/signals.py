@@ -7,8 +7,6 @@ from .models import Room
 
 channel_layer = get_channel_layer()
 
-
-
 @receiver(post_save,sender=Room)
 def create_room_signal(sender, instance, created, *args, **kwargs):
     ins_room_id = instance.room_id
