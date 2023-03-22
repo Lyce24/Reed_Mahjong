@@ -11,17 +11,14 @@ from .models import *
 
 # Create your views here.
 
-class TodoView(viewsets.ModelViewSet):
-    serializer_class = TodoSerializer
-    queryset = Todo.objects.all()
     
 class RoomView(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
 
-class StudentView(viewsets.ModelViewSet):
-    serializer_class = StudentSerializer
-    queryset = Student.objects.all()
+class PlayerView(viewsets.ModelViewSet):
+    serializer_class = PlayerSerializer
+    queryset = Player.objects.all()
 
 class TileView(viewsets.ModelViewSet):
     serializer_class = TileSerializer
@@ -61,3 +58,4 @@ def create_room(request):
         room = Room.objects.create(room_id= random_room_id)
         serializer = RoomSerializer(room, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
