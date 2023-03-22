@@ -27,7 +27,7 @@ export default function JoinRoom() {
       <form onSubmit={handleSubmit}>
         <label>
           <span>Room Code: </span>
-          <input type="number" value={roomNum} onChange={e => setRoomNum(e.target.value)} />
+          <input type="text" value={roomNum} onChange={e => setRoomNum(e.target.value)} maxLength={8} minLength={8} />
         </label>
         <input type="submit" value="Submit" className='button' />
       </form>
