@@ -81,7 +81,7 @@ TEMPLATES = [
     },
 ]
 
-# Channels
+# Point channels at the root routing configuration
 ASGI_APPLICATION = 'backend.asgi.application'
 
 MAX_CONN_AGE = 600
