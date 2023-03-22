@@ -2,17 +2,13 @@ import React from 'react';
 import Tile from './Tile';
 import '../index.css';
 
-class OtherBoard extends React.Component {
+export default function OtherBoard() {
 
-    render() {
-        return(
-            <div className='playerBoard other'>
-                <Tile suite="bamboo" number="10" isFacedDown="true"/>
-                <Tile suite="bamboo" number="9" isFacedDown="true"/>
-                <Tile suite="bamboo" number="8" isFacedDown="true"/>
-            </div>            
-        )
-    }
+    return (
+        <div className='playerBoard other'>
+            <Tile suite="bamboo" number="10" isFacedDown="true" />
+            <Tile suite="bamboo" number="9" isFacedDown="true" />
+            <Tile suite="bamboo" number="8" isFacedDown="true" />
+        </div>
+    );
 }
-
-export default OtherBoard;
