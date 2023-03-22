@@ -81,6 +81,7 @@ TEMPLATES = [
     },
 ]
 
+# Channels
 ASGI_APPLICATION = 'backend.asgi.application'
 
 MAX_CONN_AGE = 600
@@ -95,6 +96,7 @@ DATABASES = {
     }
 }
 
+# Allows multiple consumer instances to communicate
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
