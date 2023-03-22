@@ -6,26 +6,20 @@ import '../index.css';
 export default function JoinRoom() {
   const [roomNum, setRoomNum] = useState(0);
 
-  // Posts roomNum when user clicks button
+  // Redirect to room when user clicks button if roomNum if valid 
   function handleSubmit() {
-    // preventDefault();
-    console.log('Submitted', JSON.stringify(roomNum));
+    e.preventDefault(); // prevent form submission
 
-    axios.get(`http://localhost:8000/api/todos/`)
+    axios.get(`http://localhost:8000/room/${roomNum}`)
       .then(res => {
-        console.log(res.data);
+        if (res.status == "200"){
+          window.location.href = `/room/${res.data.room_id}`;
+        }
+      })
+      .catch(err => {
+        console.log(err.response.status);
+        alert("Room number doesn't exist");
       });
-    /* fetch('/api/get-room', {
-        method: "POST",
-        headers: {
-            'Content-type': 'application/json'
-        },
-        body: JSON.stringify(.state)
-        })
-        .then((response) => response.json())
-        .then((data) => {
-            window.location.href = `/room/${data.roomCode}`;
-        }) */
   }
 
   return (
