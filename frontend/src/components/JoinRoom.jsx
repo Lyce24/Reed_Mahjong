@@ -7,7 +7,7 @@ export default function JoinRoom() {
   const [roomNum, setRoomNum] = useState(0);
 
   // Redirect to room when user clicks button if roomNum if valid 
-  function handleSubmit() {
+  function handleSubmit(e) {
     e.preventDefault(); // prevent form submission
 
     axios.get(`http://localhost:8000/room/${roomNum}`)
