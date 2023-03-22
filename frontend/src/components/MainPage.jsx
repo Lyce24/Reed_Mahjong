@@ -1,6 +1,6 @@
 import React from 'react';
 import CreateRoomButton from './CreateRoomButton';
-import JoinRoomButton from './JoinRoomButton';
+import JoinRoom from './JoinRoom';
 
 export default function MainPage() {
     return (
@@ -9,7 +9,7 @@ export default function MainPage() {
             <hr></hr>
             <CreateRoomButton />
             <br />
-            <JoinRoomButton />
+            <JoinRoom />
         </div>
     );
 }
