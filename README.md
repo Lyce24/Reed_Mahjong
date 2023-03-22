@@ -32,8 +32,9 @@ Useful Resourse:
 Frontend
 
 - Populate room page
-  - Create tile component
-  - Create game board component
-  - Create user component
+  - Playerboard and otherboard layout within gameboard
+  - Tile layout within playerboard and gameboard
+  - Make tiles clickable
+  - Implement Tile face up vs face down
 - Get image resources
   - Get tile images

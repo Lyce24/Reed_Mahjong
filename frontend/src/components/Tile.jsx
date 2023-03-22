@@ -12,7 +12,6 @@ class Tile extends React.Component {
                     <p>Tile face down</p>
                     <img src="./images/til/facedown" alt={`Tile Facedown`} />
                 </div>
-                
             )
         } else {
             return(
@@ -20,7 +19,6 @@ class Tile extends React.Component {
                     <p>Tile {this.props.suite} {this.props.number}</p>
                     <img src="./images/tile" alt={`Tile ${this.props.suite} ${this.props.number}`} />
                 </div>
-                
             )
         }
     }
