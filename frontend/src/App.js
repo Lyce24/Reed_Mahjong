@@ -2,7 +2,7 @@ import MainPage from './components/MainPage';
 import { Route, Routes } from 'react-router-dom';
 import RoomPage from './components/RoomPage';
 
-function App(prop) {
+export default function App(prop) {
     return (
       <Routes>
         <Route path='/' element={<MainPage />}/>
@@ -10,5 +10,3 @@ function App(prop) {
       </Routes>
     );
 }
-
-export default App;
