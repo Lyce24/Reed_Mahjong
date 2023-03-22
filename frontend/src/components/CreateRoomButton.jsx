@@ -1,21 +1,19 @@
 import React from 'react';
+import axios from 'axios';
 import '../index.css';
 
 export default function CreateRoomButton() {
 
   function handleClick() {
-    // TODO: Send request to backend to create a new room
     console.log('Clicked');
-    window.location.href = "/room/000";
-    console.log('Navigated');
-    /* fetch('/api/create-room')
-      .then(response => response.json())
-      .then(data => {
-        // Redirect user to new room URL
-        window.location.href = `/room/${data.roomCode}`;
-        //window.location.href = "/room/000"
-        console.log('Navigated');
-      }); */
+    axios.get(`http://localhost:8000/create_room/`)
+    .then(res => {
+      window.location.href = `/room/${res.data.room_id}`;
+    })
+    .catch(err => {
+      console.log(err.response.status);
+      alert("Error");
+    });
   }
 
   return (
