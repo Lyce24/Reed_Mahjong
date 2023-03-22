@@ -1,9 +1,9 @@
 ## Installation
 
 * Create a Python virtual environemnt
-* In that environment, run ```pip install -r requirements.txt``` inside your project
+* In that environment, run ```pip install -r requirements.txt``` inside backend
 * Create the local database with ```python manage.py migrate```
-* Run Django development server on port 8080 - ```python manage.py runserver 8080```
+* Run Django development server on port 8000 - ```python manage.py runserver```
 
 When updating Model:
 
