@@ -1,7 +1,9 @@
-Start backend:
+## Installation
 
-1. `pip install django djangorestframework django-cors-headers`
-2. `python3 manage.py runserver`
+* Create a Python virtual environemnt
+* In that environment, run ```pip install -r requirements.txt``` inside your project
+* Create the local database with ```python manage.py migrate```
+* Run Django development server on port 8080 - ```python manage.py runserver 8080```
 
 When updating Model:
 
