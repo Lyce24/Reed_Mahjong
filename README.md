@@ -30,6 +30,7 @@ Useful Resourse:
 4. https://reactjs.org/tutorial/tutorial.html 
 5. MVC in Django. https://medium.com/shecodeafrica/understanding-the-mvc-pattern-in-django-edda05b9f43f, https://techvidvan.com/tutorials/django-mvc-architecture/
 6. Some examples. https://github.com/learningnoobi/django_channels_bingo_game
+7. Example with explanation. Has info on connecting index and game pages. https://blog.logrocket.com/django-channels-and-websockets/
 
 ### Todo
 
