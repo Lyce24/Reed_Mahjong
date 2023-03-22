@@ -6,7 +6,6 @@ export default function Tilt(props) {
                 <p>Tile face down</p>
                 <img src="./images/til/facedown" alt={`Tile Facedown`} />
             </div>
-
         );
     } else {
         return (
@@ -14,7 +13,6 @@ export default function Tilt(props) {
                 <p>Tile {props.suite} {props.number}</p>
                 <img src="./images/tile" alt={`Tile ${props.suite} ${props.number}`} />
             </div>
-
         );
     }
 }

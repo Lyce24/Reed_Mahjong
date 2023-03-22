@@ -22,18 +22,21 @@ Run frontend:
 5. npm start (this serves the frontened webpage at localhost:3000)
 
 Useful Resourse:
-1. https://codyparker.com/django-channels-with-react/2/ (skip this)
+1. https://codyparker.com/django-channels-with-react/2/
 2. https://www.digitalocean.com/community/tutorials/build-a-to-do-application-using-django-and-react
 3. https://blog.logrocket.com/using-react-django-create-app-tutorial/ 
 4. https://reactjs.org/tutorial/tutorial.html 
+5. MVC in Django. https://medium.com/shecodeafrica/understanding-the-mvc-pattern-in-django-edda05b9f43f, https://techvidvan.com/tutorials/django-mvc-architecture/
+6. Some examples. https://github.com/learningnoobi/django_channels_bingo_game
 
 ### Todo
 
 Frontend
 
 - Populate room page
-  - Create tile component
-  - Create game board component
-  - Create user component
+  - Playerboard and otherboard layout within gameboard
+  - Tile layout within playerboard and gameboard
+  - Make tiles clickable
+  - Implement Tile face up vs face down
 - Get image resources
   - Get tile images
