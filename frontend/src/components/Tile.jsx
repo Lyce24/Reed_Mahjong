@@ -1,4 +1,4 @@
-export default function Tilt(props) {
+export default function Tile(props) {
 
     if (props.isFacedDown == "true") {
         return (
