@@ -11,5 +11,5 @@ export default function MainPage() {
             <br />
             <JoinRoomButton />
         </div>
-    )
+    );
 }
