@@ -5,7 +5,7 @@ class TodoAdmin(admin.ModelAdmin):
     list_display = ('title', 'description', 'completed')
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('id', 'room_id', 'status')
+    list_display = ('id', 'room_id')
 
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'email', 'document', 'phone', 'registrationDate')

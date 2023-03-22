@@ -9,7 +9,7 @@ class TodoSerializer(serializers.ModelSerializer):
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = ('id', 'room_id', 'status')
+        fields = ('id', 'room_id')
         
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
