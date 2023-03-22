@@ -1,11 +1,12 @@
 import React from 'react';
 import '../index.css';
 
-class CreateRoomButton extends React.Component {
-    handleClick() {
-    // Send request to backend to create a new room
+export default function CreateRoomButton() {
+
+  function handleClick() {
+    // TODO: Send request to backend to create a new room
     console.log('Clicked');
-    window.location.href = "/room/000"
+    window.location.href = "/room/000";
     console.log('Navigated');
     /* fetch('/api/create-room')
       .then(response => response.json())
@@ -17,14 +18,10 @@ class CreateRoomButton extends React.Component {
       }); */
   }
 
-  render() {
-    return (
-      <div className="createRoomButton">
-          <button type="button" onClick={this.handleClick} className='button'>Create a Game!</button>
-      </div>
-       
-    );
-  }
-}
+  return (
+    <div className="createRoomButton">
+      <button type="button" onClick={handleClick} className='button'>Create a Game!</button>
+    </div>
 
-export default CreateRoomButton;
+  );
+}
