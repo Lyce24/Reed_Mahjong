@@ -52,13 +52,30 @@ class JoinRoom(APIView):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
-        # Bug: always defaults to None and raises BAD_REQUEST error
         code = request.data.get(self.lookup_url_kwarg)
         if code != None:
             room_result = Room.objects.filter(room_id=code)
             if len(room_result) > 0:
                 room = room_result[0]
                 self.request.session['room_id'] = code
+
+                room = Room.objects.get(room_id=code)
+                if room.player_1 == False:
+                    room.player_1 = True
+                elif room.player_2 == False:
+                    room.player_2 = True
+                elif room.player_3 == False:
+                    room.player_3 = True
+                elif room.player_4 == False:
+                    room.player_4 = True
+                else:
+                    return Response({'Bad Request': 'Room is full.'}, status=status.HTTP_400_BAD_REQUEST)
+                
+                room.save()
+                serializer = RoomSerializer(room, context={'request': request})
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+
                 return Response({'message': 'Room Joined!'}, status=status.HTTP_200_OK)
 
             return Response({'Bad Request': 'Invalid Room ID'}, status=status.HTTP_400_BAD_REQUEST)
