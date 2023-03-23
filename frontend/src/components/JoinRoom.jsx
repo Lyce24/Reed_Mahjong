@@ -10,17 +10,16 @@ export default function JoinRoom() {
   function handleSubmit(e) {
     e.preventDefault(); // prevent form submission
 
-    axios.get(`http://localhost:8000/api/join_room`)
-    // need some update here
+    axios.post(`http://localhost:8000/api/join_room/`, {room_id: roomNum})
       .then(res => {
         if (res.status == "200"){
-          window.location.href = `/room/${res.data.room_id}`;
+          window.location.href = `/room/${roomNum}`;
+          //console.log(res.data.message)
         }
       })
       .catch(err => {
-        console.log(err.response.status);
-        alert("Room number doesn't exist");
-      });
+        console.log(err.response.data);
+      }); 
   }
 
   return (
