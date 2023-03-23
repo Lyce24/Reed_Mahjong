@@ -26,6 +26,11 @@ class Room(models.Model):
     # when a player leaves, remove the player from the room
     # check if the room is full, if it is pop a notification
     # if the room is full and game_mode is true, start the game
+
+    player_1 = models.BooleanField(default=False)
+    player_2 = models.BooleanField(default=False)
+    player_3 = models.BooleanField(default=False)
+    player_4 = models.BooleanField(default=False)
     
 class Player(models.Model):
     name = models.CharField("Name", max_length=240)
