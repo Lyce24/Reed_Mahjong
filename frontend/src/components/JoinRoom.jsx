@@ -10,7 +10,8 @@ export default function JoinRoom() {
   function handleSubmit(e) {
     e.preventDefault(); // prevent form submission
 
-    axios.get(`http://localhost:8000/api/room/${roomNum}`)
+    axios.get(`http://localhost:8000/api/join_room`)
+    // need some update here
       .then(res => {
         if (res.status == "200"){
           window.location.href = `/room/${res.data.room_id}`;
