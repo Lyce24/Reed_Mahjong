@@ -37,6 +37,10 @@ code {
   border: blue 5px solid;
 }
 
+.tile.clicked {
+  border: red 5px solid;
+}
+
 /* Style boards */
 .playerBoard {
   border: red 1px solid;
