@@ -52,7 +52,8 @@ class JoinRoom(APIView):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
-        code = request.data.get(self.lookup_url_kwarg)
+        # Bug: always defaults to None and raises BAD_REQUEST error
+        code = request.POST.get(self.lookup_url_kwarg, None)
         if code != None:
             room_result = Room.objects.filter(room_id=code)
             if len(room_result) > 0:
