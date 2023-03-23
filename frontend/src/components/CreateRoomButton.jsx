@@ -6,7 +6,7 @@ export default function CreateRoomButton() {
 
   function handleClick() {
     console.log('Clicked');
-    axios.get(`http://localhost:8000/create_room/`)
+    axios.get(`http://localhost:8000/api/create_room/`)
     .then(res => {
       window.location.href = `/room/${res.data.room_id}`;
     })
