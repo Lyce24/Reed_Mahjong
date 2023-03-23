@@ -21,6 +21,11 @@ class Room(models.Model):
     game_mode = models.BooleanField(default=False)
     host_id = models.CharField(max_length=50, default= generate_random_host_id ,unique = True) 
 
+    # add player 1, player 2, player 3, player 4 (default = "")
+    # each time a player joins, add the player to the room
+    # when a player leaves, remove the player from the room
+    # check if the room is full, if it is pop a notification
+    # if the room is full and game_mode is true, start the game
     
 class Player(models.Model):
     name = models.CharField("Name", max_length=240)
