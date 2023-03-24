@@ -22,6 +22,7 @@ urlpatterns = [
     # # Games - actual room for players  
     re_path(r'^room/(\d{8})/create_game$', views.CreateGame.as_view()), #set game mode = 1 
     re_path(r'^room/(\d{8})/delete_game$', views.DeleteGame.as_view()), #set game mode = 0
+    re_path(r'^room/(\d{8})/grab_tile$', views.GrabTile.as_view()), # grab a tile
     
     
     # # Player APIs - Not finished

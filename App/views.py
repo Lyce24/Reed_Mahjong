@@ -136,9 +136,31 @@ class DeleteGame(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except Room.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        
-# '''
+
+class GrabTile(APIView):
+    serializer_class = RoomSerializer
+
+    def get(self, request, pk):
+        try:
+            room = Room.objects.get(room_id=pk)
+            if room.game_mode == 1:
+                player_result = Player.objects.filter(room__room_id=pk, player_id=self.request.session.session_key)
+                for player in player_result:
+                    # choose random key (tile)
+                    tile = 'id'
+                    while tile == 'id' or tile == 'player_id' or tile == 'room' or tile == '_state' or tile == 'room_id':
+                        tile, count = random.choice(list(player.__dict__.items()))
+                    player.__dict__[tile] += 1
+                    room.__dict__[tile] -= 1
+                    player.save()
+                room.save()
+                serializer = RoomSerializer(room, context={'request': request}) 
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Room.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 # Player Operations - Create a player, Delete a player
 # '''
 
@@ -224,5 +246,3 @@ class PlayerLeaveRoom(APIView):
             return Response({'Message': 'Leave room successfully'}, status=status.HTTP_200_OK)
 
         return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
-        
-
