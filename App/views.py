@@ -59,6 +59,18 @@ class DeleteRoom(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         
 
+# class RoomDetail(APIView):
+#     serializer_class = RoomSerializer
+
+#     def get(self, request, pk):
+#         try:
+#             room = Room.objects.get(room_id=pk)
+#             serializer = RoomSerializer(room, context={'request': request})
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         except Room.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)        
+
+
 # '''
 # Game Operations - Create a game, Delete a game
 # '''
@@ -186,7 +198,8 @@ class PlayerLeaveRoom(APIView):
 
         return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
         
-    
+
+# 
     
 # # # In the home page, player should select whether to create a room or join a room
 # # # if join a room, then the player should enter the room code and the player name
