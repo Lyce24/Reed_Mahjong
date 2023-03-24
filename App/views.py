@@ -206,37 +206,4 @@ class PlayerLeaveRoom(APIView):
 
         return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
         
-    
-    
-# # # In the home page, player should select whether to create a room or join a room
-# # # if join a room, then the player should enter the room code and the player name
-# class PlayerJoinRoom(APIView):
-#     serializer_class = PlayerSerializer
-    
-#     def post(self, request):
-#         if not self.request.session.exists(self.request.session.session_key):
-#             self.request.session.create()
-            
-#         player_name = self.request.session.get('name')
-#         player_room = self.request.session.get('room_id')
-#         if player_name != None and player_room != None:
-#             room_result = Room.objects.filter(room_id=player_room)
-#             if len(room_result) > 0:
-#                 room = room_result[0]
-#                 player = Player.objects.create(name=request.data.get('name'), room=request.data.get('room'))
-#                 serializer = PlayerSerializer(player, context={'request': request})
-#                 return Response(serializer.data, status=status.HTTP_200_OK)
-#             return Response({'Bad Request': 'Invalid Room Code'}, status=status.HTTP_400_BAD_REQUEST)
-#         return Response({'Bad Request': 'Invalid post data, did not find a code key'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    
-# class PlayerLeaveRoom(APIView):
-#     serializer_class = PlayerSerializer
-    
-#     def get(self, request, pk):
-#         try:
-#             player = Player.objects.get(pk=pk)
-#             player.delete()
-#             return Response(status=status.HTTP_204_NO_CONTENT)
-#         except Player.DoesNotExist:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
+
