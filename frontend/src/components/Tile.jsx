@@ -14,7 +14,6 @@ export default function Tile(props) {
     if (props.isFacedDown == "true") {
         return (
             <div className={`tile faceDown ${clicked}`} onClick={handleClick}>
-                <p>Tile face down</p>
                 <img src="./images/tile-facedown" alt={`Tile Facedown`} />
             </div>
         );
