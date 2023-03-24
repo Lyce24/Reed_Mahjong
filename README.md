@@ -1,7 +1,8 @@
 ## Installation
 
-* Create a Python virtual environemnt
-* In that environment, run ```pip install -r requirements.txt``` inside backend
+* Create a Python virtual environemnt ```python -m venv .```
+* In that environment, run ```pip install -r requirements.txt```
+* Install Django with ```python -m pip install Django```
 * Create the local database with ```python manage.py migrate```
 * Run Django development server on port 8000 - ```python manage.py runserver```
 
