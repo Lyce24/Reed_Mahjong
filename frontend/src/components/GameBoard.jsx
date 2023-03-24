@@ -1,4 +1,3 @@
-import React from 'react';
 import PlayerBoard from './PlayerBoard';
 import OtherBoard from './OtherBoard';
 import '../index.css';

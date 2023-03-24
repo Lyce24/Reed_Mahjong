@@ -11,10 +11,10 @@ export default function Tile(props) {
     }
     let clicked = `${clickState ? "clicked" : ""}`;
 
-    if (props.isFacedDown == "true") {
+    if (props.isFacedDown === "true") {
         return (
             <div className={`tile faceDown ${clicked}`} onClick={handleClick}>
-                <img src="./images/tile-facedown" alt={`Tile Facedown`} />
+                <img src="./images/tile-facedown" alt={`Facedown`} />
             </div>
         );
     } else {
@@ -22,7 +22,7 @@ export default function Tile(props) {
         let number = props.number;
         return (
             <div className={`tile ${clicked}`} onClick={handleClick}>
-                <img src={`./images/tile-${suite}-${number}`} alt={`Tile ${suite} ${number}`} />
+                <img src={`./images/tile-${suite}-${number}`} alt={`${suite} ${number}`} />
             </div>
         );
     }
