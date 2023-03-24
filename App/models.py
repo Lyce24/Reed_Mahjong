@@ -28,7 +28,7 @@ class Room(models.Model):
    
 
 class Player(models.Model):
-    player_id = models.CharField(max_length=50, default= '')
+    player_id = models.CharField(max_length=50, unique=True)
     
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='player_set', null=True)
 
@@ -67,9 +67,6 @@ class Player(models.Model):
     Red = models.BooleanField(default=False)
     Green = models.BooleanField(default=False)
     White = models.BooleanField(default=False)
-# Create your models here.
-
-
 
     
 #TODO: add more fields and function     

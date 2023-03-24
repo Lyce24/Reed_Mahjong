@@ -45,8 +45,6 @@ class CreateRoomView(APIView):
         player.save()
         return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
 
-
-
 class DeleteRoom(APIView):
     serializer_class = RoomSerializer
     
@@ -58,6 +56,28 @@ class DeleteRoom(APIView):
         except Room.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
+class RoomDetail(APIView):
+    serializer_class = RoomSerializer
+    
+    def get(self, request, pk):
+        try:
+            room = Room.objects.get(room_id=pk)
+            player_result = Player.objects.filter(room__room_id=pk)
+            player_id = ''
+            count = 0
+            for player in player_result:
+                player_id += str(player.id) + ' '
+                count += 1
+                
+            data = {
+                'room_id': room.room_id,
+                'game_mode': room.game_mode,
+                'player_count': count,
+                'player_id': player_id
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        except Room.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 # '''
 # Game Operations - Create a game, Delete a game
