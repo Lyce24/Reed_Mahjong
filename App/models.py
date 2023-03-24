@@ -33,6 +33,11 @@ class Tile(models.Model):
     def __str__(self):
         return self.suite
     
+# TODO: Tile
+'''
+Try to find a nice data structure to represent the tiles for each player
+'''
+    
 #TODO: add more fields and function     
 # class Game(models.Model):
 #     room_id = models.ForeignKey(Room, on_delete=models.CASCADE)
