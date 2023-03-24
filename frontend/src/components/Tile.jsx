@@ -14,15 +14,15 @@ export default function Tile(props) {
     if (props.isFacedDown == "true") {
         return (
             <div className={`tile faceDown ${clicked}`} onClick={handleClick}>
-                <p>Tile face down</p>
-                <img src="./images/til/facedown" alt={`Tile Facedown`} />
+                <img src="./images/tile-facedown" alt={`Tile Facedown`} />
             </div>
         );
     } else {
+        let suite = props.suite;
+        let number = props.number;
         return (
             <div className={`tile ${clicked}`} onClick={handleClick}>
-                <p>Tile {props.suite} {props.number}</p>
-                <img src="./images/tile" alt={`Tile ${props.suite} ${props.number}`} />
+                <img src={`./images/tile-${suite}-${number}`} alt={`Tile ${suite} ${number}`} />
             </div>
         );
     }
