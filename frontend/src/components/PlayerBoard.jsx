@@ -1,4 +1,3 @@
-import React from 'react';
 import Tile from './Tile';
 import { useState } from 'react';
 import '../index.css';
@@ -15,5 +14,4 @@ export default function PlayerBoard() {
             <Tile suite="bamboo" number="8" isFacedDown="false" />
         </div>
     );
-
 }

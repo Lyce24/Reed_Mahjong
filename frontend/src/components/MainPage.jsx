@@ -1,4 +1,3 @@
-import React from 'react';
 import CreateRoomButton from './CreateRoomButton';
 import JoinRoom from './JoinRoom';
 
