@@ -3,7 +3,7 @@ from .models import *
 
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('id', 'room_id', 'game_mode', 'host_id')
+    list_display = ('id', 'room_id', 'game_mode', 'player_1', 'player_2', 'player_3', 'player_4')
 
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'room')

@@ -36,22 +36,41 @@ class CreateRoomView(APIView):
     serializer_class = RoomSerializer
 
     def get(self, request):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        if Room.objects.filter(player_1=self.request.session.session_key).count() != 0:
+            return Response({'Message': 'You have already created a room'}, status=status.HTTP_400_BAD_REQUEST)
+
         while True:
             random_room_id = random.randint(10000000, 99999999)
             if Room.objects.filter(room_id=random_room_id).count() == 0:
                 break
-                
-        room = Room.objects.create(room_id=random_room_id)
-        serializer = RoomSerializer(room, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+        room = Room.objects.create(room_id=random_room_id, player_1= self.request.session.session_key)
+        room.save()
+        self.request.session['room_id'] = room.room_id
+        return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
+
 
 class JoinRoom(APIView):
     lookup_url_kwarg = 'room_id'
     
-    def post(self, request, format=None):
+    def get(self, request):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
+        if self.request.session['room_id'] != None:
+            return Response({'Message': 'You have already joined a room'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        if self.request.session['room_id'] != None:
+            return Response({'Message': 'You have already joined a room'}, status=status.HTTP_400_BAD_REQUEST)
+        
         code = request.data.get(self.lookup_url_kwarg)
         if code != None:
             room_result = Room.objects.filter(room_id=code)
@@ -60,14 +79,16 @@ class JoinRoom(APIView):
                 self.request.session['room_id'] = code
 
                 room = Room.objects.get(room_id=code)
-                if room.player_1 == False:
-                    room.player_1 = True
-                elif room.player_2 == False:
-                    room.player_2 = True
-                elif room.player_3 == False:
-                    room.player_3 = True
-                elif room.player_4 == False:
-                    room.player_4 = True
+                if room.player_2 == '':
+                    room.player_2 = self.request.session.session_key
+                elif room.player_3 == '':
+                    if room.player_2 == self.request.session.session_key:
+                        return Response({'Bad Request': 'You have already joined this room.'}, status=status.HTTP_400_BAD_REQUEST)
+                    room.player_3 = self.request.session.session_key
+                elif room.player_4 == '':
+                    if room.player_2 == self.request.session.session_key or room.player_3 == self.request.session.session_key:
+                        return Response({'Bad Request': 'You have already joined this room.'}, status=status.HTTP_400_BAD_REQUEST)
+                    room.player_4 = self.request.session.session_key
                 else:
                     return Response({'Bad Request': 'Room is full.'}, status=status.HTTP_400_BAD_REQUEST)
                 
@@ -75,8 +96,6 @@ class JoinRoom(APIView):
                 serializer = RoomSerializer(room, context={'request': request})
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-                return Response({'message': 'Room Joined!'}, status=status.HTTP_200_OK)
 
             return Response({'Bad Request': 'Invalid Room ID'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -115,12 +134,15 @@ class CreateGame(APIView):
         try:
             room = Room.objects.get(room_id=pk)
             if room.game_mode == 0:
-                room.game_mode = 1
-                room.save()
-                serializer = RoomSerializer(room, context={'request': request})
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                if room.player_4 != '':
+                    room.game_mode = 1
+                    room.save()
+                    serializer = RoomSerializer(room, context={'request': request})
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else :
+                    return Response({'Message': 'Room not full'}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response({'Message': 'Game already exist'},status=status.HTTP_400_BAD_REQUEST)
         except Room.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
@@ -160,11 +182,26 @@ class PlayerInRoom(APIView):
         return JsonResponse(data, status=status.HTTP_200_OK)
     
 class PlayerLeaveRoom(APIView):
-    def get(self, request, format=None):
+    def get(self, request):
         if 'room_id' in self.request.session:
+            room_id = self.request.session['room_id']
             self.request.session.pop('room_id')
+            room = Room.objects.get(room_id=room_id)
+            id = self.request.session.session_key
+            if room.player_1 == id:
+                room.delete()
+            elif room.player_2 == id:
+                room.player_2 = ''
+                room.save()
+            elif room.player_3 == id:
+                room.player_3 = ''
+                room.save()
+            elif room.player_4 == id:
+                room.player_4 = ''
+                room.save()
               
-        return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
+            return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
+        return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # # # In the home page, player should select whether to create a room or join a room
