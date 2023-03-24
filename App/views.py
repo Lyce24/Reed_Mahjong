@@ -10,10 +10,6 @@ from .models import *
 
 # Create your views here.
 
-class TileView(viewsets.ModelViewSet):
-    serializer_class = TileSerializer
-    queryset = Tile.objects.all()
-
 
 # APIViews
 '''
@@ -39,63 +35,18 @@ class CreateRoomView(APIView):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
-        if Room.objects.filter(player_1=self.request.session.session_key).count() != 0:
-            return Response({'Message': 'You have already created a room'}, status=status.HTTP_400_BAD_REQUEST)
-
         while True:
             random_room_id = random.randint(10000000, 99999999)
             if Room.objects.filter(room_id=random_room_id).count() == 0:
                 break
-    
-        room = Room.objects.create(room_id=random_room_id, player_1= self.request.session.session_key)
+        room = Room.objects.create(room_id = random_room_id)
+        player = Player.objects.create(player_id=self.request.session.session_key, room = room)
         room.save()
-        self.request.session['room_id'] = room.room_id
+        player.save()
         return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
 
 
-class JoinRoom(APIView):
-    lookup_url_kwarg = 'room_id'
-    def get(self, request):
-        if 'room_id' in self.request.session:
-            if self.request.session['room_id'] != None:
-                return Response({'Message': 'You have already joined a room'}, status=status.HTTP_400_BAD_REQUEST)
-            
-        return Response({'Message': 'Input Room ID'}, status=status.HTTP_200_OK)
-    
-    def post(self, request):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
 
-        code = request.data.get(self.lookup_url_kwarg)
-        if code != None:
-            room_result = Room.objects.filter(room_id=code)
-            if len(room_result) > 0:
-                room = room_result[0]
-                self.request.session['room_id'] = code
-
-                room = Room.objects.get(room_id=code)
-                if room.player_2 == '':
-                    room.player_2 = self.request.session.session_key
-                elif room.player_3 == '':
-                    if room.player_2 == self.request.session.session_key:
-                        return Response({'Bad Request': 'You have already joined this room.'}, status=status.HTTP_400_BAD_REQUEST)
-                    room.player_3 = self.request.session.session_key
-                elif room.player_4 == '':
-                    if room.player_2 == self.request.session.session_key or room.player_3 == self.request.session.session_key:
-                        return Response({'Bad Request': 'You have already joined this room.'}, status=status.HTTP_400_BAD_REQUEST)
-                    room.player_4 = self.request.session.session_key
-                else:
-                    return Response({'Bad Request': 'Room is full.'}, status=status.HTTP_400_BAD_REQUEST)
-                
-                room.save()
-                serializer = RoomSerializer(room, context={'request': request})
-                return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-            return Response({'Bad Request': 'Invalid Room ID'}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({'Bad Request': 'Invalid post data, did not find a ID key'}, status=status.HTTP_400_BAD_REQUEST)
-    
 class DeleteRoom(APIView):
     serializer_class = RoomSerializer
     
@@ -107,21 +58,10 @@ class DeleteRoom(APIView):
         except Room.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-class RoomDetail(APIView):
-    serializer_class = RoomSerializer
-    
-    def get(self, request, pk):
-        try:
-            room = Room.objects.get(room_id=pk)
-            serializer = RoomSerializer(room, context={'request': request})
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Room.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
 
-'''
-Game Operations - Create a game, Delete a game
-'''
+# '''
+# Game Operations - Create a game, Delete a game
+# '''
 class CreateGame(APIView):
     serializer_class = RoomSerializer
     
@@ -129,7 +69,8 @@ class CreateGame(APIView):
         try:
             room = Room.objects.get(room_id=pk)
             if room.game_mode == 0:
-                if room.player_4 != '':
+                room_id = pk
+                if Player.objects.filter(room__room_id=room_id).count() != 4:
                     room.game_mode = 1
                     room.save()
                     serializer = RoomSerializer(room, context={'request': request})
@@ -139,7 +80,7 @@ class CreateGame(APIView):
             else:
                 return Response({'Message': 'Game already exist'},status=status.HTTP_400_BAD_REQUEST)
         except Room.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({"Message': 'Room doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
         
 class DeleteGame(APIView):
     serializer_class = RoomSerializer
@@ -158,52 +99,95 @@ class DeleteGame(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         
-'''
-Player Operations - Create a player, Delete a player
-'''
+# '''
+# Player Operations - Create a player, Delete a player
+# '''
 
 class PlayerView(viewsets.ModelViewSet):
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
+    
+class JoinRoom(APIView):
+    lookup_url_kwarg = 'room_id'
+    def get(self, request):
+        player_result = Player.objects.filter(player_id=self.request.session.session_key)
+        if len(player_result) > 0:
+            if player_result[0].room != None:
+                return Response({'Message': 'You have already joined a room'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Message': 'Input Room ID'}, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        code = request.data.get(self.lookup_url_kwarg)
+        if code != None:
+            room_result = Room.objects.filter(room_id=code)
+            if len(room_result) > 0:
+                self.request.session['room_id'] = code
+                print(Player.objects.filter(room__room_id=code).count())
+                if Player.objects.filter(room__room_id=code).count() ==4:
+                    return Response({'Bad Request': 'Room is full'}, status=status.HTTP_400_BAD_REQUEST)
+                
+                elif Player.objects.filter(player_id=self.request.session.session_key).count() == 0:
+                    player = Player.objects.create(player_id=self.request.session.session_key, room = room_result[0])
+                    player.save()
+        
+                    serializer = PlayerSerializer(player, context={'request': request})
+                    return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+                else:
+                    player = Player.objects.filter(player_id=self.request.session.session_key)[0]
+                    player.room = room_result[0]
+                    player.save()
+                    
+                    serializer = PlayerSerializer(player, context={'request': request})
+                    return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+
+            return Response({'Bad Request': 'Invalid Room ID'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'Bad Request': 'Invalid post data, did not find a ID key'}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class PlayerInRoom(APIView):
     def get(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
+        if Player.objects.filter(player_id=self.request.session.session_key).count() == 0:
+            return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        elif Player.objects.filter(player_id=self.request.session.session_key)[0].room == None:
+            return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
+        
         data = {
-            'room_id': self.request.session.get('room_id')
+            'room_id': Player.objects.filter(player_id=self.request.session.session_key)[0].room.room_id
         }
         return JsonResponse(data, status=status.HTTP_200_OK)
     
 class PlayerLeaveRoom(APIView):
     def get(self, request):
-        if 'room_id' in self.request.session:
-            room_id = self.request.session['room_id']
-            self.request.session.pop('room_id')
-            room = Room.objects.get(room_id=room_id)
-            id = self.request.session.session_key
-            if room.player_1 == id:
-                room.player_1 = ''
-                room.save()
-            elif room.player_2 == id:
-                room.player_2 = ''
-                room.save()
-            elif room.player_3 == id:
-                room.player_3 = ''
-                room.save()
-            elif room.player_4 == id:
-                room.player_4 = ''
-                room.save()
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+            
+        if Player.objects.filter(player_id=self.request.session.session_key).count() != 0:
+            if Player.objects.filter(player_id=self.request.session.session_key)[0].room == None:
+                return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            player = Player.objects.filter(player_id=self.request.session.session_key)[0]
+            room_id = player.room.room_id
+            player.room = None
+            player.save()
+            
+            if Player.objects.filter(room__room_id=room_id).count() == 0:
+                Room.objects.filter(room_id=room_id).delete()
                 
-            if room.player_1 == '' and room.player_2 == '' and room.player_3 == '' and room.player_4 == '':
-                room.delete()
-                return Response({'Message': 'Room deleted'}, status=status.HTTP_200_OK)
-              
-            return Response({'Message': 'Success'}, status=status.HTTP_202_ACCEPTED)
+            return Response({'Message': 'Leave room successfully'}, status=status.HTTP_200_OK)
+
         return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
-
-
+        
+    
+    
 # # # In the home page, player should select whether to create a room or join a room
 # # # if join a room, then the player should enter the room code and the player name
 # class PlayerJoinRoom(APIView):
