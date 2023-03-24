@@ -55,22 +55,17 @@ class CreateRoomView(APIView):
 
 class JoinRoom(APIView):
     lookup_url_kwarg = 'room_id'
-    
     def get(self, request):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-
-        if self.request.session['room_id'] != None:
-            return Response({'Message': 'You have already joined a room'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_200_OK)
+        if 'room_id' in self.request.session:
+            if self.request.session['room_id'] != None:
+                return Response({'Message': 'You have already joined a room'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        return Response({'Message': 'Input Room ID'}, status=status.HTTP_200_OK)
     
     def post(self, request):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
-        if self.request.session['room_id'] != None:
-            return Response({'Message': 'You have already joined a room'}, status=status.HTTP_400_BAD_REQUEST)
-        
         code = request.data.get(self.lookup_url_kwarg)
         if code != None:
             room_result = Room.objects.filter(room_id=code)
@@ -189,7 +184,8 @@ class PlayerLeaveRoom(APIView):
             room = Room.objects.get(room_id=room_id)
             id = self.request.session.session_key
             if room.player_1 == id:
-                room.delete()
+                room.player_1 = ''
+                room.save()
             elif room.player_2 == id:
                 room.player_2 = ''
                 room.save()
@@ -199,8 +195,12 @@ class PlayerLeaveRoom(APIView):
             elif room.player_4 == id:
                 room.player_4 = ''
                 room.save()
+                
+            if room.player_1 == '' and room.player_2 == '' and room.player_3 == '' and room.player_4 == '':
+                room.delete()
+                return Response({'Message': 'Room deleted'}, status=status.HTTP_200_OK)
               
-            return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
+            return Response({'Message': 'Success'}, status=status.HTTP_202_ACCEPTED)
         return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
 
 
