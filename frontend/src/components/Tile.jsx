@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import img from '../tiles/back.png';
+import * as images from '../tiles/back.png';
 
 export default function Tile(props) {
 
@@ -14,7 +16,7 @@ export default function Tile(props) {
     if (props.isFacedDown === "true") {
         return (
             <div className={`tile faceDown ${clicked}`} onClick={handleClick}>
-                <img src="./images/tile-facedown" alt={`Facedown`} />
+                <img src={img} alt={`Facedown`} />
             </div>
         );
     } else {
