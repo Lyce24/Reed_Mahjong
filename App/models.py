@@ -4,11 +4,16 @@ import random
 import string
 import datetime
 
-
-# Create your models here.
-class Room(models.Model):
-    room_id = models.CharField(max_length=8, unique = True) 
-    game_mode = models.BooleanField(default=False)
+# def create_tiles():
+#     suites = ['Bamboo', 'Character', 'Circle']
+#     honors = ['East', 'South', 'West', 'North', 'Red', 'Green', 'White']
+#     tiles = []
+#     for suite in suites:
+#         for i in range(1, 10):
+#             tiles.append(suite + str(i))
+#     for honor in honors:
+#         tiles.append(honor)
+#     return tiles
 
     # add player 1, player 2, player 3, player 4 (default = "")
     # each time a player joins, add the player to the room
@@ -16,27 +21,56 @@ class Room(models.Model):
     # check if the room is full, if it is pop a notification
     # if the room is full and game_mode is true, start the game
 
-    player_1 = models.CharField(max_length=50, default= '' ) 
-    player_2 = models.CharField(max_length=50, default= '' ) 
-    player_3 = models.CharField(max_length=50, default= '' ) 
-    player_4 = models.CharField(max_length=50, default= '' ) 
-    
+ 
+class Room(models.Model):
+    room_id = models.CharField(max_length=8, unique = True) 
+    game_mode = models.BooleanField(default=False)
+   
+
 class Player(models.Model):
-    name = models.CharField("Name", max_length=240)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
-
-
-class Tile(models.Model):
-    suite = models.CharField("Suite", max_length=10)
-    number = models.IntegerField(validators=[MaxValueValidator(10),MinValueValidator(1)])
-
-    def __str__(self):
-        return self.suite
+    player_id = models.CharField(max_length=50, default= '')
     
-# TODO: Tile
-'''
-Try to find a nice data structure to represent the tiles for each player
-'''
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='player_set', null=True)
+
+    
+    Bamboo1 = models.BooleanField(default=False)
+    Bamboo2 = models.BooleanField(default=False)
+    Bamboo3 = models.BooleanField(default=False)
+    Bamboo4 = models.BooleanField(default=False)
+    Bamboo5 = models.BooleanField(default=False)
+    Bamboo6 = models.BooleanField(default=False)
+    Bamboo7 = models.BooleanField(default=False)
+    Bamboo8 = models.BooleanField(default=False)
+    Bamboo9 = models.BooleanField(default=False)
+    Character1 = models.BooleanField(default=False)
+    Character2 = models.BooleanField(default=False)
+    Character3 = models.BooleanField(default=False)
+    Character4 = models.BooleanField(default=False)
+    Character5 = models.BooleanField(default=False)
+    Character6 = models.BooleanField(default=False)
+    Character7 = models.BooleanField(default=False)
+    Character8 = models.BooleanField(default=False)
+    Character9 = models.BooleanField(default=False)
+    Circle1 = models.BooleanField(default=False)
+    Circle2 = models.BooleanField(default=False)
+    Circle3 = models.BooleanField(default=False)
+    Circle4 = models.BooleanField(default=False)
+    Circle5 = models.BooleanField(default=False)
+    Circle6 = models.BooleanField(default=False)
+    Circle7 = models.BooleanField(default=False)
+    Circle8 = models.BooleanField(default=False)
+    Circle9 = models.BooleanField(default=False)
+    East = models.BooleanField(default=False)
+    South = models.BooleanField(default=False)
+    West = models.BooleanField(default=False)
+    North = models.BooleanField(default=False)
+    Red = models.BooleanField(default=False)
+    Green = models.BooleanField(default=False)
+    White = models.BooleanField(default=False)
+# Create your models here.
+
+
+
     
 #TODO: add more fields and function     
 # class Game(models.Model):
