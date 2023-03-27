@@ -1,4 +1,7 @@
 import { useState } from 'react';
+const images = require.context('../tiles', false);
+
+//import * as images from '../tiles/back.png';
 
 export default function Tile(props) {
 
@@ -14,7 +17,7 @@ export default function Tile(props) {
     if (props.isFacedDown === "true") {
         return (
             <div className={`tile faceDown ${clicked}`} onClick={handleClick}>
-                <img src="./images/tile-facedown" alt={`Facedown`} />
+                <img src={images('./back.png')} alt={`Facedown`} />
             </div>
         );
     } else {
@@ -22,7 +25,7 @@ export default function Tile(props) {
         let number = props.number;
         return (
             <div className={`tile ${clicked}`} onClick={handleClick}>
-                <img src={`./images/tile-${suite}-${number}`} alt={`${suite} ${number}`} />
+                <img src={images(`./${suite}-${number}.png`)} alt={`${suite} ${number}`} />
             </div>
         );
     }

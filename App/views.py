@@ -8,6 +8,7 @@ import random
 from .serializers import *
 from .models import *
 
+
 # Create your views here.
 
 
@@ -22,7 +23,6 @@ from .models import *
 '''
 Room Operations - Create a Room, Join a Room, Show all rooms, Delete Room
 '''
-
 
 class RoomView(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
@@ -40,7 +40,14 @@ class CreateRoomView(APIView):
             if Room.objects.filter(room_id=random_room_id).count() == 0:
                 break
         room = Room.objects.create(room_id = random_room_id)
-        player = Player.objects.create(player_id=self.request.session.session_key, room = room)
+        try:
+            player = Player.objects.get(player_id=self.request.session.session_key)
+            if player.room is None:
+                player.room = room
+            else:
+                return Response({'Message': 'Player already in a room'},status=status.HTTP_400_BAD_REQUEST)
+        except Player.DoesNotExist:
+            player = Player.objects.create(player_id=self.request.session.session_key, room = room)
         room.save()
         player.save()
         return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
@@ -68,7 +75,7 @@ class RoomDetail(APIView):
             for player in player_result:
                 player_id += str(player.id) + ' '
                 count += 1
-                
+
             data = {
                 'room_id': room.room_id,
                 'game_mode': room.game_mode,
@@ -89,14 +96,24 @@ class CreateGame(APIView):
         try:
             room = Room.objects.get(room_id=pk)
             if room.game_mode == 0:
-                room_id = pk
-                if Player.objects.filter(room__room_id=room_id).count() != 4:
-                    room.game_mode = 1
-                    room.save()
-                    serializer = RoomSerializer(room, context={'request': request})
-                    return Response(serializer.data, status=status.HTTP_200_OK)
-                else :
-                    return Response({'Message': 'Room not full'}, status=status.HTTP_400_BAD_REQUEST)
+                player_result = Player.objects.filter(room__room_id=pk)
+                room.game_mode = 1
+ 
+                # devise the distribution algorithm later - temporary random distribution
+                for player in player_result:
+                    count = 0
+                    while count < 14:
+                        for key in player.__dict__:
+                            if key != 'id' and key != 'player_id' and key != 'room' and key != '_state' and key != 'room_id':
+                                player.__dict__[key] = random.randint(0, 3)
+                                room.__dict__[key] -= player.__dict__[key]
+                                count += player.__dict__[key]
+                                
+                    player.save()    
+                room.save()
+                serializer = RoomSerializer(room, context={'request': request})
+                return Response(serializer.data, status=status.HTTP_200_OK)
+    
             else:
                 return Response({'Message': 'Game already exist'},status=status.HTTP_400_BAD_REQUEST)
         except Room.DoesNotExist:
@@ -109,7 +126,16 @@ class DeleteGame(APIView):
         try:
             room = Room.objects.get(room_id=pk)
             if room.game_mode == 1:
+                player_result = Player.objects.filter(room__room_id=pk)
                 room.game_mode = 0
+ 
+                for player in player_result:
+                    for key in player.__dict__:
+                        if key != 'id' and key != 'player_id' and key != 'room' and key != '_state' and key != 'room_id':
+                            player.__dict__[key] = 0
+                            room.__dict__[key] = 4
+                                
+                    player.save()    
                 room.save()
                 serializer = RoomSerializer(room, context={'request': request})
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -117,9 +143,31 @@ class DeleteGame(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except Room.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        
-# '''
+
+class GrabTile(APIView):
+    serializer_class = RoomSerializer
+
+    def get(self, request, pk):
+        try:
+            room = Room.objects.get(room_id=pk)
+            if room.game_mode == 1:
+                player_result = Player.objects.filter(room__room_id=pk, player_id=self.request.session.session_key)
+                for player in player_result:
+                    # choose random key (tile)
+                    tile = 'id'
+                    while tile == 'id' or tile == 'player_id' or tile == 'room' or tile == '_state' or tile == 'room_id':
+                        tile, count = random.choice(list(player.__dict__.items()))
+                    player.__dict__[tile] += 1
+                    room.__dict__[tile] -= 1
+                    player.save()
+                room.save()
+                serializer = RoomSerializer(room, context={'request': request}) 
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Room.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 # Player Operations - Create a player, Delete a player
 # '''
 
@@ -205,5 +253,3 @@ class PlayerLeaveRoom(APIView):
             return Response({'Message': 'Leave room successfully'}, status=status.HTTP_200_OK)
 
         return Response({'Message': 'You are not in a room'}, status=status.HTTP_400_BAD_REQUEST)
-        
-
