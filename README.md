@@ -1,6 +1,7 @@
 ## Installation
 
-* Create a Python virtual environemnt ```python -m venv .```
+* Create a Python virtual environment ```python -m venv .```
+* Activate the virtual environment, for example if you're using bash, type ```source bin/activate```
 * In that environment, run ```pip install -r requirements.txt```
 * Install Django with ```python -m pip install Django```
 * Create the local database with ```python manage.py migrate```
