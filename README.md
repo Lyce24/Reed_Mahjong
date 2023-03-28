@@ -34,6 +34,7 @@ Useful Resourse:
 6. Some examples. https://github.com/learningnoobi/django_channels_bingo_game
 7. Example with explanation. (WebSockets). https://blog.logrocket.com/django-channels-and-websockets/
 8. Django-React WebSockets Example 2: https://blog.logrocket.com/build-chat-application-react-django-channels/
+9. Frontend (establish WebSocket connection) Backend (routers + consumers to handle connection) overview: https://www.youtube.com/watch?v=cw8-KFVXpTE
 
 ### Todo
 
