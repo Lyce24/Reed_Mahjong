@@ -27,3 +27,4 @@ django-cors-headers==3.14.0
 djangorestframework==3.14.0
 zope.interface==5.4.0
 whitenoise>=6.0,<7.0
+channels_redis==3.2
