@@ -4,8 +4,8 @@
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import *
-# from channels.db import database_sync_to_async
-# from asgiref.sync import async_to_sync, sync_to_async
+from channels.db import database_sync_to_async
+from asgiref.sync import async_to_sync, sync_to_async
 
 class AppConsumer(AsyncJsonWebsocketConsumer):
     """
@@ -41,8 +41,24 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content):
         # Handles incoming JSON message from client
         print(f"Received JSON message:{content}")
-        
+
+        """
+        # Example code of how to update models 
+        pid = content['player_id']
+        try:
+            player = await self.get_model(pid)
+            # Stuff
+        except Player.DoesNotExist:
+            return
+        """
+
         # placeholder: just echo the message back to the client 
         await self.send_json(({
             'echo': content
         }))
+
+    async def get_room_model(self, model_id):
+        return await sync_to_async(Room.objects.get)(room_id=model_id)
+    
+    async def get_player_model(self, model_id):
+        return await sync_to_async(Player.objects.get)(player_id=model_id)
