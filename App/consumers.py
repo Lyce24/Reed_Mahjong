@@ -1,11 +1,9 @@
 # Series of functions to be called when an event happens
 # Deals with handoffs and threading for async code
 
-import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import *
-from channels.db import database_sync_to_async
-from asgiref.sync import async_to_sync, sync_to_async
+from asgiref.sync import sync_to_async
 
 class AppConsumer(AsyncJsonWebsocketConsumer):
     """
