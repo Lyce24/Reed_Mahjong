@@ -39,6 +39,12 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content):
         # Handles incoming JSON message from client
         print(f"Received JSON message:{content}")
+        event_type = content.get('type')
+        if event_type == 'placeholder':
+            # placeholder: just echo the message back to the client 
+            return await self.send_json(({
+                'echo': content
+            }))
 
         """
         # Example code of how to update models 
@@ -50,13 +56,19 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             return
         """
 
-        # placeholder: just echo the message back to the client 
-        await self.send_json(({
-            'echo': content
-        }))
-
     async def get_room_model(self, model_id):
         return await sync_to_async(Room.objects.get)(room_id=model_id)
     
     async def get_player_model(self, model_id):
         return await sync_to_async(Player.objects.get)(player_id=model_id)
+    
+
+
+    # Methods with websocket_ in front
+
+    '''
+    For the client (frontend) to trigger these methods, send custom websocket event:
+    socket.send(JSON.stringify({
+        'type': 'websocket.event',
+    }))
+    '''

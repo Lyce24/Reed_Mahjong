@@ -22,7 +22,7 @@ class MyTests(TestCase):
         assert connected
 
         # Send test message to the consumer
-        message = {'id': 1, 'yo': 'hi'}
+        message = {'type': 'placeholder'}
         await communicator.send_json_to(message)
 
         # Receive response from consumer
