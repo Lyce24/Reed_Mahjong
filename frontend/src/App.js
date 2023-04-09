@@ -6,8 +6,6 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 const SOCKET_URL = 'http://localhost:80'
 
 export default function App(prop) {
-  const { sendMessage, lastMessage, readyState } = useWebSocket(SOCKET_URL);
-
   return (
     <Routes>
       <Route path='/' element={<MainPage />} />
