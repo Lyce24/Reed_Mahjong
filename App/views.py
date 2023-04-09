@@ -47,6 +47,7 @@ class CreateRoomView(APIView):
             else:
                 return Response({'Message': 'Player already in a room'},status=status.HTTP_400_BAD_REQUEST)
         except Player.DoesNotExist:
+            room = Room.objects.create(room_id = random_room_id)
             player = Player.objects.create(player_id=self.request.session.session_key, room = room)
         room.save()
         player.save()
