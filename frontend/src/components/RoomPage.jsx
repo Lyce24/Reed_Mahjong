@@ -7,7 +7,7 @@ export default function RoomPage() {
   let { roomid } = useParams();
 
   return (
-    <div>
+    <div className='page roomPage'>
       <h1>Room {roomid} </h1>
       <GameBoard />
     </div>
