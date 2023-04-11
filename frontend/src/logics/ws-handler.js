@@ -1,4 +1,4 @@
-export const SOCKET_URL = "ws://echo.websocket.events";
+export const SOCKET_URL = `ws://localhost:8000/ws/socket-server/`;
 let SOCKET = undefined;
 
 export function getWebSocket() {

@@ -25,6 +25,8 @@ import datetime
 class Room(models.Model):
     room_id = models.CharField(max_length=8, unique = True) 
     game_mode = models.BooleanField(default=False)
+    # TODO: game state as JSONField 
+
     
     Bamboo1 = models.SmallIntegerField(default=4)
     Bamboo2 = models.SmallIntegerField(default=4)
@@ -63,9 +65,13 @@ class Room(models.Model):
    
 
 class Player(models.Model):
+    # TODO: unique identifier is the primary key, and it's the primary key that's sent across the network
     player_id = models.CharField(max_length=50, unique=True)
     
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='player_set', null=True)
+
+    # player state as JSON Field 
+    
 
     Bamboo1 = models.SmallIntegerField(default=0)
     Bamboo2 = models.SmallIntegerField(default=0)

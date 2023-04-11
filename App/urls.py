@@ -9,6 +9,23 @@ import re
 # router.register(r'^room/(\d{8})$', views.room_detail)
 # router.register(r'room',views.RoomView, 'rooms')
 
+# {
+    # type: 'create_room',
+    # data: {
+    #     userId: '1111',
+
+    # }
+# }
+# => {
+    # type: 'created_room',
+    # status: 'success' | 'fail',
+    # data:  {
+        # roomId: 11111
+    # } | null
+# }
+
+# {type: 'join_room', }
+
 urlpatterns = [ 
     # Room APIs 
     path('room/', views.RoomView.as_view({'get': 'list', 'post' : "create"})), #show all rooms
