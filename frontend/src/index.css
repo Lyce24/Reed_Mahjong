@@ -37,10 +37,15 @@ div#root, .page{
 }
 
 /* Style tiles */
+
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .tile {
-  margin: 0px;
+  width: 6vh;
   border: blue 1px solid;
-  scale: 0.7;
 }
 
 .tile.faceDown {
@@ -59,6 +64,7 @@ div#root, .page{
   height: 100%;
 }
 
+/* General playerboard and other board setting */
 .board {
   display: flex;
 }
