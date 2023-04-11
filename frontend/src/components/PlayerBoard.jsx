@@ -24,7 +24,7 @@ export default function PlayerBoard() {
     
 
     return (
-        <div className='playerBoard'>
+        <div className='board playerBoard'>
             {hand.map(tile => (
                 <Tile suite={tile.suite} number={tile.number} isFacedDown="false"/>
             ))}

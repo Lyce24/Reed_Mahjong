@@ -4,14 +4,14 @@ import '../index.css';
 
 export default function OtherBoard() {
 
-    let initialTiles = Array(3).fill({
+    let initialTiles = Array(13).fill({
         suite: "bamboo",
         number: 1
     })
     const [hand, setHand] = useState(initialTiles);
 
     return (
-        <div className='playerBoard otherBoard'>
+        <div className='board otherBoard'>
             {hand.map(tile => (
                 <Tile suite={tile.suite} number={tile.number} isFacedDown="true"/>
             ))}

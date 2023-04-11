@@ -13,6 +13,15 @@ code {
 }
 
 
+html, body {
+  height: 100%
+}
+
+div#root, .page{
+  width: 100%;
+  height: 100%;
+}
+
 /* Style create and join room buttons */
 .button{
   padding: 10px;
@@ -29,8 +38,9 @@ code {
 
 /* Style tiles */
 .tile {
-  margin: 5px;
+  margin: 0px;
   border: blue 1px solid;
+  scale: 0.7;
 }
 
 .tile.faceDown {
@@ -42,13 +52,21 @@ code {
 }
 
 /* Style boards */
+
+.gameBoard{
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.board {
+  display: flex;
+}
+
 .playerBoard {
   border: red 1px solid;
-  /* position: fixed;
-  bottom: 20%; */
-  display: flex;
   position: absolute;
-  bottom: 0%;
+  bottom: 0;
   left: 50%;
   transform: translate(-50%)
 }
@@ -58,21 +76,23 @@ code {
 }
 
 .leftBoard {
-  transform: rotateZ(90deg); 
   position: absolute;
-  left: 0%;
-  top: 50%
+  transform-origin: left top;
+  transform: rotate(-90.0deg) translateX(-50%);
+  top: 50%;
 }
 
 .rightBoard {
-  transform: rotateZ(270deg); 
   position: absolute;
-  right: 0%;
-  top: 50%
+  right: 0;
+  transform-origin: right top;
+  transform: rotate(90.0deg) translateX(50%);
+  top: 50%;
 }
 
 .topBoard {
   position: absolute;
-  top: 20%;
+  top: 0;
   left: 50%;
+  transform: translate(-50%);
 }
