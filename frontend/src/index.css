@@ -47,11 +47,32 @@ code {
   /* position: fixed;
   bottom: 20%; */
   display: flex;
+  position: absolute;
+  bottom: 0%;
+  left: 50%;
+  transform: translate(-50%)
 }
 
-.other {
+.otherBoard {
   border: orange 5px solid;
-  /* position: fixed;
-  bottom: 20%; */
 }
 
+.leftBoard {
+  transform: rotateZ(90deg); 
+  position: absolute;
+  left: 0%;
+  top: 50%
+}
+
+.rightBoard {
+  transform: rotateZ(270deg); 
+  position: absolute;
+  right: 0%;
+  top: 50%
+}
+
+.topBoard {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+}
