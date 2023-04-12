@@ -41,9 +41,12 @@ Useful Resourse:
 Frontend
 
 - Populate room page
-  - Playerboard and otherboard layout within gameboard
-  - Tile layout within playerboard and gameboard
-  - Make tiles clickable
-  - Implement Tile face up vs face down
+  - Implement discard pile at center
+  - Implement methods to draw and discard tile
+  - Implement methods to organize player tiles
+  - Playerboard and otherboard layout within gameboard (done)
+  - Tile layout within playerboard and gameboard (done)
+  - Make tiles clickable (done)
+  - Implement Tile face up vs face down (done)
 - Get image resources
-  - Get tile images
+  - Get tile images (done)
