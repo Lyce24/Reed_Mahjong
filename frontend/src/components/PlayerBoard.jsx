@@ -4,11 +4,14 @@ import '../index.css';
 
 export default function PlayerBoard() {
 
-    // 13 tiles + 1 drawn tile
-    let initialTiles = Array(13).fill({
+    let initialTiles = Array(13);
+    for (let i = 0; i<13; i++) {
+        initialTiles.push({
         suite: "bamboo",
-        number: 1
-    })
+        number: Math.min(i+1,9),
+        index: i
+        })
+    }
     const [hand, setHand] = useState(initialTiles);
     //const [drawnTile, setTile] = useState({suite: "", number: 0});
     

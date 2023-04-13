@@ -15,6 +15,8 @@ export default function GameBoard() {
             <BoardRight/>
             <br />
             <BoardTop/>
+            <br />
+            <MiddleSection />
         </div>
     );
 }
