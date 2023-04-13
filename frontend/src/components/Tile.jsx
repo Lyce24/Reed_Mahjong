@@ -1,18 +1,13 @@
 import { useState } from 'react';
 const images = require.context('../tiles', false);
 
-//import * as images from '../tiles/back.png';
-
 export default function Tile(props) {
 
-    const [clickState, setState] = useState(false);
-
     function handleClick() {
-        // toggle clickState
-        setState(!clickState);
-        console.log(!clickState);
+        props.onClick(props.index)
     }
-    let clicked = `${clickState ? "clicked" : ""}`;
+
+    let clicked = `${props.isSelected ? "clicked" : ""}`;
 
     if (props.isFacedDown === "true") {
         return (
