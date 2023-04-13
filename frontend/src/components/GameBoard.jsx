@@ -1,6 +1,8 @@
 import PlayerBoard from './PlayerBoard';
-import OtherBoard from './OtherBoard';
 import '../index.css';
+import BoardLeft from './BoardLeft';
+import BoardRight from './BoardRight';
+import BoardTop from './BoardTop';
 
 export default function GameBoard() {
 
@@ -8,11 +10,11 @@ export default function GameBoard() {
         <div className='gameBoard'>
             <PlayerBoard />
             <br />
-            <OtherBoard />
+            <BoardLeft/>
             <br />
-            <OtherBoard />
+            <BoardRight/>
             <br />
-            <OtherBoard />
+            <BoardTop/>
         </div>
     );
 }

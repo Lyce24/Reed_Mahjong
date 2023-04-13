@@ -1,6 +1,7 @@
 ## Installation
 
-* Create a Python virtual environemnt ```python -m venv .```
+* Create a Python virtual environment ```python -m venv .```
+* Activate the virtual environment, for example if you're using bash, type ```source bin/activate```
 * In that environment, run ```pip install -r requirements.txt```
 * Install Django with ```python -m pip install Django```
 * Create the local database with ```python manage.py migrate```
@@ -31,16 +32,21 @@ Useful Resourse:
 4. https://reactjs.org/tutorial/tutorial.html 
 5. MVC in Django. https://medium.com/shecodeafrica/understanding-the-mvc-pattern-in-django-edda05b9f43f, https://techvidvan.com/tutorials/django-mvc-architecture/
 6. Some examples. https://github.com/learningnoobi/django_channels_bingo_game
-7. Example with explanation. Has info on connecting index and game pages. https://blog.logrocket.com/django-channels-and-websockets/
+7. Example with explanation. (WebSockets). https://blog.logrocket.com/django-channels-and-websockets/
+8. Django-React WebSockets Example 2: https://blog.logrocket.com/build-chat-application-react-django-channels/
+9. Frontend (establish WebSocket connection) Backend (routers + consumers to handle connection) overview: https://www.youtube.com/watch?v=cw8-KFVXpTE
 
 ### Todo
 
 Frontend
 
 - Populate room page
-  - Playerboard and otherboard layout within gameboard
-  - Tile layout within playerboard and gameboard
-  - Make tiles clickable
-  - Implement Tile face up vs face down
+  - Implement discard pile at center
+  - Implement methods to draw and discard tile
+  - Implement methods to organize player tiles
+  - Playerboard and otherboard layout within gameboard (done)
+  - Tile layout within playerboard and gameboard (done)
+  - Make tiles clickable (done)
+  - Implement Tile face up vs face down (done)
 - Get image resources
-  - Get tile images
+  - Get tile images (done)
