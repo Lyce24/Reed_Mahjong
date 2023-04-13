@@ -5,9 +5,6 @@ import DiscardButton from './DiscardButton';
 
 export default function PlayerBoard() {
 
-    let reference = useRef(0);
-
-    // 13 tiles + 1 drawn tile
     let initialTiles = Array(13);
     for (let i = 0; i<13; i++) {
         initialTiles.push({
