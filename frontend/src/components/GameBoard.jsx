@@ -10,13 +10,13 @@ export default function GameBoard() {
         <div className='gameBoard'>
             <PlayerBoard />
             <br />
-            <BoardLeft/>
+            <OtherBoard orientation="leftBoard" />
             <br />
-            <BoardRight/>
+            <OtherBoard orientation="rightBoard" />
             <br />
-            <BoardTop/>
-            {/* <br />
-            <MiddleSection /> */}
+            <OtherBoard orientation="topBoard" />
+            <br />
+            <MiddleSection />
         </div>
     );
 }

@@ -67,11 +67,11 @@ img {
 /* General playerboard and other board setting */
 .board {
   display: flex;
+  position: absolute;
 }
 
 .playerBoard {
   border: red 1px solid;
-  position: absolute;
   bottom: 0;
   left: 50%;
   transform: translate(-50%)
@@ -82,14 +82,14 @@ img {
 }
 
 .leftBoard {
-  position: absolute;
+  /* position: absolute; */
   transform-origin: left top;
   transform: rotate(-90.0deg) translateX(-50%);
   top: 50%;
 }
 
 .rightBoard {
-  position: absolute;
+  /* position: absolute; */
   right: 0;
   transform-origin: right top;
   transform: rotate(90.0deg) translateX(50%);
@@ -97,8 +97,12 @@ img {
 }
 
 .topBoard {
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   left: 50%;
   transform: translate(-50%);
+}
+
+.middleSection {
+  text-align:center;
 }
