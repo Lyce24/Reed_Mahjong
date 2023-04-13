@@ -30,10 +30,14 @@ export default function PlayerBoard() {
     }
     //const [drawnTile, setTile] = useState({suite: "", number: 0});
 
-    /* function handleDiscard(params) {
-        console.log(reference.current.state)
-        // collect tile that is clicked
-    } */
+    function handleDiscard(params) {
+        if (selectedTile == null){
+            alert("You have not selected any tile!");
+        } else {
+            // remove tile that is selected
+            // hand.pop(index)
+        }
+    }
     
     // Template for adding elements to array
     /* const temp = () => {
@@ -44,12 +48,12 @@ export default function PlayerBoard() {
         setHand(updateHand);
     }; */
     
-//<DiscardButton onClick={handleDiscard}/>
     return (
         <div className='board playerBoard'>
             {hand.map(tile => (
                 <Tile suite={tile.suite} number={tile.number} index={tile.index} onClick={handleTileClick} isSelected={selectedTile == tile.index} isFacedDown="false"/>
             ))}
+            <DiscardButton onClick={handleDiscard}/>
         </div>
         
     );
