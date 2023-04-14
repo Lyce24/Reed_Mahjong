@@ -1,13 +1,13 @@
-import Tile from './Tile';
-import middleSection from './MiddleSection';
+// import Tile from './Tile';
+// import middleSection from './MiddleSection';
 import '../index.css';
 
 export default function Discard({orientation}) {
 
-    let initialTiles = Array(4).fill({
-        suite: "bamboo",
-        number: 1
-    })
+    // let initialTiles = Array(4).fill({
+    //     suite: "bamboo",
+    //     number: 1
+    // })
     
     // const [hand, setHand] = useState(initialTiles);
     

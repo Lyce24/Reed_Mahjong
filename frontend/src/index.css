@@ -123,21 +123,26 @@ img {
 .discard {
   border: green 2px solid;
   position: absolute;
-  width: 20vw;
-  height: 10vh;
+  width: 200px;
+  height: 100px;
+  /* left: 0%; */
 }
 
 .playerDiscard {
-  /* transform-origin: right bottom; */
   bottom: 0;
   left: 50%;
-  transform: translate(-50%)
+  transform: translate(-15vw, 0);
+  /* left: 50%; */
+  /* transform: translate(-50%); */
 }
 
 .leftDiscard {
-  transform-origin: left top;
-  transform: rotate(-90.0deg) translateX(-50%);
+  left: 0;
   top: 50%;
+  transform: rotate(-90deg) translateY(-50%);
+  
+  
+  /* top: 50%; */
 }
 
 .rightDiscard {
@@ -149,15 +154,15 @@ img {
 
 .topDiscard {
   top: 0;
-  left: 50%;
-  transform: translate(-50%);
+  right: 50%;
+  transform: translate(15vw, 0);
 }
 
 .recentDiscard {
   position: absolute;
   border: black 2px solid;
-  width: 30%;
-  height: 30%;
+  width: 30vw;
+  height: 30vh;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
