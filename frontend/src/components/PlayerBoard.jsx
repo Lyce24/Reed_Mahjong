@@ -1,16 +1,17 @@
 import Tile from './Tile';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import '../index.css';
 import DiscardButton from './DiscardButton';
+import { nanoid } from 'nanoid';
 
 function compareTile(a, b){
     // wan < circle < bamboo
-    if (a.suite == b.suite) {
+    if (a.suite === b.suite) {
         return a.number - b.number
-    } else if (a.suite == "wan" && (b.suite == "circle" || b.suite == "bamboo")){
+    } else if (a.suite === "wan" && (b.suite === "circle" || b.suite === "bamboo")){
         // a before b
         return -1
-    } else if (a.suite == "circle" && b.suite == "bamboo"){
+    } else if (a.suite === "circle" && b.suite === "bamboo"){
         // a before b
         return -1
     } else {
@@ -21,12 +22,13 @@ function compareTile(a, b){
 
 export default function PlayerBoard() {
 
-    let initialTiles = Array();
+    let initialTiles = []; // Array();
     for (let i = 0; i<13; i++) {
         initialTiles.push({
         suite: "bamboo",
         number: Math.min(i+1,9),
-        index: i
+        index: i,
+        key: nanoid()
         })
     }
     const [hand, setHand] = useState(initialTiles);
@@ -42,8 +44,14 @@ export default function PlayerBoard() {
         }
     }
 
-    //TODO: get drawn tile from backend and display on the side
-    const [drawnTile, setDrawnTile] = useState({suite: "circle", number: 1});
+    //TODO: get drawn tile from backend and display on the right side of playerboad
+    // TODO: generate new key for each drawn tile
+    const [drawnTile, setDrawnTile] = useState({
+        suite: "bamboo", 
+        number: 2, 
+        index:100,
+        key: nanoid()
+    });
 
     function handleDiscard(params) {
         if (selectedTile == null){
@@ -61,7 +69,7 @@ export default function PlayerBoard() {
                 tile.index = index;
             })
             setHand(updatedHand);
-            setSelectedTile(null);
+            setSelectedTile(null); 
         }
     }
     // Template for adding elements to array
@@ -76,7 +84,15 @@ export default function PlayerBoard() {
     return (
         <div className='board playerBoard'>
             {hand.map(tile => (
-                <Tile suite={tile.suite} number={tile.number} index={tile.index} onClick={handleTileClick} isSelected={selectedTile == tile.index} isFacedDown="false"/>
+                <Tile 
+                    suite={tile.suite} 
+                    number={tile.number} 
+                    index={tile.index} 
+                    onClick={handleTileClick} 
+                    isSelected={selectedTile === tile.index} 
+                    isFacedDown="false"
+                    key={tile.key}
+                    />
             ))}
             <DiscardButton onClick={handleDiscard}/>
         </div>
