@@ -18,7 +18,7 @@ code {
     monospace;
 }
 
-
+/* Use max available space in the page */
 html, body {
   height: 100%
 }
@@ -43,7 +43,6 @@ div#root, .page{
 }
 
 /* Style tiles */
-
 img {
   max-width: 100%;
   max-height: 100%;
@@ -64,7 +63,6 @@ img {
 }
 
 /* Style boards */
-
 .gameBoard{
   position: relative;
   width: 100%;
