@@ -5,6 +5,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import *
 from asgiref.sync import sync_to_async
 import json
+import random
 class AppConsumer(AsyncJsonWebsocketConsumer):
     """
     This app  consumer handles websocket connections for chat clients.
@@ -69,58 +70,97 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         # 'your_turn' => 
 
         event_type = content.get('type')
-        data = content.get('data')
+        # data = content.get('data')
         match event_type:
             case 'create_room': 
-                hanlder = create_room
+                response = self.create_room()
             case 'join_room': 
-                handler = join_room 
+                room_id = content.get('room_id')
+                response = self.join_room(room_id)
+            case 'leave_room':
+                room_id = content.get('room_id')
+                response = self.leave_room(room_id)
             case 'start_game': 
-                handler = start_game 
+                response = self.start_game()
         
-        try:
-            response = hanlder(data) 
-        except Exception as e:
-            response = {
-                'type': 'error',
-                'data': {
-                    'message': str(e)
-                }
-            }
+        # try:
+        #     response = handler(data)
+        # except Exception as e:
+        #     response = {
+        #         'type': 'error',
+        #         'data': {
+        #             'message': str(e)
+        #         }
+        #     }
 
         return await self.send_json(response)
     
 
-        event_type = content.get('type')
-        if event_type == 'placeholder':
-            # placeholder: just echo the message back to the client 
-            return await self.send_json(({
-                'echo': content
-            }))
+        # event_type = content.get('type')
+        # if event_type == 'placeholder':
+        #     # placeholder: just echo the message back to the client 
+        #     return await self.send_json(({
+        #         'echo': content
+        #     }))
 
-        """
-        # Example code of how to update models 
-        pid = content['player_id']
+        # """
+        # # Example code of how to update models 
+        # pid = content['player_id']
+        # try:
+        #     player = await self.get_model(pid)
+        #     # Stuff
+        # except Player.DoesNotExist:
+        #     return
+        # """
+
+    # Add client to a group with specified room_id 
+    async def create_room(self):
+        # make sure player isn't already in room
+        
+        # create player ID
+        client_key = self.scope["session"].session_key               
         try:
-            player = await self.get_model(pid)
-            # Stuff
+            player = sync_to_async(Player.objects.get)(player_id=client_key)
         except Player.DoesNotExist:
-            return
-        """
+            player = sync_to_async(Player.objects.create)(player_id=client_key)
 
+        # creates random room id and makes sure it's not already in use
+        random_room_id = random.randint(10000000, 99999999)
+        while(sync_to_async(Room.objects.filter)(room_id=random_room_id).count() != 0):
+            random_room_id = random.randint(10000000, 99999999)
+        
+        # creates a room
+        if(player.room is None):
+            room = sync_to_async(Room.objects.create)(room_id = random_room_id)
+            await self.send_json({
+                'message': 'Successfully created room!'
+            })
+            await self.join_room(room)
+        else:
+            await self.send_json({
+                'message': 'Player already in a room.'
+            })
+        
+
+    async def join_room(self, room):
+        self.get_player_model(self.scope["session"].session_key).room = room
+        return
+
+    async def leave_room(self, room_id):
+        return
+
+    async def start_game(self):
+        return
+    
+    async def add_to_group(self):
+        await self.channel_layer.group_add(
+            self.room_name, # `room_id` is the group name
+            self.channel_name
+        )
+
+    # Use these methods to update player and room models
     async def get_room_model(self, model_id):
         return await sync_to_async(Room.objects.get)(room_id=model_id)
     
     async def get_player_model(self, model_id):
         return await sync_to_async(Player.objects.get)(player_id=model_id)
-    
-
-
-    # Methods with websocket_ in front
-
-    '''
-    For the client (frontend) to trigger these methods, send custom websocket event:
-    socket.send(JSON.stringify({
-        'type': 'websocket.event',
-    }))
-    '''
