@@ -25,7 +25,9 @@ export default function PlayerBoard() {
             setSelectedTile(index);
         }
     }
-    //const [drawnTile, setTile] = useState({suite: "", number: 0});
+
+    //TODO: get drawn tile from backend
+    const [drawnTile, setDrawnTile] = useState({suite: "circle", number: 1});
 
     function handleDiscard(params) {
         if (selectedTile == null){
@@ -34,6 +36,8 @@ export default function PlayerBoard() {
         } else {
             // remove tile that is selected
             let updatedHand = hand.toSpliced(selectedTile, 1);
+            // put drawn tile in hand
+            updatedHand = [...updatedHand, drawnTile];
             // reindex tiles
             updatedHand.forEach((tile,index) =>{
                 tile.index = index;
