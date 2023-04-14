@@ -7,7 +7,7 @@ export default function MiddleSection() {
 
     return (
         <div className='middleSection'>
-            <Discard orintation='playerDiscard'/>
+            <Discard orientation="playerDiscard" />
             <br />
             <Discard orientation="leftDiscard" />
             <br />

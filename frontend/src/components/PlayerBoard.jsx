@@ -31,7 +31,7 @@ export default function PlayerBoard() {
         if (selectedTile == null){
             alert("You have not selected any tile!");
         } else {
-            console.log("discard tile" + index);
+            // console.log("discard tile" + index);
             // remove tile that is selected
             // hand.pop(index)
         }
