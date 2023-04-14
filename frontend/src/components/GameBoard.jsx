@@ -1,8 +1,7 @@
 import PlayerBoard from './PlayerBoard';
+import OtherBoard from './OtherBoard';
+import MiddleSection from './MiddleSection';
 import '../index.css';
-import BoardLeft from './BoardLeft';
-import BoardRight from './BoardRight';
-import BoardTop from './BoardTop';
 
 export default function GameBoard() {
 

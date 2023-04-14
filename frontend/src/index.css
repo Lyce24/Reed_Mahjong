@@ -1,3 +1,9 @@
+/* This 'root' style defines values that are used throughout the style sheet */
+:root {
+  --DiscardWidth: 40;
+}
+
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -44,16 +50,17 @@ img {
 }
 
 .tile {
-  width: 6vh;
+  /* This width should be some proportion of the screen */
+  width: 6vh; 
   border: blue 1px solid;
 }
 
 .tile.faceDown {
-  border: blue 5px solid;
+  border: blue 2px solid;
 }
 
 .tile.clicked {
-  border: red 5px solid;
+  border: red 3px solid;
 }
 
 /* Style boards */
@@ -104,5 +111,54 @@ img {
 }
 
 .middleSection {
-  text-align:center;
+  border: black 2px solid;
+  width: 70%;
+  height: 70%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+
+.discard {
+  border: green 2px solid;
+  position: absolute;
+  width: 20vw;
+  height: 10vh;
+}
+
+.playerDiscard {
+  /* transform-origin: right bottom; */
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%)
+}
+
+.leftDiscard {
+  transform-origin: left top;
+  transform: rotate(-90.0deg) translateX(-50%);
+  top: 50%;
+}
+
+.rightDiscard {
+  right: 0;
+  transform-origin: right top;
+  transform: rotate(90.0deg) translateX(50%);
+  top: 50%;
+}
+
+.topDiscard {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.recentDiscard {
+  position: absolute;
+  border: black 2px solid;
+  width: 30%;
+  height: 30%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
