@@ -42,8 +42,9 @@ Frontend
 
 - Populate room page
   - Implement discard pile at center
-  - Implement methods to draw and discard tile
-  - Implement methods to organize player tiles
+  - Implement discard button
+  - Implement method to reorganize and reindex player tiles
+  - Implement method to add drawn tile (from backend)
   - Playerboard and otherboard layout within gameboard (done)
   - Tile layout within playerboard and gameboard (done)
   - Make tiles clickable (done)

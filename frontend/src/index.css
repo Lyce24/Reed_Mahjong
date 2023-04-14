@@ -131,31 +131,39 @@ img {
 .playerDiscard {
   bottom: 0;
   left: 50%;
-  transform: translate(-15vw, 0);
-  /* left: 50%; */
-  /* transform: translate(-50%); */
+  transform: rotate(180deg) translateX(15vw);
+  background-image: linear-gradient(orange, green);
+  width: 49.5vw;
+  height: 19vh;
 }
 
 .leftDiscard {
   left: 0;
   top: 50%;
-  transform: rotate(-90deg) translateY(-50%);
-  
-  
-  /* top: 50%; */
+  transform: rotate(-90deg) translateX(-100%) translateX(15vh);
+  transform-origin: top left;
+  background-image: linear-gradient(orange, green);
+  height: 19vw;
+  width: 49.5vh;
 }
 
 .rightDiscard {
   right: 0;
-  transform-origin: right top;
-  transform: rotate(90.0deg) translateX(50%);
   top: 50%;
+  transform: rotate(90deg) translateX(15vh);
+  transform-origin: top right;
+  background-image: linear-gradient(orange, green);
+  height: 19vw;
+  width: 49.5vh;
 }
 
 .topDiscard {
   top: 0;
   right: 50%;
-  transform: translate(15vw, 0);
+  transform: translateX(15vw);
+  background-image: linear-gradient(orange, green);
+  width: 49.5vw;
+  height: 19vh;
 }
 
 .recentDiscard {
