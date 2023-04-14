@@ -29,14 +29,17 @@ export default function PlayerBoard() {
 
     function handleDiscard(params) {
         if (selectedTile == null){
-            alert("You have not selected any tile!");
-            //console.log(hand)
+            //alert("You have not selected any tile!");
+            console.log(hand)
         } else {
             // remove tile that is selected
-            //console.log("discard tile " + selectedTile);
-            setHand(hand.toSpliced(selectedTile, 1));
+            let updatedHand = hand.toSpliced(selectedTile, 1);
+            // reindex tiles
+            updatedHand.forEach((tile,index) =>{
+                tile.index = index;
+            })
+            setHand(updatedHand);
             setSelectedTile(null);
-            //TODO Reindex tiles
         }
     }
     // Template for adding elements to array
