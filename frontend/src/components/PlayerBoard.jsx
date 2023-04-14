@@ -3,6 +3,22 @@ import { useState, useRef } from 'react';
 import '../index.css';
 import DiscardButton from './DiscardButton';
 
+function compareTile(a, b){
+    // wan < circle < bamboo
+    if (a.suite == b.suite) {
+        return a.number - b.number
+    } else if (a.suite == "wan" && (b.suite == "circle" || b.suite == "bamboo")){
+        // a before b
+        return -1
+    } else if (a.suite == "circle" && b.suite == "bamboo"){
+        // a before b
+        return -1
+    } else {
+        // b before a
+        return 1
+    }
+}
+
 export default function PlayerBoard() {
 
     let initialTiles = Array();
@@ -26,7 +42,7 @@ export default function PlayerBoard() {
         }
     }
 
-    //TODO: get drawn tile from backend
+    //TODO: get drawn tile from backend and display on the side
     const [drawnTile, setDrawnTile] = useState({suite: "circle", number: 1});
 
     function handleDiscard(params) {
@@ -38,6 +54,8 @@ export default function PlayerBoard() {
             let updatedHand = hand.toSpliced(selectedTile, 1);
             // put drawn tile in hand
             updatedHand = [...updatedHand, drawnTile];
+            // reorder tiles
+            updatedHand.sort(compareTile);
             // reindex tiles
             updatedHand.forEach((tile,index) =>{
                 tile.index = index;
