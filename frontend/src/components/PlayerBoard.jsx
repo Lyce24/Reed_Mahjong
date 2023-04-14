@@ -1,16 +1,16 @@
 import Tile from './Tile';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import '../index.css';
 import DiscardButton from './DiscardButton';
 
 function compareTile(a, b){
     // wan < circle < bamboo
-    if (a.suite == b.suite) {
+    if (a.suite === b.suite) {
         return a.number - b.number
-    } else if (a.suite == "wan" && (b.suite == "circle" || b.suite == "bamboo")){
+    } else if (a.suite === "wan" && (b.suite === "circle" || b.suite === "bamboo")){
         // a before b
         return -1
-    } else if (a.suite == "circle" && b.suite == "bamboo"){
+    } else if (a.suite === "circle" && b.suite === "bamboo"){
         // a before b
         return -1
     } else {
@@ -21,7 +21,7 @@ function compareTile(a, b){
 
 export default function PlayerBoard() {
 
-    let initialTiles = Array();
+    let initialTiles = []; // Array();
     for (let i = 0; i<13; i++) {
         initialTiles.push({
         suite: "bamboo",
@@ -76,7 +76,7 @@ export default function PlayerBoard() {
     return (
         <div className='board playerBoard'>
             {hand.map(tile => (
-                <Tile suite={tile.suite} number={tile.number} index={tile.index} onClick={handleTileClick} isSelected={selectedTile == tile.index} isFacedDown="false"/>
+                <Tile suite={tile.suite} number={tile.number} index={tile.index} onClick={handleTileClick} isSelected={selectedTile === tile.index} isFacedDown="false"/>
             ))}
             <DiscardButton onClick={handleDiscard}/>
         </div>
