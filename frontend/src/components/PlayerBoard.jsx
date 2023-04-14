@@ -5,7 +5,7 @@ import DiscardButton from './DiscardButton';
 
 export default function PlayerBoard() {
 
-    let initialTiles = Array(13);
+    let initialTiles = Array();
     for (let i = 0; i<13; i++) {
         initialTiles.push({
         suite: "bamboo",
@@ -31,9 +31,10 @@ export default function PlayerBoard() {
         if (selectedTile == null){
             alert("You have not selected any tile!");
         } else {
-            //console.log("discard tile" + index);
+            console.log("discard tile " + selectedTile);
+            console.log(hand);
             // remove tile that is selected
-            // hand.pop(index)
+            // setHand(hand.pop(selectedTile));
         }
     }
     // Template for adding elements to array
