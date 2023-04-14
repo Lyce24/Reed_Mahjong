@@ -13,11 +13,12 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = new W3CWebSocket(URL);
-    //const newSocket = new WebSocketInstance(URL);
+    //const newSocket = new W3CWebSocket(URL);
+    const newSocket = new WebSocketInstance(URL);
     setSocket(newSocket);
 
-    return () => newSocket.close();
+    //return () => newSocket.close();
+    return () => newSocket.disconnect();
   }, []);
 
   return (
@@ -28,10 +29,10 @@ export const SocketProvider = ({ children }) => {
 };
 
 
-/* class WebSocketInstance {
+class WebSocketInstance {
   constructor(URL) {
     this.socketRef = new W3CWebSocket(URL);
-    this.state = this.socketRef.readyState;
+    this.readyState = this.socketRef.readyState;
   }
 
   connect() {
@@ -44,7 +45,25 @@ export const SocketProvider = ({ children }) => {
     this.socketRef.close();
   }
 
-  addCallbacks(setMessage) {
+  send(message) {
+    if (this.socketRef.readyState === WebSocket.OPEN){
+      this.socketRef.send(JSON.stringify({
+        'type': 'placeholder',
+        'message': message,
+      }))
+    } else {
+      console.error('Socket is not connected');
+    }
+    
+    this.socketRef.onmessage = function(e) {
+        if (typeof e.data === 'string') {
+            const message = JSON.parse(e.data);
+            console.log("Received: ", message);
+        }
+    };
+  }
+
+/*   addCallbacks(setMessage) {
     this.socketRef.onmessage = (e) => {
       const message = JSON.parse(e.data);
       setMessage(message);
@@ -57,7 +76,7 @@ export const SocketProvider = ({ children }) => {
     this.socketRef.onclose = () => {
       console.log('WebSocket closed');
     }
-  }
+  } */
 }
 
-export default WebSocketInstance; */
+/* export default WebSocketInstance; */

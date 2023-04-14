@@ -12,21 +12,7 @@ export default function JoinRoom() {
     e.preventDefault(); // prevent form submission
 
     console.log('clicked submit');
-    if (socket.readyState === WebSocket.OPEN){
-      socket.send(JSON.stringify({
-        'type': 'placeholder',
-        'message': 'hi',
-      }))
-    } else {
-      console.error('Socket is not connected');
-    }
-    
-    socket.onmessage = function(e) {
-        if (typeof e.data === 'string') {
-            const message = JSON.parse(`${e.data}`);
-            console.log("Received: ", message);
-        }
-    };
+    socket.send('hi');
 
 /*     axios.post(`http://localhost:8000/api/join_room/`, {room_id: roomNum})
       .then(res => {
