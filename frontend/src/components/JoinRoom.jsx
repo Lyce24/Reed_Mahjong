@@ -1,15 +1,34 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { useSocket } from './SocketProvider';
 import '../index.css';
 
 export default function JoinRoom() {
   const [roomNum, setRoomNum] = useState(0);
+  const socket = useSocket();
 
   // Redirect to room when user clicks button if roomNum if valid 
   function handleSubmit(e) {
     e.preventDefault(); // prevent form submission
 
-    axios.post(`http://localhost:8000/api/join_room/`, {room_id: roomNum})
+    console.log('clicked submit');
+    if (socket.readyState === WebSocket.OPEN){
+      socket.send(JSON.stringify({
+        'type': 'placeholder',
+        'message': 'hi',
+      }))
+    } else {
+      console.error('Socket is not connected');
+    }
+    
+    socket.onmessage = function(e) {
+        if (typeof e.data === 'string') {
+            const message = JSON.parse(`${e.data}`);
+            console.log("Received: ", message);
+        }
+    };
+
+/*     axios.post(`http://localhost:8000/api/join_room/`, {room_id: roomNum})
       .then(res => {
         if (res.status === 202){
           window.location.href = `/room/${roomNum}`;
@@ -17,7 +36,7 @@ export default function JoinRoom() {
       })
       .catch(err => {
         console.log(err.response);
-      }); 
+      });  */
   }
 
   return (
