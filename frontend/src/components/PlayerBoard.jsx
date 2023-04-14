@@ -5,7 +5,7 @@ import DiscardButton from './DiscardButton';
 
 export default function PlayerBoard() {
 
-    let initialTiles = Array(13);
+    let initialTiles = Array();
     for (let i = 0; i<13; i++) {
         initialTiles.push({
         suite: "bamboo",
@@ -25,15 +25,25 @@ export default function PlayerBoard() {
             setSelectedTile(index);
         }
     }
-    //const [drawnTile, setTile] = useState({suite: "", number: 0});
+
+    //TODO: get drawn tile from backend
+    const [drawnTile, setDrawnTile] = useState({suite: "circle", number: 1});
 
     function handleDiscard(params) {
         if (selectedTile == null){
-            alert("You have not selected any tile!");
+            //alert("You have not selected any tile!");
+            console.log(hand)
         } else {
-            // console.log("discard tile" + index);
             // remove tile that is selected
-            // hand.pop(index)
+            let updatedHand = hand.toSpliced(selectedTile, 1);
+            // put drawn tile in hand
+            updatedHand = [...updatedHand, drawnTile];
+            // reindex tiles
+            updatedHand.forEach((tile,index) =>{
+                tile.index = index;
+            })
+            setHand(updatedHand);
+            setSelectedTile(null);
         }
     }
     // Template for adding elements to array
