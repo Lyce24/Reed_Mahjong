@@ -5,12 +5,15 @@ import { nanoid } from 'nanoid';
 
 export default function OtherBoard({orientation}) {
 
-    let initialTiles = Array(13).fill({
+    let initialTiles = []; // Array();
+    for (let i = 0; i<13; i++) {
+        initialTiles.push({
         suite: "bamboo",
         number: 1,
-        index: 0,
+        index: i,
         key: nanoid()
-    })
+        })
+    }
 
     initialTiles.forEach((tile,index) =>{
         tile.index = index;
