@@ -42,10 +42,9 @@ Frontend
 
 - Populate room page
   - Implement discard pile at center
-  - Implement discard button
-  - Implement method to reorganize and reindex player tiles
+  - Implement discard button (done)
+  - Implement method to reorganize and reindex player tiles after discarding (done)
   - Implement method to add drawn tile (from backend)
-
   - Implement methods to draw and discard tile (done)
   - Implement methods to organize player tiles (done)
   - Playerboard and otherboard layout within gameboard (done)
@@ -54,3 +53,32 @@ Frontend
   - Implement Tile face up vs face down (done)
 - Get image resources
   - Get tile images (done)
+
+- Integrating with backend using socket
+  - join room (done)
+  - create room (done)
+
+Template code for using socket in frontend
+
+```
+import { useState } from 'react';
+import { useSocket } from './SocketProvider';
+
+const socket = useSocket();
+// The variable that you want to get from the backend
+const [variable, setVariable] = useState(null);
+
+socket.send({
+  'request': 'getVariable',
+  'result': 'variable',
+  'roomNum': `000`, //* should be set by backend, put here now for testing
+  'status': '202', //* should be set by backend, put here now for testing
+}, setVariable);
+
+if (variable !== null){
+   // do something with variable
+} else {
+  console.log('Get variable from backend was unsuccessful');
+}
+
+```
