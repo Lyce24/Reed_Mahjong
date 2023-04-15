@@ -4,20 +4,19 @@ import { useSocket } from './SocketProvider';
 import '../index.css';
 
 export default function JoinRoom() {
-  const [roomNum, setRoomNum] = useState(0);
+  const [roomNum, setRoomNum] = useState(null);
   const socket = useSocket();
 
   // Redirect to room when user clicks button if roomNum if valid 
   function handleSubmit(e) {
     e.preventDefault(); // prevent form submission
-
-    console.log('clicked submit');
+    
     socket.send({
+      'request': 'joinRoom',
       'result': 'roomNum',
-      'roomNum': `${roomNum}`, //* will get from backend
+      'roomNum': `000`, //* will get from backend
       'status': '202', //* will get from backend
     }, setRoomNum);
-    console.log('room number received: ', roomNum);
 
     if (roomNum !== null){
       window.location.href = `/room/${roomNum}`;
