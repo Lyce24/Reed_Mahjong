@@ -12,7 +12,18 @@ export default function JoinRoom() {
     e.preventDefault(); // prevent form submission
 
     console.log('clicked submit');
-    socket.send('hi');
+    socket.send({
+      'result': 'roomNum',
+      'roomNum': `${roomNum}`, //* will get from backend
+      'status': '202', //* will get from backend
+    }, setRoomNum);
+    console.log('room number received: ', roomNum);
+
+    if (roomNum !== null){
+      window.location.href = `/room/${roomNum}`;
+    } else {
+      console.log('Room number invalid');
+    }
 
 /*     axios.post(`http://localhost:8000/api/join_room/`, {room_id: roomNum})
       .then(res => {

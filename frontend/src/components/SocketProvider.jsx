@@ -45,7 +45,7 @@ class WebSocketInstance {
     this.socketRef.close();
   }
 
-  send(message) {
+  send(message, setResult) {
     if (this.socketRef.readyState === WebSocket.OPEN){
       this.socketRef.send(JSON.stringify({
         'type': 'placeholder',
@@ -57,9 +57,18 @@ class WebSocketInstance {
     
     this.socketRef.onmessage = function(e) {
         if (typeof e.data === 'string') {
-            const message = JSON.parse(e.data);
+            const message = JSON.parse(e.data).echo.message;
             console.log("Received: ", message);
+            if (message.status !== "202"){
+              setResult(null);
+            } else if(message.result === "roomNum"){
+              setResult(message.roomNum);
+            }
         }
+    };
+
+    this.socketRef.onerror = (e) => {
+      console.log(e.message);
     };
   }
 
