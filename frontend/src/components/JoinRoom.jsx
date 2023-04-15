@@ -4,7 +4,7 @@ import { useSocket } from './SocketProvider';
 import '../index.css';
 
 export default function JoinRoom() {
-  const [roomNum, setRoomNum] = useState(null);
+  const [roomNum, setRoomNum] = useState(0);
   const socket = useSocket();
 
   // Redirect to room when user clicks button if roomNum if valid 
