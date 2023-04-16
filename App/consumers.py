@@ -68,8 +68,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         # 'game_end' =>
         # 'game_reset' =>
         # 'game_pause' =>
-        # 'your_turn' =>
         # 'discard_tile' => user discards a tile, needs user id + room id + tile suite and number, return none (proceed w game logic)
+        # 'draw_tile' (i.e. 'your_turn') => return random tile (suite + number)
 
         event_type = content.get('type')
         # data = content.get('data')
@@ -113,8 +113,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     async def create_room(self):
         # make sure player isn't already in room
 
-        """ 
-        # test create_room function from front end
+        """ # test create_room function from front end
         random_room_id = random.randint(10000000, 99999999)
         await self.send_json({
             'message': 'Successfully created room!',

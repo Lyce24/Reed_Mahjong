@@ -33,6 +33,7 @@ class WebSocketInstance {
   constructor(URL) {
     this.socketRef = new W3CWebSocket(URL);
     this.readyState = this.socketRef.readyState;
+    this.addCallbacks();
   }
 
   connect() {
@@ -44,6 +45,16 @@ class WebSocketInstance {
   disconnect() {
     this.socketRef.close();
   }
+
+  addCallbacks() {
+    this.socketRef.onerror = (e) => {
+      console.log(e.message);
+    };
+
+    this.socketRef.onclose = () => {
+      console.log('WebSocket closed');
+    }
+  } 
 
   send(message, setResult) {
     if (this.socketRef.readyState === WebSocket.OPEN){
@@ -65,8 +76,6 @@ class WebSocketInstance {
                 setResult(message.room_id);
                 window.location.href = `/room/${message.room_id}`;
                 break;
-              case "tile":
-                break;
               default:
                 break;
             }
@@ -78,20 +87,25 @@ class WebSocketInstance {
     };
   }
 
-/*   addCallbacks(setMessage) {
-    this.socketRef.onmessage = (e) => {
-      const message = JSON.parse(e.data);
-      setMessage(message);
-    };
-
-    this.socketRef.onerror = (e) => {
-      console.log(e.message);
-    };
-
-    this.socketRef.onclose = () => {
-      console.log('WebSocket closed');
+  receive(setResult) {
+    this.socketRef.onmessage = function(e){
+      if (typeof e.data === 'string') {
+        const message = JSON.parse(e.data);
+        console.log("Received: ", message);
+        if (message.status !== "202"){
+          setResult(null);
+          return;
+        }
+        switch (message.result) {
+          case "tile":
+            setResult(message.tile);
+            break;
+          default:
+            break;
+        }
+      }
     }
-  } */
+  };
 }
 
 /* export default WebSocketInstance; */
