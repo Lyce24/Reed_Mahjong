@@ -58,9 +58,17 @@ class WebSocketInstance {
             console.log("Received: ", message);
             if (message.status !== "202"){
               setResult(null);
-            } else if(message.result === "room_id"){
-              setResult(message.room_id);
-              window.location.href = `/room/${message.room_id}`;
+              return;
+            }
+            switch (message.result) {
+              case "room_id":
+                setResult(message.room_id);
+                window.location.href = `/room/${message.room_id}`;
+                break;
+              case "tile":
+                break;
+              default:
+                break;
             }
         }
     };
