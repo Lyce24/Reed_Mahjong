@@ -47,22 +47,20 @@ class WebSocketInstance {
 
   send(message, setResult) {
     if (this.socketRef.readyState === WebSocket.OPEN){
-      this.socketRef.send(JSON.stringify({
-        'type': 'placeholder',
-        'message': message,
-      }))
+      this.socketRef.send(JSON.stringify(message))
     } else {
       console.error('Socket is not connected');
     }
     
     this.socketRef.onmessage = function(e) {
         if (typeof e.data === 'string') {
-            const message = JSON.parse(e.data).echo.message;
+            const message = JSON.parse(e.data);
             console.log("Received: ", message);
             if (message.status !== "202"){
               setResult(null);
-            } else if(message.result === "roomNum"){
-              setResult(message.roomNum);
+            } else if(message.result === "room_id"){
+              setResult(message.room_id);
+              window.location.href = `/room/${message.room_id}`;
             }
         }
     };
