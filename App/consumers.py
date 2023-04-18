@@ -3,7 +3,6 @@
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
-from channels.exceptions import InvalidGroup
 from .models import *
 from .serializers import *
 from asgiref.sync import sync_to_async
@@ -53,10 +52,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         print("Disconnected")
 
         # Remove connection from group
-        try:
-            await self.remove_from_group()
-        except InvalidGroup:
-            pass
+        await self.remove_from_group()
 
     async def receive_json(self, content):
         # Handles incoming JSON message from client
