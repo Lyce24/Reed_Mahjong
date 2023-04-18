@@ -117,8 +117,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     async def create_room(self):
         # make sure player isn't already in room
 
-        """ # test create_room function from front end
-        random_room_id = random.randint(10000000, 99999999)
+        # test create_room function from front end
+        """ random_room_id = random.randint(10000000, 99999999)
         await self.send_json({
             'message': 'Successfully created room!',
             'room_id': random_room_id,
@@ -151,21 +151,33 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             await self.join_room(room)
         else:
             await self.send_json({
-                'message': 'Player already in a room.'
+                'message': 'Player already in a room.',
+                'status': '400'
             })
 
     async def join_room(self, room_id, content):
+
+        # test join_room function from front end
+        """ await self.send_json({
+            'message': 'Successfully joined room!',
+            'room_id': room_id,
+            'result': 'room_id',
+            'status': '202',
+        })
+        return """
+
         client_key = self.scope["session"].session_key
         # try:
         #     player = self.get_player_model(client_key)
         # except Player.DoesNotExist:
         #     player = self.create_player_model(client_key)
         room_result = await self.filter_room_models(room_id)
-        if await sync_to_async(Player.objects.filter(room__room_id=room_id)).count() == 4:
+        if await self.filter_player_models_room(room_id).count() == 4:
             await self.send_json({
-                'Bad Request': 'Room is full'
+                'Bad Request': 'Room is full',
+                'status': '400'
             })
-        elif await sync_to_async(Player.objects.filter)(player_id=client_key).count() == 0:
+        elif await self.filter_player_models(client_key).count() == 0:
             player = await self.create_player_model(client_key)
             player.room = room_result[0]
             await sync_to_async(player.save)()
@@ -184,7 +196,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     # serializer = PlayerSerializer(player, context={'request': request})
     # just sending a json for now
     async def serialize_player_data(self, player, content):
-        serializer = await sync_to_async(PlayerSerializer)(player, context={'content':content})
+        serializer = await sync_to_async(PlayerSerializer)(player, context={'content': content})
         is_valid = await sync_to_async(serializer.is_valid)()
         if is_valid:
             # Update object using serializer data asynchronously
@@ -194,7 +206,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'status': '202'
             })
         else:
-            # serializer data is invalid asynchronously 
+            # serializer data is invalid asynchronously
             errors = await sync_to_async(serializer.error)()
             await self.send_json({
                 'errors': errors,
@@ -209,12 +221,12 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                     'message': 'You are not in a room',
                     'status': 400
                 })
-            
+
             player = await self.filter_player_models(client_key)[0]
             curr_room = player.room.room_id
             player.room = None
             await sync_to_async(player.save)()
-            
+
             if sync_to_async(Player.objects.filter)(room__room_id=curr_room).count() == 0:
                 await self.filter_room_models(curr_room).delete()
 
@@ -227,8 +239,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             self.channel_name
         )
 
-
     # methods to access player and room model databases
+
     @database_sync_to_async
     def get_room_model(self, room_id):
         return Room.objects.get(room_id=room_id)
@@ -236,7 +248,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def create_room_model(self, room_id):
         return Room.objects.create(room_id=room_id)
-    
+
     @database_sync_to_async
     def filter_room_models(self, room_id):
         return Room.objects.filter(room_id=room_id)
@@ -248,7 +260,11 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def create_player_model(self, player_id):
         return Player.objects.create(player_id=player_id)
-    
+
     @database_sync_to_async
     def filter_player_models(self, player_id):
         return Player.objects.filter(player_id=player_id)
+
+    @database_sync_to_async
+    def filter_player_models_room(self, room_id):
+        return Player.objects.filter(room__room_id=room_id)
