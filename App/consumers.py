@@ -3,6 +3,7 @@
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
+from channels.exceptions import InvalidGroup
 from .models import *
 from .serializers import *
 from asgiref.sync import sync_to_async
@@ -48,15 +49,15 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         message = event["message"]
         await self.send_json(message)
 
-    async def disconnect(self, close_code):
+    async def disconnect(self):
         # Called when WebSocket closes
         print("Disconnected")
 
         # Remove connection from group
-        await self.channel_layer.group_discard(
-            self.room_name,
-            self.channel_name
-        )
+        try:
+            await self.remove_from_group()
+        except InvalidGroup:
+            pass
 
     async def receive_json(self, content):
         # Handles incoming JSON message from client
@@ -230,12 +231,20 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             if sync_to_async(Player.objects.filter)(room__room_id=curr_room).count() == 0:
                 await self.filter_room_models(curr_room).delete()
 
+            await self.remove_from_group()
+
     async def start_game(self):
         return
 
     async def add_to_group(self):
         await self.channel_layer.group_add(
             self.room_name,  # `room_id` is the group name
+            self.channel_name
+        )
+
+    async def remove_from_group(self):
+        await self.channel_layer.group_discard(
+            self.room_name,
             self.channel_name
         )
 
