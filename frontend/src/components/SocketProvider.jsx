@@ -9,7 +9,7 @@ const SocketContext = createContext();
 export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children }) => {
-  const URL = 'ws://localhost:8000/ws/room/000/';
+  const URL = 'ws://localhost:8000/ws/socket-server';
   //! Only one socket? Or one socket for mainpage, and initialize new socket for new room
   const [socket, setSocket] = useState(null);
 
@@ -55,26 +55,26 @@ class WebSocketInstance {
     this.socketRef.onclose = () => {
       console.log('WebSocket closed');
     }
-  } 
+  }
 
-  send(message, setResult) {
+  send(message) {
     if (this.socketRef.readyState === WebSocket.OPEN) {
-      this.socketRef.send(JSON.stringify({message}))
+      this.socketRef.send(message)
     } else {
       console.error('Socket is not connected');
     }
 
-    this.socketRef.onmessage = function (e) {
-      if (typeof e.data === 'string') {
-        const message = JSON.parse(e.data).echo.message;
-        console.log("Received: ", message);
-        if (message.status !== "202") {
-          setResult(null);
-        } else if (message.room === "roomNum") {
-          setResult(message.roomNum);
-        }
-      }
-    };
+    // this.socketRef.onmessage = function (e) {
+    //   if (typeof e.data === 'string') {
+    //     const message = JSON.parse(e.data).echo.message;
+    //     console.log("Received: ", message);
+    //     if (message.status !== "202") {
+    //       setResult(null);
+    //     } else if (message.room === "roomNum") {
+    //       setResult(message.roomNum);
+    //     }
+    //   }
+    // };
 
     this.socketRef.onerror = (e) => {
       console.log(e.message);
@@ -82,11 +82,11 @@ class WebSocketInstance {
   }
 
   receive(setResult) {
-    this.socketRef.onmessage = function(e){
+    this.socketRef.onmessage = function (e) {
       if (typeof e.data === 'string') {
         const message = JSON.parse(e.data);
         console.log("Received: ", message);
-        if (message.status !== "202"){
+        if (message.status !== "202") {
           setResult(null);
           return;
         }
@@ -100,10 +100,13 @@ class WebSocketInstance {
       }
     }
   };
-  
+
   onmessage(message) {
     message = JSON.parse(message);
-    if (message.type === '')
+    console.log(message);
+    if (message['message'] === 'room_create') {
+      console.log(message['room_id']);
+    }
   };
 
   /*   addCallbacks(setMessage) {
