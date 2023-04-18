@@ -10,9 +10,9 @@ export default function CreateRoomButton() {
   function handleClick() {
     console.log('Clicked');
 
-    socket.send({
+    socket.send(JSON.stringify({
       'type': 'create_room',
-    }, setRoomNum);
+    }));
 
     if (roomNum !== null) {
       window.location.href = `/room/${roomNum}`;

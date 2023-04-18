@@ -57,24 +57,24 @@ class WebSocketInstance {
     }
   }
 
-  send(message, setResult) {
+  send(message) {
     if (this.socketRef.readyState === WebSocket.OPEN) {
-      this.socketRef.send(JSON.stringify({ message }))
+      this.socketRef.send(message)
     } else {
       console.error('Socket is not connected');
     }
 
-    this.socketRef.onmessage = function (e) {
-      if (typeof e.data === 'string') {
-        const message = JSON.parse(e.data).echo.message;
-        console.log("Received: ", message);
-        if (message.status !== "202") {
-          setResult(null);
-        } else if (message.room === "roomNum") {
-          setResult(message.roomNum);
-        }
-      }
-    };
+    // this.socketRef.onmessage = function (e) {
+    //   if (typeof e.data === 'string') {
+    //     const message = JSON.parse(e.data).echo.message;
+    //     console.log("Received: ", message);
+    //     if (message.status !== "202") {
+    //       setResult(null);
+    //     } else if (message.room === "roomNum") {
+    //       setResult(message.roomNum);
+    //     }
+    //   }
+    // };
 
     this.socketRef.onerror = (e) => {
       console.log(e.message);
@@ -103,6 +103,7 @@ class WebSocketInstance {
 
   onmessage(message) {
     message = JSON.parse(message);
+    console.log(message);
     if (message['message'] === 'room_create') {
       console.log(message['room_id']);
     }
