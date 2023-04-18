@@ -13,7 +13,21 @@ export default function CreateRoomButton() {
     socket.send({
       'type': 'create_room',
     }, setRoomNum);
-    
+
+    if (roomNum !== null) {
+      window.location.href = `/room/${roomNum}`;
+    } else {
+      console.log('Error');
+    }
+
+    /* axios.get(`http://localhost:8000/api/create_room/`)
+    .then(res => {
+      window.location.href = `/room/${res.data.room_id}`;
+    })
+    .catch(err => {
+      console.log(err.response.status);
+      alert("Error");
+    }); */
   }
 
   return (
