@@ -38,6 +38,11 @@ Useful Resourse:
 
 ### Todo
 
+Backend
+- fix client_key (currently session_key is just always None)
+- fix line 206 of consumers.py: 
+  - `django.core.exceptions.SynchronousOnlyOperation: You cannot call this from an async context - use a thread or sync_to_async.`
+
 Frontend
 
 - Populate room page

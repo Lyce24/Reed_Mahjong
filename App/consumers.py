@@ -80,8 +80,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             print(f"Creating room")
             await self.create_room(content)
         elif event_type == 'join_room':
-            room_id = content.get('room_id', content)
-            await self.join_room(room_id)
+            room_id = content.get('room_id')
+            await self.join_room(room_id, content)
         elif event_type == 'leave_room':
             await self.leave_room()
         elif event_type == 'start_game':
@@ -208,23 +208,26 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             await sync_to_async(player.save)()
             await self.serialize_player_data(player, content)
 
-<<<<<<< HEAD
     async def leave_room(self):
         client_key = self.scope["session"].session_key
-        if await self.filter_player_models(client_key).count() != 0:
-            if Player.objects.filter(player_id=self.request.session.session_key)[0].room == None:
+        client_key = 'test'
+        player_qs = await self.filter_player_models(client_key)
+        if await sync_to_async(player_qs.count)() != 0:
+            if player_qs[0].room == None:
                 await self.send_json({
                     'message': 'You are not in a room',
                     'status': 400
                 })
 
-            player = await self.filter_player_models(client_key)[0]
+            player = player_qs[0]
             curr_room = player.room.room_id
             player.room = None
             await sync_to_async(player.save)()
 
-            if sync_to_async(Player.objects.filter)(room__room_id=curr_room).count() == 0:
-                await self.filter_room_models(curr_room).delete()
+            player_qs2 = await sync_to_async(Player.objects.filter)(room__room_id=curr_room)
+            if (player_qs2.count)() == 0:
+                room_qs = await self.filter_room_models(curr_room)
+                (room_qs.delete)()
 
             await self.remove_from_group()
 
@@ -261,9 +264,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             })
 
 
-=======
-        print(f"Player {player} joined room {room_result[0]}")
->>>>>>> f480595 (updates on creating room)
     # mimic serializer function in views
     # need to make sure the content has all of the necessary fields for Room model from the frontend
     # and omit the `type` key when assigning to fields
@@ -287,7 +287,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'status': '400'
             })
 
-<<<<<<< HEAD
     async def serialize_room_data(self, room, content):
         serializer = await sync_to_async(RoomSerializer)(room, context={'content': content})
         is_valid = await sync_to_async(serializer.is_valid)()
@@ -303,30 +302,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'errors': errors,
                 'status': '400'
             })
-=======
-    async def leave_room(self, room_id):
-        client_key = self.scope["session"].session_key
-        client_key = 'test'
-        qs = await self.filter_player_models(client_key)
-        if (qs.count)() != 0:
-            qs = Player.objects.filter(player_id=client_key)
-            if qs[0].room == None:
-                await self.send_json({
-                    'message': 'You are not in a room',
-                    'status': 400
-                })
-
-            player = await self.filter_player_models(client_key)[0]
-            curr_room = player.room.room_id
-            player.room = None
-            await sync_to_async(player.save)()
-
-            if sync_to_async(Player.objects.filter)(room__room_id=curr_room).count() == 0:
-                await self.filter_room_models(curr_room).delete()
-
-    async def start_game(self):
-        return
->>>>>>> f480595 (updates on creating room)
 
     async def add_to_group(self):
         await self.channel_layer.group_add(
