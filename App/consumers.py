@@ -144,7 +144,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         if player.room is None:
             room = await self.create_room_model(random_room_id)
             await self.send_json({
-                'message': 'Successfully created room!',
+                'message': 'room_created',
                 'room_id': random_room_id,
                 'result': 'roomNum',
                 'status': '202'
