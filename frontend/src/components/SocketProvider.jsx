@@ -10,6 +10,7 @@ export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children }) => {
   const URL = 'ws://localhost:8000/ws/room/000/';
+  //! Only one socket? Or one socket for mainpage, and initialize new socket for new room
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ class WebSocketInstance {
             switch (message.result) {
               case "room_id":
                 setResult(message.room_id);
-                window.location.href = `/room/${message.room_id}`;
+                //window.location.href = `/room/${message.room_id}`;
                 break;
               default:
                 break;

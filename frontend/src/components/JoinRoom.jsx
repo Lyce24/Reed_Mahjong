@@ -11,7 +11,7 @@ export default function JoinRoom() {
     e.preventDefault(); // prevent form submission
     
     socket.send({
-      'request': 'join_room',
+      'type': 'join_room',
       'room_id': roomNum,
     }, setRoomNum);
   }
