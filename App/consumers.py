@@ -128,14 +128,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         client_key = 'test'
         print(f'client_key: {client_key}')
 
-        try:
-            print("Trying to get player model")
-            player = await self.get_player_model(client_key)
-        except Player.DoesNotExist:
-            print("Player model does not exist")
-            player = await self.create_player_model(client_key)
-
-        print("Player model exists")
         # creates random room id and makes sure it's not already in use
         while True:
             random_room_id = random.randint(10000000, 99999999)
@@ -145,22 +137,59 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             else:
                 continue
         
-        print("Room ID created")
+        print("Room ID created: ", random_room_id)
         # creates a room
-        if player.room is None:
-            await self.create_room_model(random_room_id)
-            await self.send_json({
-                'message': 'room_created',
-                'room_id': random_room_id,
-                'result': 'roomNum',
-                'status': '202'
-            })
-            await self.join_room(random_room_id, content)
-        else:
-            await self.send_json({
-                'message': 'Player already in a room.',
-                'status': '400'
-            })
+
+        try:
+            print("Trying to get player model")
+            player = await self.get_player_model(client_key)
+            print(player.__dict__)
+            # For some reason needs to be room_id or there's a KeyError???
+            if player.room_id is None:
+                room = await self.create_room_model(random_room_id)
+                player.room = room
+                await sync_to_async(room.save)()
+                await sync_to_async(player.save)()
+            else:
+                await self.send_json({
+                    'message': 'Player already in a room.',
+                    'status': '400'
+                })
+        except Player.DoesNotExist:
+            print("Player model does not exist")
+            room = await self.create_room_model(random_room_id)
+            player = await sync_to_async(Player.objects.create)(player_id=client_key, room=room)
+            print(player.__dict__)
+            # player = await self.create_player_model(client_key)
+            # player.room = room
+            await sync_to_async(room.save)()
+            await sync_to_async(player.save)()
+
+        print("Player model exists")
+
+        await self.send_json({
+            'message': 'room_created',
+            'room_id': random_room_id,
+            'result': 'roomNum',
+            'status': '202'
+        })
+
+        # print(type(player))
+        # print(player.__dict__)
+        # if player.room_id is None:
+        #     await self.create_room_model(random_room_id)
+        #     await self.send_json({
+        #         'message': 'room_created',
+        #         'room_id': random_room_id,
+        #         'result': 'roomNum',
+        #         'status': '202'
+        #     })
+        #     await self.join_room(random_room_id, content)
+        # else:
+        #     await self.send_json({
+        #         'message': 'Player already in a room.',
+        #         'status': '400'
+        #     })
 
     async def join_room(self, room_id, content):
 
@@ -192,30 +221,39 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         elif await sync_to_async(qs2.count)() == 0:
             print("Player does not exist")
             player = await self.create_player_model(client_key)
-            player.room = room_result[0]
+            # player.room = room_result[0]
+            player.room = await sync_to_async(room_result.first)()
+            print(player.room)
             await sync_to_async(player.save)()
 
             await self.serialize_player_data(player, content)
         else:
             print("Player exists")
             player_qs = await self.filter_player_models(client_key)
-            player = player_qs[0]
-            player.room = room_result[0]
+            # player = player_qs[0]
+            player = await sync_to_async(player_qs.first)()
+            # player.room = room_result[0]
+            player.room = await sync_to_async(room_result.first)()
+            print(player.room)
             await sync_to_async(player.save)()
-            await self.serialize_player_data(player, content)
+            # await self.serialize_player_data(player, content)
+            await self.send_json({
+                'status': '202'
+            })
 
     async def leave_room(self):
         client_key = self.scope["session"].session_key
         client_key = 'test'
         player_qs = await self.filter_player_models(client_key)
         if await sync_to_async(player_qs.count)() != 0:
-            if player_qs[0].room == None:
+            first_player_qs = await sync_to_async(player_qs.first)()
+            if first_player_qs.room == None:
                 await self.send_json({
                     'message': 'You are not in a room',
                     'status': 400
                 })
 
-            player = player_qs[0]
+            player = await sync_to_async(player_qs.first)()
             curr_room = player.room.room_id
             player.room = None
             await sync_to_async(player.save)()
@@ -266,7 +304,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     # serializer = PlayerSerializer(player, context={'request': request})
     # just sending a json for now
     async def serialize_player_data(self, player, content):
-        serializer = await sync_to_async(PlayerSerializer)(player, context={'content': content})
+        serializer = await sync_to_async(PlayerSerializer)(player)
         is_valid = await sync_to_async(serializer.is_valid)()
         if is_valid:
             # Update object using serializer data asynchronously
