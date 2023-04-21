@@ -67,6 +67,7 @@ Frontend
 Template code for using socket in frontend
 
 ```
+// In component
 import { useState } from 'react';
 import { useSocket } from './SocketProvider';
 
@@ -74,17 +75,13 @@ const socket = useSocket();
 // The variable that you want to get from the backend
 const [variable, setVariable] = useState(null);
 
-socket.send({
+socket.send(setVariable, JSON.stringify({
   'request': 'getVariable',
   'result': 'variable',
-  'roomNum': `000`, //* should be set by backend, put here now for testing
+  'room_id': `000`, //* should be set by backend, put here now for testing
   'status': '202', //* should be set by backend, put here now for testing
-}, setVariable);
+}));
 
-if (variable !== null){
-   // do something with variable
-} else {
-  console.log('Get variable from backend was unsuccessful');
-}
-
+// In Socket provider send() method
+// Add desired behavior upon receiving backend message to this.socketRef.onmessage() code block
 ```
