@@ -10,15 +10,9 @@ export default function CreateRoomButton() {
   function handleClick() {
     console.log('Clicked');
 
-    socket.send(JSON.stringify({
+    socket.send(setRoomNum, JSON.stringify({
       'type': 'create_room',
     }));
-
-    if (roomNum !== null) {
-      window.location.href = `/room/${roomNum}`;
-    } else {
-      console.log('Error');
-    }
 
     /* axios.get(`http://localhost:8000/api/create_room/`)
     .then(res => {

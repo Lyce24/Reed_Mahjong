@@ -72,7 +72,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         if event_type == 'echo':
             await self.send_json(content)
         elif event_type == 'create_room':
-            print(f"Creating room")
             await self.create_room(content)
         elif event_type == 'join_room':
             room_id = content.get('room_id')
@@ -136,7 +135,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 break
             else:
                 continue
-        
+
         print("Room ID created: ", random_room_id)
         # creates a room
 
@@ -172,7 +171,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({
             'message': 'room_created',
             'room_id': random_room_id,
-            'result': 'roomNum',
+            'result': 'room_id',
             'status': '202'
         })
 
@@ -245,9 +244,10 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         try:
             room = self.get_room_model(room_id)
             if room.game_mode == 0:
-                player_result = sync_to_async(Player.objects.filter)(room__room_id=room_id)
+                player_result = sync_to_async(
+                    Player.objects.filter)(room__room_id=room_id)
                 room.game_mode = 1
- 
+
                 # devise the distribution algorithm later - temporary random distribution
                 for player in player_result:
                     count = 0
@@ -257,11 +257,11 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                                 player.__dict__[key] = random.randint(0, 3)
                                 room.__dict__[key] -= player.__dict__[key]
                                 count += player.__dict__[key]
-                                
-                    await sync_to_async(player.save)()    
+
+                    await sync_to_async(player.save)()
                 await sync_to_async(room.save)()
                 # serialize room data?
-    
+
             else:
                 self.send_json({
                     'message': 'Game already exists',

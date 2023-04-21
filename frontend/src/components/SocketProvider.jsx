@@ -10,7 +10,6 @@ export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children }) => {
   const URL = 'ws://localhost:8000/ws/socket-server';
-  //! Only one socket? Or one socket for mainpage, and initialize new socket for new room
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -57,24 +56,31 @@ class WebSocketInstance {
     }
   }
 
-  send(message) {
+  send(setResult, message) {
     if (this.socketRef.readyState === WebSocket.OPEN) {
       this.socketRef.send(message)
     } else {
       console.error('Socket is not connected');
     }
 
-    // this.socketRef.onmessage = function (e) {
-    //   if (typeof e.data === 'string') {
-    //     const message = JSON.parse(e.data).echo.message;
-    //     console.log("Received: ", message);
-    //     if (message.status !== "202") {
-    //       setResult(null);
-    //     } else if (message.room === "roomNum") {
-    //       setResult(message.roomNum);
-    //     }
-    //   }
-    // };
+    this.socketRef.onmessage = function(e) {
+      if (typeof e.data === 'string') {
+          const message = JSON.parse(e.data);
+          console.log("Received: ", message);
+          if (message.status !== "202"){
+            setResult(null);
+            return;
+          }
+          switch (message.result) {
+            case "room_id":
+              setResult(message.room_id);
+              window.location.href = `/room/${message.room_id}`;
+              break;
+            default:
+              break;
+          }
+        }
+    };
 
     this.socketRef.onerror = (e) => {
       console.log(e.message);
