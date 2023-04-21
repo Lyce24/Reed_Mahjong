@@ -28,7 +28,7 @@ export const SocketProvider = ({ children }) => {
   );
 };
 
-
+// Create cleaner interface for websocket interface interaction on frontend
 class WebSocketInstance {
   constructor(URL) {
     this.socketRef = new W3CWebSocket(URL);
