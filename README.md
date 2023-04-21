@@ -39,9 +39,10 @@ Useful Resourse:
 ### Todo
 
 Backend
-- fix client_key (currently session_key is just always None)
-- fix line 206 of consumers.py: 
-  - `django.core.exceptions.SynchronousOnlyOperation: You cannot call this from an async context - use a thread or sync_to_async.`
+- game logic (using signals?)
+- debug all consumers functions
+- `if player.room_id is None:` around line 150 in `consumers.py`, it doesn't throw an error rn but there are some comments there since i don't understand how/ why it works
+- is serializer necessary in `consumers.py`?
 
 Frontend
 

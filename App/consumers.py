@@ -4,7 +4,6 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import *
-from .serializers import *
 from asgiref.sync import sync_to_async
 import random
 
@@ -124,8 +123,9 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         return """
         print("Creating room")
         # create player ID
-        client_key = self.scope["session"].session_key
-        client_key = 'test'
+        # self.channel_name is unique identifier for each WS connection
+        # and can be used to send messages to a specific client using self.channel_layer.send
+        client_key = self.channel_name
         print(f'client_key: {client_key}')
 
         # creates random room id and makes sure it's not already in use
@@ -144,7 +144,9 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             print("Trying to get player model")
             player = await self.get_player_model(client_key)
             print(player.__dict__)
-            # For some reason needs to be room_id or there's a KeyError???
+            # even though player model has a room attribute, not room_id
+            # For some reason needs to be room_id or there's a KeyError?
+            # player.room doesn't give an error in views.py...
             if player.room_id is None:
                 room = await self.create_room_model(random_room_id)
                 player.room = room
@@ -158,10 +160,10 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         except Player.DoesNotExist:
             print("Player model does not exist")
             room = await self.create_room_model(random_room_id)
-            player = await sync_to_async(Player.objects.create)(player_id=client_key, room=room)
+            player = await self.create_player_model(client_key)
+            player.room = room
+            # player = await sync_to_async(Player.objects.create)(player_id=client_key, room=room)
             print(player.__dict__)
-            # player = await self.create_player_model(client_key)
-            # player.room = room
             await sync_to_async(room.save)()
             await sync_to_async(player.save)()
 
@@ -174,23 +176,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             'status': '202'
         })
 
-        # print(type(player))
-        # print(player.__dict__)
-        # if player.room_id is None:
-        #     await self.create_room_model(random_room_id)
-        #     await self.send_json({
-        #         'message': 'room_created',
-        #         'room_id': random_room_id,
-        #         'result': 'roomNum',
-        #         'status': '202'
-        #     })
-        #     await self.join_room(random_room_id, content)
-        # else:
-        #     await self.send_json({
-        #         'message': 'Player already in a room.',
-        #         'status': '400'
-        #     })
-
     async def join_room(self, room_id, content):
 
         # test join_room function from front end
@@ -202,13 +187,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         })
         return """
         print("Joining room")
-        # NEED TO FIND NEW METHOD FOR IDENTIFYING PLAYERS -- THIS RETURNS NONE
-        client_key = self.scope["session"].session_key
-        client_key = 'test'
-        # try:
-        #     player = self.get_player_model(client_key)
-        # except Player.DoesNotExist:
-        #     player = self.create_player_model(client_key))
+        client_key = self.channel_name
+
         room_result = await self.filter_room_models(room_id)
         qs1 = await self.filter_player_models_room(room_id)
         qs2 = await self.filter_player_models(client_key)
@@ -221,29 +201,25 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         elif await sync_to_async(qs2.count)() == 0:
             print("Player does not exist")
             player = await self.create_player_model(client_key)
-            # player.room = room_result[0]
             player.room = await sync_to_async(room_result.first)()
             print(player.room)
             await sync_to_async(player.save)()
 
-            await self.serialize_player_data(player, content)
+            # Do we need to serializer player data here?
         else:
             print("Player exists")
             player_qs = await self.filter_player_models(client_key)
-            # player = player_qs[0]
             player = await sync_to_async(player_qs.first)()
-            # player.room = room_result[0]
             player.room = await sync_to_async(room_result.first)()
             print(player.room)
             await sync_to_async(player.save)()
-            # await self.serialize_player_data(player, content)
+            # Serialize player data?
             await self.send_json({
                 'status': '202'
             })
 
     async def leave_room(self):
-        client_key = self.scope["session"].session_key
-        client_key = 'test'
+        client_key = self.channel_name
         player_qs = await self.filter_player_models(client_key)
         if await sync_to_async(player_qs.count)() != 0:
             first_player_qs = await sync_to_async(player_qs.first)()
@@ -284,7 +260,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                                 
                     await sync_to_async(player.save)()    
                 await sync_to_async(room.save)()
-                await self.serialize_room_data(room, content)
+                # serialize room data?
     
             else:
                 self.send_json({
@@ -295,46 +271,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             self.send_json({
                 "message': 'Room doesn't exist"
                 'status': '404'
-            })
-
-
-    # mimic serializer function in views
-    # need to make sure the content has all of the necessary fields for Room model from the frontend
-    # and omit the `type` key when assigning to fields
-    # serializer = PlayerSerializer(player, context={'request': request})
-    # just sending a json for now
-    async def serialize_player_data(self, player, content):
-        serializer = await sync_to_async(PlayerSerializer)(player)
-        is_valid = await sync_to_async(serializer.is_valid)()
-        if is_valid:
-            # Update object using serializer data asynchronously
-            await sync_to_async(serializer.save)()
-            await self.send_json({
-                'data': serializer.data,
-                'status': '202'
-            })
-        else:
-            # serializer data is invalid asynchronously
-            errors = await sync_to_async(serializer.error)()
-            await self.send_json({
-                'errors': errors,
-                'status': '400'
-            })
-
-    async def serialize_room_data(self, room, content):
-        serializer = await sync_to_async(RoomSerializer)(room, context={'content': content})
-        is_valid = await sync_to_async(serializer.is_valid)()
-        if is_valid:
-            await self.send_json({
-                'data': serializer.data,
-                'status': '200'
-            })
-        else:
-            # serializer data is invalid asynchronously
-            errors = await sync_to_async(serializer.error)()
-            await self.send_json({
-                'errors': errors,
-                'status': '400'
             })
 
     async def add_to_group(self):
@@ -349,8 +285,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             self.channel_name
         )
 
-    # methods to access player and room model databases
-
+    # methods to access player and room model databases:
     @database_sync_to_async
     def get_room_model(self, room_id):
         return Room.objects.get(room_id=room_id)
