@@ -8,9 +8,14 @@ export default function CreateRoomButton() {
   const socket = useSocket();
 
   function handleClick() {
-    console.log('Clicked');
+    console.log('Create Room Button Clicked');
 
-    socket.send(setRoomNum, JSON.stringify({
+    socket.addListener(setRoomNum, (room_id) => {
+      window.location.href = `/room/${room_id}`
+      console.log('new code');
+    });
+
+    socket.send(JSON.stringify({
       'type': 'create_room',
     }));
 
