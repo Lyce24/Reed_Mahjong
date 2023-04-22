@@ -46,7 +46,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         message = event["message"]
         await self.send_json(message)
 
-    async def disconnect(self):
+    async def disconnect(self, close_code):
         # Called when WebSocket closes
         print("Disconnected")
 
@@ -100,6 +100,55 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
 
     async def create_room(self, content):
         print("Creating room")
+        
+        client_key = self.channel_name
+        while True:
+            random_room_id = random.randint(10000000, 99999999)
+            qs = await self.filter_room_models(random_room_id)
+            if await sync_to_async(qs.count)() == 0:
+                break
+            else:
+                continue
+
+        print("Room ID created: ", random_room_id)
+        # creates a room
+
+        try:
+            print("Trying to get player model")
+            player = await self.get_player_model(client_key)
+            print(player.__dict__)
+            # even though player model has a room attribute, not room_id
+            # For some reason needs to be room_id or there's a KeyError?
+            # player.room doesn't give an error in views.py...
+            if player.room_id is None:
+                room = await self.create_room_model(random_room_id)
+                player.room = room
+                await sync_to_async(room.save)()
+                await sync_to_async(player.save)()
+            else:
+                await self.send_json({
+                    'message': 'Player already in a room.',
+                    'status': '400'
+                })
+        except Player.DoesNotExist:
+            print("Player model does not exist")
+            room = await self.create_room_model(random_room_id)
+            player = await self.create_player_model(client_key)
+            player.room = room
+            # player = await sync_to_async(Player.objects.create)(player_id=client_key, room=room)
+            print(player.__dict__)
+            await sync_to_async(room.save)()
+            await sync_to_async(player.save)()
+
+        print("Player model exists")
+
+        await self.send_json({
+            'message': 'room_created',
+            'room_id': random_room_id,
+            'result_type': 'room_id',
+            'status': '202'
+        })
+        
         print("self.channel_name: ", self.channel_name)
         print("self.room_name: ", self.room_name)
 
