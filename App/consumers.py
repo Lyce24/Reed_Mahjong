@@ -41,8 +41,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 "message": "You are now connected to the group!",
             }
         )
-        print("self.channel_name: ", self.channel_name)
-        print("self.room_name: ", self.room_name)
 
     async def send_json_message(self, event):
         message = event["message"]
@@ -102,7 +100,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
 
     async def create_room(self, content):
         print("Creating room")
-
+        
         client_key = self.channel_name
         while True:
             random_room_id = random.randint(10000000, 99999999)
@@ -150,7 +148,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             'result_type': 'room_id',
             'status': '202'
         })
-
+        
         print("self.channel_name: ", self.channel_name)
         print("self.room_name: ", self.room_name)
 
@@ -261,6 +259,15 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 "message': 'Room doesn't exist"
                 'status': '404'
             })
+            
+    async def discard_tile(self, content):
+        client_key = self.channel_name
+        player_qs = await self.filter_player_models(client_key)
+        player = await sync_to_async(player_qs.first)()
+        tile = content['tile']
+        player.__dict__[tile] -= 1
+        await sync_to_async(player.save)()
+        # serialize player data?
 
     async def add_to_group(self):
         await self.channel_layer.group_add(
