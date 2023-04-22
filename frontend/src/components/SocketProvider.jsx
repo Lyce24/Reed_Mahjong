@@ -79,6 +79,7 @@ class WebSocketInstance {
   */
   // Add onmessage listener
   addListener(setResult) {
+    console.log('listener added');
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);

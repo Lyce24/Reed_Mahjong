@@ -56,7 +56,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content):
         # Handles incoming JSON message from client
         print(f"Received JSON message:{content}")
-        
+
         '''
         FORMATTING:
         'type': 'getVariable',
@@ -81,7 +81,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json(content)
         elif event_type == 'create_room':
             await self.create_room(content)
-        #elif event_type == 'discard_tile':
+        # elif event_type == 'discard_tile':
         #    await self.discard_tile(content)
         elif event_type == 'join_room':
             room_id = content.get('room_id')
@@ -96,22 +96,23 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'message': 'not an event type'
             })
 
-
     # Add client to a group with specified room_id
 
     async def create_room(self, content):
+        print("Creating room")
+        print("self.channel_name: ", self.channel_name)
+        print("self.room_name: ", self.room_name)
+
         # test create_room function from front end
-        """ await self.send_json({
+        """ random_room_id = random.randint(10000000, 99999999)
+        await self.send_json({
             'message': 'Successfully created room!',
-            'room_id': room_id,
+            'room_id': random_room_id,
             'result': 'room_id',
             'status': '202',
         })
         return """
-        print("Creating room")
-        print("self.channel_name: ", self.channel_name)
-        print("self.room_name: ", self.room_name)
-        
+
     async def join_room(self, room_id, content):
 
         # test join_room function from front end
