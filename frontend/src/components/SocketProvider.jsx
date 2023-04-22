@@ -128,7 +128,7 @@ class WebSocketInstance {
         const message = JSON.parse(e.data);
         console.log("Received: ", message);
         if (message.status !== "202") {
-          setResult(null);
+          console.log("discard error");
           return;
         }
         if (message.result_type === "discard") {
