@@ -17,6 +17,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     //const newSocket = new W3CWebSocket(URL);
     const newSocket = new WebSocketInstance(URL);
+    newSocket.addListener();
     setSocket(newSocket);
 
     //return () => newSocket.close();
@@ -78,19 +79,17 @@ class WebSocketInstance {
   result
   */
   // Add onmessage listener
-  addListener(setResult) {
+  addListener() {
     console.log('listener added');
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
         console.log("Received: ", message);
         if (message.status !== "202") {
-          setResult(null);
           return;
         }
         switch (message.result_type) {
           case "room_id":
-            setResult(message.room_id);
             window.location.href = `/room/${message.room_id}`;
             break;
           default:

@@ -10,7 +10,7 @@ export default function JoinRoom() {
   function handleSubmit(e) {
     e.preventDefault(); // prevent form submission
     
-    socket.send(setRoomNum, JSON.stringify({
+    socket.send(JSON.stringify({
       'type': 'join_room',
       'room_id': roomNum,
     }));

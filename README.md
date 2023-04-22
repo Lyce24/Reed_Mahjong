@@ -73,16 +73,12 @@ import { useState } from 'react';
 import { useSocket } from './SocketProvider';
 
 const socket = useSocket();
-// The variable that you want to get from the backend
-const [variable, setVariable] = useState(null);
 
-socket.send(setVariable, JSON.stringify({
-  'type': 'getVariable',
-  'result_type': 'variable', //* should be set by backend, put here now for testing
-  'room_id': `000`, //* should be set by backend, put here now for testing
-  'status': '202', //* should be set by backend, put here now for testing
+
+socket.send(JSON.stringify({
+  'type': 'specific_action'
 }));
 
-// In Socket provider send() method
-// Add desired behavior upon receiving backend message to this.socketRef.onmessage() code block
+// In Socket provider addListener() method
+// Add desired behavior upon receiving backend message
 ```

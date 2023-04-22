@@ -10,20 +10,9 @@ export default function CreateRoomButton() {
   function handleClick() {
     console.log('Create Room Button Clicked');
 
-    socket.addListener(setRoomNum);
-    
     socket.send(JSON.stringify({
       'type': 'create_room',
     }));
-
-    /* axios.get(`http://localhost:8000/api/create_room/`)
-    .then(res => {
-      window.location.href = `/room/${res.data.room_id}`;
-    })
-    .catch(err => {
-      console.log(err.response.status);
-      alert("Error");
-    }); */
   }
 
   return (
