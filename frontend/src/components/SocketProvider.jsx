@@ -122,6 +122,21 @@ class WebSocketInstance {
     };
   }
 
+  addDiscardListener(callback) {
+    this.socketRef.onmessage = function (e) {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+        console.log("Received: ", message);
+        if (message.status !== "202") {
+          setResult(null);
+          return;
+        }
+        if (message.result_type === "discard") {
+          callback();
+        }
+      }
+    };
+  }
   // Don't send anything, just specify what behavior you want when receive backend response
   receive(setResult) {
     this.socketRef.onmessage = function (e) {
