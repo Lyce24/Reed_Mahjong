@@ -24,6 +24,8 @@ from .models import *
 Room Operations - Create a Room, Join a Room, Show all rooms, Delete Room
 '''
 
+tiles = ['Bamboo1', 'Bamboo2', 'Bamboo3', 'Bamboo4', 'Bamboo5', 'Bamboo6', 'Bamboo7', 'Bamboo8', 'Bamboo9', 'Character1', 'Character2', 'Character3', 'Character4', 'Character5', 'Character6', 'Character7', 'Character8', 'Character9', 'Circle1', 'Circle2', 'Circle3', 'Circle4', 'Circle5', 'Circle6', 'Circle7', 'Circle8', 'Circle9', 'East', 'South', 'West', 'North', 'Red', 'Green', 'White']
+
 class RoomView(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
@@ -97,24 +99,39 @@ class CreateGame(APIView):
         try:
             room = Room.objects.get(room_id=pk)
             if room.game_mode == 0:
-                player_result = Player.objects.filter(room__room_id=pk)
-                room.game_mode = 1
- 
-                # devise the distribution algorithm later - temporary random distribution
-                for player in player_result:
-                    count = 0
-                    while count < 14:
-                        for key in player.__dict__:
-                            if key != 'id' and key != 'player_id' and key != 'room' and key != '_state' and key != 'room_id':
-                                player.__dict__[key] = random.randint(0, 3)
-                                room.__dict__[key] -= player.__dict__[key]
-                                count += player.__dict__[key]
-                                
-                    player.save()    
-                room.save()
-                serializer = RoomSerializer(room, context={'request': request})
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                if room.player1 == "" or room.player2 == "" or room.player3 == "" and room.player4 == "":
+                    return Response({'Message': 'Not enough players'},status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    player_result = Player.objects.filter(room__room_id=pk)
+                    room.game_mode = 1
     
+                    index = random.randint(1, 4)
+                    room.current_player = index
+                    zhuangjia_name = room.__dict__[f'player{index}']
+                    zhuangjia = Player.objects.get(player_id=zhuangjia_name)
+    
+                    # devise the distribution algorithm later - temporary random distribution
+                    for player in player_result:
+                        count = 0
+                        while count < 13:
+                            key = random.choice(tiles)
+                            while room.__dict__[key] == 0:
+                                key = random.choice(tiles)
+                            player.__dict__[key] += 1
+                            room.__dict__[key] -= 1
+                            count += 1
+                                    
+                        player.save()   
+                        
+                    key = random.choice(tiles)
+                    while room.__dict__[key] == 0:
+                        key = random.choice(tiles)
+                    zhuangjia.__dict__[key] += 1
+                    room.__dict__[key] -= 1
+                    room.save()
+                    serializer = RoomSerializer(room, context={'request': request})
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+        
             else:
                 return Response({'Message': 'Game already exist'},status=status.HTTP_400_BAD_REQUEST)
         except Room.DoesNotExist:

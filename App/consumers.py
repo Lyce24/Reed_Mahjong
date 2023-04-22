@@ -8,7 +8,7 @@ from asgiref.sync import sync_to_async
 from django.db.utils import IntegrityError
 import random
 
-
+tiles = ['Bamboo1', 'Bamboo2', 'Bamboo3', 'Bamboo4', 'Bamboo5', 'Bamboo6', 'Bamboo7', 'Bamboo8', 'Bamboo9', 'Character1', 'Character2', 'Character3', 'Character4', 'Character5', 'Character6', 'Character7', 'Character8', 'Character9', 'Circle1', 'Circle2', 'Circle3', 'Circle4', 'Circle5', 'Circle6', 'Circle7', 'Circle8', 'Circle9', 'East', 'South', 'West', 'North', 'Red', 'Green', 'White']
 class AppConsumer(AsyncJsonWebsocketConsumer):
     """
     This app  consumer handles websocket connections for chat clients.
@@ -109,16 +109,14 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json(content)
         elif event_type == 'create_room':
             await self.create_room(content)
-        elif event_type == 'discard_tile':
-           await self.discard_tile(content)
+        # elif event_type == 'discard_tile':
+        #    await self.discard_tile(content)
         elif event_type == 'join_room':
             room_id = content.get('room_id')
             await self.join_room(room_id, content)
-        # elif event_type == 'leave_room':
-        #     await self.leave_room()
-        # elif event_type == 'start_game':
-        #     room_id = content.get('room_id')
-        #     await self.start_game(room_id, content)
+        elif event_type == 'start_game':
+            room_id = content.get('room_id')
+            await self.start_game(room_id, content)
         else:
             await self.send_json({
                 'message': 'not an event type'
@@ -186,9 +184,20 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         return """
         print("Joining room")
         
-       
-        player = await self.create_player_model(player_id = content.get('username'))
-        room = await self.get_room_model(room_id)
+        player_result = await self.filter_player_models(player_id = content.get('username')) 
+        if await sync_to_async(player_result.count)() == 0:
+            player = await self.create_player_model(player_id = content.get('username'))
+        else:
+            player = await sync_to_async(player_result.first)()
+        room_result = await self.filter_room_models(room_id)
+        if await sync_to_async(room_result.count)() == 0:
+            await self.send_json({
+                'message': 'Room does not exist',
+                'status': '400'
+            })
+            return
+        else:
+            room = await sync_to_async(room_result.first)()
         
         if room.player1 == player.player_id or room.player2 == player.player_id or room.player3 == player.player_id or room.player4 == player.player_id:
             print("Player already in room")
@@ -243,79 +252,115 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         return 
             
 
-    # async def leave_room(self):
-    #     client_key = self.channel_name
-    #     player_qs = await self.filter_player_models(client_key)
-    #     if await sync_to_async(player_qs.count)() != 0:
-    #         first_player_qs = await sync_to_async(player_qs.first)()
-    #         if first_player_qs.room == None:
-    #             await self.send_json({
-    #                 'message': 'You are not in a room',
-    #                 'status': 400
-    #             })
 
-    #         player = await sync_to_async(player_qs.first)()
-    #         curr_room = player.room.room_id
-    #         player.room = None
-    #         await sync_to_async(player.save)()
+    async def start_game(self, room_id, content):
+        try:
+            room = self.get_room_model(room_id)
+            if room.game_mode == 0:
+                if room.player1 == "" or room.player2 == "" or room.player3 == "" or room.player4 == "":
+                    self.send_json({
+                        'message': 'Not enough players',
+                        'status': '400'
+                    })
+                    return
+                
+                else:
+                    room.game_mode = 1
+                    await sync_to_async(room.save)()
+                    player_result = await self.filter_player_models(room_id)
+                    index = random.randint(1, 4)
+                    room.current_player = index
+                    zhuangjia_name = room.__dict__[f'player{index}']
+                    zhuangjia = await self.get_player_model(zhuangjia_name)
+                    
+                    for player in player_result:
+                        count = 0
+                        while count < 13:
+                            key = random.choice(tiles)
+                            while room.__dict__[key] == 0:
+                                key = random.choice(tiles)
+                            player.__dict__[key] += 1
+                            room.__dict__[key] -= 1
+                            count += 1
+                        await sync_to_async(player.save)()
+                    
+                    key = random.choice(tiles)
+                    while room.__dict__[key] == 0:
+                        key = random.choice(tiles)
+                    zhuangjia.__dict__[key] += 1
+                    room.__dict__[key] -= 1
+                    
+                    await sync_to_async(zhuangjia.save)()
+                    await sync_to_async(room.save)()
+                    self.send_json({
+                        'message': 'Game started',
+                        'room_id': room_id,
+                        'result_type': 'room_id',
+                        'status': '202'
+                    })
+                # serialize room data?
 
-    #         player_qs2 = await sync_to_async(Player.objects.filter)(room__room_id=curr_room)
-    #         if (player_qs2.count)() == 0:
-    #             room_qs = await self.filter_room_models(curr_room)
-    #             (room_qs.delete)()
+            else:
+                self.send_json({
+                    'message': 'Game already exists',
+                    'status': '400'
+                })
+        except Room.DoesNotExist:
+            self.send_json({
+                "message': 'Room doesn't exist"
+                'status': '404'
+            })
+    '''
+    async def discard_tiles(self, room_id, content):
+        1. get the room
+        2. get the player
+        3. check if the player is the current player (by checking content.get('username')
+            4. if not, send a message saying that it is not the player's turn
+            if yes
+            5. check if the player has the tile (almost yes every time if frontend is correct)
+                6. if not, send a message saying that the player does not have the tile 
+                7. if yea, discard the tile (player.__dict__[tile] -= 1)
+                8. broadcast this message to the room
+                send_json_message
+                {tile, username, room_id, result_type, status}
+                
+        check whether other players can perform chi or peng or hu.
+        for example, if the next player can perform chi, send a message to the next player
+        1. if current_player is 1, then next player is 2
+        2. check if player2 has the tiles around the tile that player1 discarded 
+            (if player1 discarded bamboo1, then check if player2 has bamboo2 and bamboo3)
+            (if player1 discarded bamboo5, then check if player2 has bamboo4 and bamboo6 or bamboo6 and bamboo7 or bamboo3 and bamboo4) - fixed range, so O(1) time complexity
+        3. prompt a message to player2 saying that player1 discarded a tile and player2 can perform chi
+           {
+               tile: bamboo5,
+               ...
+           }
+    ''' 
+    
+    # async def discard_tile(self, content):
+    #     '''
+    #     username
+    #     tile
+    #     '''
+    #     tile = content.get('tile')
+    #     player = content.get('username')
+    #     player.__dict__[tile] -= 1
+    #     # add it to the players discarded tiles
+    #     # player.discarded  somthing something something something 
+    #     await self.channel_layer.group_send(
+    #         self.room_name,
+    #         {
+    #             "type": "send_json_message",
+    #             "message": "Send tile to ppl",
+    #         }
+    #     )
+    
+    '''
+    async def chi(self, room_id, content):
+        1. get the room
+        2. get the player
+    '''
 
-    #         await self.remove_from_group()
-
-    # async def start_game(self, room_id, content):
-    #     try:
-    #         room = self.get_room_model(room_id)
-    #         if room.game_mode == 0:
-    #             player_result = sync_to_async(
-    #                 Player.objects.filter)(room__room_id=room_id)
-    #             room.game_mode = 1
-
-    #             # devise the distribution algorithm later - temporary random distribution
-    #             for player in player_result:
-    #                 count = 0
-    #                 while count < 13:
-    #                     for key in player.__dict__:
-    #                         if key != 'id' and key != 'player_id' and key != 'room' and key != '_state' and key != 'room_id':
-    #                             player.__dict__[key] = random.randint(0, 3)
-    #                             room.__dict__[key] -= player.__dict__[key]
-    #                             count += player.__dict__[key]
-
-    #                 await sync_to_async(player.save)()
-    #             await sync_to_async(room.save)()
-    #             # serialize room data?
-
-    #         else:
-    #             self.send_json({
-    #                 'message': 'Game already exists',
-    #                 'status': '400'
-    #             })
-    #     except Room.DoesNotExist:
-    #         self.send_json({
-    #             "message': 'Room doesn't exist"
-    #             'status': '404'
-    #         })
-            
-    async def discard_tile(self, content):
-        '''
-        username
-        tile
-        '''
-        tile = content.get('tile')
-        player = content.get('username')
-        player.__dict__[tile] -= 1
-        # add it to the players discarded tiles
-        # player.discarded  somthing something something something 
-        await self.channel_layer.group_send(
-            self.room_name,
-            {
-                "type": "send_json_message",
-                "message": "Send tile to ppl",
-            }
-        )
 
 
     async def add_to_group(self):
