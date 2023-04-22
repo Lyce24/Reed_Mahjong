@@ -116,9 +116,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             print("Trying to get player model")
             player = await self.create_player_model(player_id = content.get('username'))
             print(player.__dict__)
-            # even though player model has a room attribute, not room_id
-            # For some reason needs to be room_id or there's a KeyError?
-            # player.room doesn't give an error in views.py...
             if player.room_id is None:
                 room = await self.create_room_model(random_room_id)
                 player.room = room
@@ -135,7 +132,6 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             room = await self.create_room_model(random_room_id)
             player = await self.create_player_model(player_id = content.get('username'))
             player.room = room
-            # player = await sync_to_async(Player.objects.create)(player_id=client_key, room=room)
             print(player.__dict__)
             await sync_to_async(room.save)()
             await sync_to_async(player.save)()
@@ -173,27 +169,25 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         })
         return """
         print("Joining room")
-
-        client_key = content.get("username")
+        
         room_result = await self.filter_room_models(room_id)
-        player_result = await self.filter_player_models(client_key)
 
-        player = await sync_to_async(player_result.first)()
+        player = await self.create_player_model(player_id = content.get('username'))
         room = await sync_to_async(room_result.first)()    
         
-        if room_result.player2 == "":
+        if room.player2 == "":
             room.player2 = player.player_id
             player.room = room
             await sync_to_async(player.save)()
             await sync_to_async(room.save)()
  
-        elif room_result.player3 == "":
+        elif room.player3 == "":
             room.player3 = player.player_id
             player.room = room    
             await sync_to_async(player.save)()
             await sync_to_async(room.save)()   
         
-        elif room_result.player4 == "":
+        elif room.player4 == "":
             room.player4 = player.player_id
             player.room = room
             await sync_to_async(player.save)()
