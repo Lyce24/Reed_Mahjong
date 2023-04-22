@@ -172,6 +172,7 @@ cython_debug/
 
 bin/
 pyvenv.cfg
+db.sqlite3
 
 .vscode
 node_modules
