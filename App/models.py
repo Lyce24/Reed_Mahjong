@@ -26,6 +26,13 @@ class Room(models.Model):
     room_id = models.CharField(max_length=8, unique = True) 
     game_mode = models.BooleanField(default=False)
     
+    player1 = models.CharField(max_length=50, default="")
+    player2 = models.CharField(max_length=50, default="")
+    player3 = models.CharField(max_length=50, default="")
+    player4 = models.CharField(max_length=50, default="")
+    
+    current_player = models.IntegerField(default=1)
+    
     Bamboo1 = models.SmallIntegerField(default=4)
     Bamboo2 = models.SmallIntegerField(default=4)
     Bamboo3 = models.SmallIntegerField(default=4)
