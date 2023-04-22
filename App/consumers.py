@@ -56,6 +56,14 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content):
         # Handles incoming JSON message from client
         print(f"Received JSON message:{content}")
+        
+        '''
+        FORMATTING:
+        'type': 'getVariable',
+        'result': 'variable', //* should be set by backend, put here now for testing
+        'room_id': `000`, //* should be set by backend, put here now for testing
+        'status': '202', //* should be set by backend, put here now for testing
+        '''
 
         # 'register' => user registers, return a random new user id in uuid4
         # 'create_room' => user creates a room, needs user id as own, return a random room id in uuid4 if success otherwise indicate fail
@@ -73,6 +81,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json(content)
         elif event_type == 'create_room':
             await self.create_room(content)
+        #elif event_type == 'discard_tile':
+        #    await self.discard_tile(content)
         elif event_type == 'join_room':
             room_id = content.get('room_id')
             await self.join_room(room_id, content)
@@ -86,95 +96,22 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'message': 'not an event type'
             })
 
-        # try:
-        #     response = handler(data)
-        # except Exception as e:
-        #     response = {
-        #         'type': 'error',
-        #         'data':
-        #             'message': str(e)
-        #         }
-        #     }
-
-        # """
-        # # Example code of how to update models
-        # pid = content['player_id']
-        # try:
-        #     player = await self.get_model(pid)
-        #     # Stuff
-        # except Player.DoesNotExist:
-        #     return
-        # """
 
     # Add client to a group with specified room_id
 
     async def create_room(self, content):
-        # make sure player isn't already in room
-
         # test create_room function from front end
-        """ random_room_id = random.randint(10000000, 99999999)
-        await self.send_json({
+        """ await self.send_json({
             'message': 'Successfully created room!',
-            'room_id': random_room_id,
+            'room_id': room_id,
             'result': 'room_id',
-            'status': '202'
+            'status': '202',
         })
         return """
         print("Creating room")
-        # create player ID
-        # self.channel_name is unique identifier for each WS connection
-        # and can be used to send messages to a specific client using self.channel_layer.send
-        client_key = self.channel_name
-        print(f'client_key: {client_key}')
-
-        # creates random room id and makes sure it's not already in use
-        while True:
-            random_room_id = random.randint(10000000, 99999999)
-            qs = await self.filter_room_models(random_room_id)
-            if await sync_to_async(qs.count)() == 0:
-                break
-            else:
-                continue
-
-        print("Room ID created: ", random_room_id)
-        # creates a room
-
-        try:
-            print("Trying to get player model")
-            player = await self.get_player_model(client_key)
-            print(player.__dict__)
-            # even though player model has a room attribute, not room_id
-            # For some reason needs to be room_id or there's a KeyError?
-            # player.room doesn't give an error in views.py...
-            if player.room_id is None:
-                room = await self.create_room_model(random_room_id)
-                player.room = room
-                await sync_to_async(room.save)()
-                await sync_to_async(player.save)()
-            else:
-                await self.send_json({
-                    'message': 'Player already in a room.',
-                    'status': '400'
-                })
-        except Player.DoesNotExist:
-            print("Player model does not exist")
-            room = await self.create_room_model(random_room_id)
-            player = await self.create_player_model(client_key)
-            player.room = room
-            # player = await sync_to_async(Player.objects.create)(player_id=client_key, room=room)
-            print(player.__dict__)
-            await sync_to_async(room.save)()
-            await sync_to_async(player.save)()
-
-        print("Player model exists")
-
-        await self.send_json({
-            'message': 'room_created',
-            'room_id': random_room_id,
-            'result': 'room_id',
-            'status': '202'
-        })
-
+        print("self.channel_name: ", self.channel_name)
+        print("self.room_name: ", self.room_name)
+        
     async def join_room(self, room_id, content):
 
         # test join_room function from front end
@@ -251,7 +188,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 # devise the distribution algorithm later - temporary random distribution
                 for player in player_result:
                     count = 0
-                    while count < 14:
+                    while count < 13:
                         for key in player.__dict__:
                             if key != 'id' and key != 'player_id' and key != 'room' and key != '_state' and key != 'room_id':
                                 player.__dict__[key] = random.randint(0, 3)

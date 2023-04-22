@@ -43,6 +43,7 @@ Backend
 - debug all consumers functions
 - `if player.room_id is None:` around line 150 in `consumers.py`, it doesn't throw an error rn but there are some comments there since i don't understand how/ why it works
 - is serializer necessary in `consumers.py`?
+- reimplement room ID generation with a unique ID package, or our own implementation that doesn't require iterating over current rooms to make sure an ID isn't in use
 
 Frontend
 
@@ -76,8 +77,8 @@ const socket = useSocket();
 const [variable, setVariable] = useState(null);
 
 socket.send(setVariable, JSON.stringify({
-  'request': 'getVariable',
-  'result': 'variable',
+  'type': 'getVariable',
+  'result': 'variable', //* should be set by backend, put here now for testing
   'room_id': `000`, //* should be set by backend, put here now for testing
   'status': '202', //* should be set by backend, put here now for testing
 }));
