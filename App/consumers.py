@@ -60,7 +60,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         '''
         FORMATTING:
         'type': 'getVariable',
-        'result': 'variable', //* should be set by backend, put here now for testing
+        'result_type': 'variable', //* should be set by backend, put here now for testing
         'room_id': `000`, //* should be set by backend, put here now for testing
         'status': '202', //* should be set by backend, put here now for testing
         '''
@@ -108,7 +108,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({
             'message': 'Successfully created room!',
             'room_id': random_room_id,
-            'result': 'room_id',
+            'result_type': 'room_id',
             'status': '202',
         })
         return """
@@ -119,7 +119,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         """ await self.send_json({
             'message': 'Successfully joined room!',
             'room_id': room_id,
-            'result': 'room_id',
+            'result_type': 'room_id',
             'status': '202',
         })
         return """

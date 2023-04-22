@@ -78,7 +78,7 @@ const [variable, setVariable] = useState(null);
 
 socket.send(setVariable, JSON.stringify({
   'type': 'getVariable',
-  'result': 'variable', //* should be set by backend, put here now for testing
+  'result_type': 'variable', //* should be set by backend, put here now for testing
   'room_id': `000`, //* should be set by backend, put here now for testing
   'status': '202', //* should be set by backend, put here now for testing
 }));
