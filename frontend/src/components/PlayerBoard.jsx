@@ -3,7 +3,7 @@ import { useState } from 'react';
 import '../index.css';
 import DiscardButton from './DiscardButton';
 import { nanoid } from 'nanoid';
-import { useSocket } from './SocketProvider';
+//import { useSocket } from './SocketProvider';
 
 function compareTile(a, b){
     // wan < circle < bamboo
@@ -23,7 +23,7 @@ function compareTile(a, b){
 
 export default function PlayerBoard() {
 
-    const socket = useSocket();
+    //const socket = useSocket();
 
     let initialTiles = []; // Array();
     for (let i = 0; i<13; i++) {
@@ -55,7 +55,7 @@ export default function PlayerBoard() {
         index:100,
         key: nanoid()
     });
-    socket.receive(setDrawnTile);
+    //socket.receive(setDrawnTile);
 
     function handleDiscard(params) {
         if (selectedTile == null){
