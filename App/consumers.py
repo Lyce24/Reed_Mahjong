@@ -115,7 +115,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
 
         try:
             print("Trying to get player model")
-            player = await self.get_player_model(client_key)
+            player = await self.get_player_model(content.get('username'))
             print(player.__dict__)
             # even though player model has a room attribute, not room_id
             # For some reason needs to be room_id or there's a KeyError?
