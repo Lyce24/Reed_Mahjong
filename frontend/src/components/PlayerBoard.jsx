@@ -27,8 +27,7 @@ function compareTile(a, b) {
 export default function PlayerBoard() {
   const socket = useSocket();
 
-  socket.addDiscardListener(handleDiscard);
-
+  // initialize 13 tiles for player hand, for test purposes only
   let initialTiles = []; // Array();
   for (let i = 0; i < 13; i++) {
     initialTiles.push({
@@ -41,6 +40,7 @@ export default function PlayerBoard() {
   const [hand, setHand] = useState(initialTiles);
   const [selectedTile, setSelectedTile] = useState(null);
 
+  // select the tile that is clicked
   function handleTileClick(index) {
     if (index === selectedTile) {
       // If the clicked child is already selected, deselect it
@@ -53,14 +53,23 @@ export default function PlayerBoard() {
 
   //TODO: get drawn tile from backend and display on the right side of playerboad
   // TODO: (backend) generate new key for each drawn tile
+  // initialize drawn tile, for test purposes only
+  // change initial value to null after tests
   const [drawnTile, setDrawnTile] = useState({
     suite: "bamboo",
     number: 2,
     index: 100,
     key: nanoid(),
   });
-  //socket.receive(setDrawnTile);
+  // setup draw listener, updates 'drawnTile' when receive backend 'draw_tile' msg
+  socket.addDrawListener(setDrawnTile);
 
+  // setup discard listener, calls 'handleDiscard' when receive discard msg from backend
+  socket.addDiscardListener(handleDiscard);
+
+  // remove selected tile from hand, submit 'discard_tile' msg to backend
+  // TODO: add drawn tile to hand
+  // sort and update hand tiles
   function handleDiscard(params) {
     if (selectedTile == null) {
       //alert("You have not selected any tile!");
@@ -80,14 +89,6 @@ export default function PlayerBoard() {
       setSelectedTile(null);
     }
   }
-  // Template for adding elements to array
-  /* const temp = () => {
-        let updateHand = [...hand, {
-            suite: "bamboo",
-            number: 1
-        }];
-        setHand(updateHand);
-    }; */
 
   return (
     <div className="board playerBoard">
