@@ -18,7 +18,7 @@ export const SocketProvider = ({ children }) => {
 
   const username = useUsername();
 
-  useEffect(() => {    
+  useEffect(() => {
     // initialize socket instance
     const newSocket = new WebSocketInstance(URL, username);
     newSocket.addListener();
@@ -34,7 +34,6 @@ export const SocketProvider = ({ children }) => {
     </SocketContext.Provider>
   );
 };
-
 
 // Create cleaner interface for websocket interface interaction on frontend
 class WebSocketInstance {
@@ -74,9 +73,9 @@ class WebSocketInstance {
       // Append username to the message JSON being sent
       const newmessage = {
         ...message,
-        'username': this.username
-      }
-      console.log('send message', newmessage)
+        username: this.username,
+      };
+      console.log("send message", newmessage);
       this.socketRef.send(JSON.stringify(newmessage));
     } else {
       console.error("Socket is not connected");
@@ -100,10 +99,40 @@ class WebSocketInstance {
           case "room_id":
             window.location.href = `/room/${message.room_id}`;
             break;
-          //case "tile":
-          //  setResult(message.tile);
           default:
             break;
+        }
+      }
+    };
+  }
+
+  addDrawListener(setResult) {
+    this.socketRef.onmessage = function (e) {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+        console.log("Received: ", message);
+        if (message.status !== "202") {
+          setResult(null);
+          return;
+        }
+        if (message.result_type === "draw") {
+          setResult(message);
+        }
+      }
+    };
+  }
+
+  addDiscardListener(callback) {
+    this.socketRef.onmessage = function (e) {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+        console.log("Received: ", message);
+        if (message.status !== "202") {
+          console.log("discard error");
+          return;
+        }
+        if (message.result_type === "discard") {
+          callback();
         }
       }
     };
