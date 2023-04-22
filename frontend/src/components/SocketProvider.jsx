@@ -88,7 +88,7 @@ class WebSocketInstance {
           setResult(null);
           return;
         }
-        switch (message.result) {
+        switch (message.result_type) {
           case "room_id":
             setResult(message.room_id);
             window.location.href = `/room/${message.room_id}`;
