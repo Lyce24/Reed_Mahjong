@@ -2,34 +2,34 @@ import { w3cwebsocket as W3CWebSocket } from "websocket";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useUsername } from "./UsernameProvider";
 
-// create SocketContext with value = the socket instance, so all components can read this value with useContext(SocketContext)
-
+// create SocketContext with value = the socket instance
+// so all components can read this value with useContext(SocketContext)
 const SocketContext = createContext();
 
-// useSocket is a custom hook, so we can use it in any component to get the socket instance
+// useSocket is a custom hook
+// we can use it in any component to get the socket instance
 export const useSocket = () => useContext(SocketContext);
 
-// SocketProvider is a component that wraps all other components, so all components can access the socket instance
+// SocketProvider is a component that wraps all other components
+// so all components can access the context value, which is the socket instance
 export const SocketProvider = ({ children }) => {
   const URL = "ws://localhost:8000/ws/socket-server";
   const [socket, setSocket] = useState(null);
 
   const username = useUsername();
 
-  useEffect(() => {
-    //const newSocket = new W3CWebSocket(URL);
-    
+  useEffect(() => {    
+    // initialize socket instance
     const newSocket = new WebSocketInstance(URL, username);
     newSocket.addListener();
     setSocket(newSocket);
-    //return () => newSocket.close();
     // this is the cleanup function, it will be called when the component unmounts
     return () => newSocket.disconnect();
   }, []);
 
   return (
     <SocketContext.Provider value={socket}>
-      {socket && children}{" "}
+      {socket && children}
       {/* conditionally render the child components only when the socket state is not null. */}
     </SocketContext.Provider>
   );
@@ -57,7 +57,7 @@ class WebSocketInstance {
     this.socketRef.close();
   }
 
-  // never used
+  // used once during initialization
   addCallbacks() {
     this.socketRef.onerror = (e) => {
       console.log(e.message);
@@ -72,12 +72,11 @@ class WebSocketInstance {
   send(message) {
     if (this.socketRef.readyState === WebSocket.OPEN) {
       // Append username to the message JSON being sent
-      console.log('send message w username', this.username)
       const newmessage = {
         ...message,
         'username': this.username
       }
-      console.log('new message', newmessage)
+      console.log('send message', newmessage)
       this.socketRef.send(JSON.stringify(newmessage));
     } else {
       console.error("Socket is not connected");
@@ -101,30 +100,12 @@ class WebSocketInstance {
           case "room_id":
             window.location.href = `/room/${message.room_id}`;
             break;
+          //case "tile":
+          //  setResult(message.tile);
           default:
             break;
         }
       }
-    };
-    /* this.socketRef.onmessage = function (e) {
-      // if the type of e.data is not string, it's a blob, which is the image
-      if (typeof e.data !== "string") {
-        console.log(`${e.data} is not a string`);
-        return;
-      }
-      const message = JSON.parse(e.data);
-      console.log("Received: ", message);
-      if (message.status !== "202") {
-        setResult(null);
-        return;
-      } else {
-        setResult(message.result);
-        callback(message.result);
-      }
-    }; */
-
-    this.socketRef.onerror = (e) => {
-      console.log(e.message);
     };
   }
   // Don't send anything, just specify what behavior you want when receive backend response

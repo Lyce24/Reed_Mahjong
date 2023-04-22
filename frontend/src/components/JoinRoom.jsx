@@ -1,19 +1,19 @@
 import { useState } from 'react';
-//import { useSocket } from './SocketProvider';
+import { useSocket } from './SocketProvider';
 import '../index.css';
 
 export default function JoinRoom() {
   const [roomNum, setRoomNum] = useState(0);
-  //const socket = useSocket();
+  const socket = useSocket();
 
   // Redirect to room when user clicks button if roomNum if valid 
   function handleSubmit(e) {
     e.preventDefault(); // prevent form submission
     
-    /* socket.send(JSON.stringify({
+    socket.send({
       'type': 'join_room',
       'room_id': roomNum,
-    })); */
+    });
   }
 
   return (
