@@ -73,6 +73,7 @@ class Player(models.Model):
     player_id = models.CharField(max_length=50, unique=True)
     
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='player_set', null=True)
+    
 
     Bamboo1 = models.SmallIntegerField(default=0)
     Bamboo2 = models.SmallIntegerField(default=0)

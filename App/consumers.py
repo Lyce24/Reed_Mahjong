@@ -5,6 +5,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import *
 from asgiref.sync import sync_to_async
+from django.db.utils import IntegrityError
 import random
 
 
@@ -50,6 +51,33 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         # Called when WebSocket closes
         print("Disconnected")
 
+        client_key = close_code.get('username')
+        room_id = close_code.get('room_id')
+        try:
+            # Delete player model from database
+            player = await self.get_player_model(client_key)
+            await sync_to_async(player.delete)()
+            # Remove player id from the room
+            room = await self.get_room_model(room_id)
+            if room.player1 == client_key:
+                room.player1 = ''
+            elif room.player2 == client_key:
+                room.player2 = ''
+            elif room.player3 == client_key:
+                room.player3 = ''
+            elif room.player4 == client_key:
+                room.player4 = ''
+            else:
+                await self.send_json({
+                    'message': 'Player is not in the room',
+                    'status': '400',
+                })
+        except Player.DoesNotExist:
+            await self.send_json({
+                'message': 'Player does not exist.',
+                'status': '400',
+            })
+
         # Remove connection from group
         await self.remove_from_group()
 
@@ -81,8 +109,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json(content)
         elif event_type == 'create_room':
             await self.create_room(content)
-        # elif event_type == 'discard_tile':
-        #    await self.discard_tile(content)
+        elif event_type == 'discard_tile':
+           await self.discard_tile(content)
         elif event_type == 'join_room':
             room_id = content.get('room_id')
             await self.join_room(room_id, content)
@@ -115,35 +143,23 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         try:
             print("Trying to get player model")
             player = await self.create_player_model(player_id = content.get('username'))
-            print(player.__dict__)
-            if player.room_id is None:
-                room = await self.create_room_model(random_room_id)
-                player.room = room
-                room.player1 = player.player_id
-                await sync_to_async(room.save)()
-                await sync_to_async(player.save)()
-            else:
-                await self.send_json({
-                    'message': 'Player already in a room.',
-                    'status': '400'
-                })
-        except Player.DoesNotExist:
-            print("Player model does not exist")
             room = await self.create_room_model(random_room_id)
-            player = await self.create_player_model(player_id = content.get('username'))
             player.room = room
-            print(player.__dict__)
+            room.player1 = player.player_id
             await sync_to_async(room.save)()
             await sync_to_async(player.save)()
-
-        print("Player model exists")
-
-        await self.send_json({
+            await self.send_json({
             'message': 'room_created',
             'room_id': random_room_id,
             'result_type': 'room_id',
             'status': '202'
         })
+
+        except IntegrityError:
+            await self.send_json({
+                'message': 'Player already in a room.',
+                'status': '400'
+            })
         
         print("self.channel_name: ", self.channel_name)
         print("self.room_name: ", self.room_name)
@@ -170,22 +186,41 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         return """
         print("Joining room")
         
-        room_result = await self.filter_room_models(room_id)
-
+       
         player = await self.create_player_model(player_id = content.get('username'))
-        room = await sync_to_async(room_result.first)()    
+        room = await self.get_room_model(room_id)
         
+        if room.player1 == player.player_id or room.player2 == player.player_id or room.player3 == player.player_id or room.player4 == player.player_id:
+            print("Player already in room")
+            await self.send_json({
+                'Bad Request': 'Player already in room',
+                'status': '400'
+            })
+            return 
+            
         if room.player2 == "":
             room.player2 = player.player_id
             player.room = room
             await sync_to_async(player.save)()
             await sync_to_async(room.save)()
+            await self.send_json({
+                "message": "player2 joined",
+                "room_id": room_id,
+                "result_type": "room_id",
+                "status": "202"
+            })
  
         elif room.player3 == "":
             room.player3 = player.player_id
             player.room = room    
             await sync_to_async(player.save)()
             await sync_to_async(room.save)()   
+            await self.send_json({
+                "message": "Player 3 joined",
+                "room_id": room_id,
+                "result_type": "room_id",
+                "status": "202"
+            })
         
         elif room.player4 == "":
             room.player4 = player.player_id
@@ -194,7 +229,9 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             await sync_to_async(room.save)()
             await self.send_json({
                 "message": "Room is full",
-                "status": "200"
+                "room_id": room_id,
+                "result_type": "room_id",
+                "status": "202"
             })
             
         else:
@@ -203,6 +240,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'Bad Request': 'Room is full',
                 'status': '400'
             })
+        return 
             
 
     # async def leave_room(self):
@@ -261,14 +299,24 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     #             'status': '404'
     #         })
             
-    # async def discard_tile(self, content):
-    #     client_key = self.channel_name
-    #     player_qs = await self.filter_player_models(client_key)
-    #     player = await sync_to_async(player_qs.first)()
-    #     tile = content['tile']
-    #     player.__dict__[tile] -= 1
-    #     await sync_to_async(player.save)()
-    #     # serialize player data?
+    async def discard_tile(self, content):
+        '''
+        username
+        tile
+        '''
+        tile = content.get('tile')
+        player = content.get('username')
+        player.__dict__[tile] -= 1
+        # add it to the players discarded tiles
+        # player.discarded  somthing something something something 
+        await self.channel_layer.group_send(
+            self.room_name,
+            {
+                "type": "send_json_message",
+                "message": "Send tile to ppl",
+            }
+        )
+
 
     async def add_to_group(self):
         await self.channel_layer.group_add(
