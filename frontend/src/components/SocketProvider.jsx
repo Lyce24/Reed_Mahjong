@@ -1,6 +1,6 @@
 import { w3cwebsocket as W3CWebSocket } from "websocket";
-
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useUsername } from "./UsernameProvider";
 
 // create SocketContext with value = the socket instance, so all components can read this value with useContext(SocketContext)
 
@@ -14,12 +14,14 @@ export const SocketProvider = ({ children }) => {
   const URL = "ws://localhost:8000/ws/socket-server";
   const [socket, setSocket] = useState(null);
 
+  const username = useUsername();
+
   useEffect(() => {
     //const newSocket = new W3CWebSocket(URL);
-    const newSocket = new WebSocketInstance(URL);
+    
+    const newSocket = new WebSocketInstance(URL, username);
     newSocket.addListener();
     setSocket(newSocket);
-
     //return () => newSocket.close();
     // this is the cleanup function, it will be called when the component unmounts
     return () => newSocket.disconnect();
@@ -36,9 +38,10 @@ export const SocketProvider = ({ children }) => {
 
 // Create cleaner interface for websocket interface interaction on frontend
 class WebSocketInstance {
-  constructor(URL) {
+  constructor(URL, username) {
     this.socketRef = new W3CWebSocket(URL);
     this.readyState = this.socketRef.readyState;
+    this.username = username;
     this.addCallbacks();
   }
 
@@ -68,6 +71,7 @@ class WebSocketInstance {
   // Send JSON to backend
   send(message) {
     if (this.socketRef.readyState === WebSocket.OPEN) {
+      console.log('send message w username', this.username)
       this.socketRef.send(message);
     } else {
       console.error("Socket is not connected");
@@ -89,7 +93,7 @@ class WebSocketInstance {
         }
         switch (message.result_type) {
           case "room_id":
-            window.location.href = `/room/${message.room_id}`;
+            // window.location.href = `/room/${message.room_id}`;
             break;
           default:
             break;
