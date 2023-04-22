@@ -10,9 +10,9 @@ export default function CreateRoomButton() {
 
   function handleClick() {
     console.log('Create Room Button Clicked');
-    socket.send(JSON.stringify({
+    socket.send({
       'type': 'create_room',
-    }));
+    });
   }
 
   return (

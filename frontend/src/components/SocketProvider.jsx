@@ -68,15 +68,17 @@ class WebSocketInstance {
     };
   }
 
-  // Send JSON to backend
+  // Send JSON object to backend
   send(message) {
     if (this.socketRef.readyState === WebSocket.OPEN) {
+      // Append username to the message JSON being sent
       console.log('send message w username', this.username)
       const newmessage = {
         ...message,
-        'username': this.username,
+        'username': this.username
       }
-      this.socketRef.send(newmessage);
+      console.log('new message', newmessage)
+      this.socketRef.send(JSON.stringify(newmessage));
     } else {
       console.error("Socket is not connected");
     }
@@ -97,7 +99,7 @@ class WebSocketInstance {
         }
         switch (message.result_type) {
           case "room_id":
-            // window.location.href = `/room/${message.room_id}`;
+            window.location.href = `/room/${message.room_id}`;
             break;
           default:
             break;
