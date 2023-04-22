@@ -72,7 +72,7 @@ class WebSocketInstance {
   send(message) {
     if (this.socketRef.readyState === WebSocket.OPEN) {
       console.log('send message w username', this.username)
-      this.socketRef.send(message);
+      this.socketRef.send(message, this.username);
     } else {
       console.error("Socket is not connected");
     }
