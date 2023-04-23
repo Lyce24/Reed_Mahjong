@@ -1,4 +1,3 @@
-import GameBoard from "./GameBoard";
 import Discard from "./Discard";
 import RecentDiscard from "./RecentDiscard";
 import "../index.css";

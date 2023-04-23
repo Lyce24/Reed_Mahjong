@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSocket } from "./SocketProvider";
 import "../index.css";
-import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateRoomButton() {
   const [roomNum, setRoomNum] = useState(null);
@@ -12,7 +12,7 @@ export default function CreateRoomButton() {
   // Set up room listener upon initial render
   useEffect(() => {
     socket.addRoomListener(setRoomNum, navigate);
-  }, []);
+  }, [socket, navigate]);
 
   // Redirect to random room when user clicks button
   function handleClick() {

@@ -25,7 +25,7 @@ export const SocketProvider = ({ children }) => {
     setSocket(newSocket);
     // this is the cleanup function, it will be called when the component unmounts
     return () => newSocket.disconnect();
-  }, []);
+  }, [username]);
 
   return (
     <SocketContext.Provider value={socket}>
