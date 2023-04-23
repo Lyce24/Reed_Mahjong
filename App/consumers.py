@@ -108,8 +108,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         print("Creating room")
 
         # test create_room function from front end
-        random_room_id = random.randint(10000000, 99999999)
-        """ print("Room ID created: ", random_room_id)
+        """ random_room_id = random.randint(10000000, 99999999)
+        print("Room ID created: ", random_room_id)
         await self.send_json({
             'message': 'Successfully created room!',
             'room_id': random_room_id,
@@ -117,6 +117,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             'status': '202',
         })
         return """
+
+        # generate random room id
         while True:
             random_room_id = random.randint(10000000, 99999999)
             qs = await self.filter_room_models(random_room_id)
@@ -126,8 +128,10 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 continue
 
         print("Room ID created: ", random_room_id)
-        # creates a room
 
+        # create player model and room model
+        # send room id back to front end
+        # return error message to front end if player is already in a room
         try:
             print("Trying to get player model")
             player = await self.create_player_model(player_id=content.get('username'))
@@ -149,6 +153,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'status': '400'
             })
 
+        # * this code doesn't get printed
         print("self.channel_name: ", self.channel_name)
         print("self.room_name: ", self.room_name)
 
@@ -164,11 +169,15 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         })
         return """
 
+        # find player model if player already exists, or create new player model
         player_result = await self.filter_player_models(player_id=content.get('username'))
         if await sync_to_async(player_result.count)() == 0:
             player = await self.create_player_model(player_id=content.get('username'))
         else:
             player = await sync_to_async(player_result.first)()
+
+        # find room model
+        # return error msg to front end if room doesn't exist
         room_result = await self.filter_room_models(room_id)
         if await sync_to_async(room_result.count)() == 0:
             await self.send_json({
@@ -179,6 +188,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         else:
             room = await sync_to_async(room_result.first)()
 
+        # return error msg to front end if player is already in the requested room
         if room.player1 == player.player_id or room.player2 == player.player_id or room.player3 == player.player_id or room.player4 == player.player_id:
             print("Player already in room")
             await self.send_json({
@@ -187,6 +197,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             })
             return
 
+        # add player to room
         if room.player2 == "":
             room.player2 = player.player_id
             player.room = room
@@ -207,6 +218,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             await sync_to_async(room.save)()
             await self.start_game(room_id)
 
+        # or return error msg to front end if room is full
         else:
             print("Room is full")
             await self.send_json({
@@ -214,6 +226,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'status': '400'
             })
 
+        # send room id back to front end to signify successful join
         await self.send_json({
             "message": "Player joined",
             "room_id": room_id,

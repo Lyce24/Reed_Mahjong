@@ -23,7 +23,7 @@ export const SocketProvider = ({ children }) => {
     const newSocket = new WebSocketInstance(URL, username);
     //newSocket.addListener();
     setSocket(newSocket);
-    // this is the cleanup function, it will be called when the component unmounts
+    // this is the cleanup function, it will be called when the component unmounts (ideally never)
     return () => newSocket.disconnect();
   }, [username]);
 
@@ -84,8 +84,8 @@ class WebSocketInstance {
   }
 
   /* Backend response JSON structure: 
-  status
-  result
+  status: "202" or "400"
+  result_type: "room_id" or "tile" etc
   */
   // Add listener to display general messages from backend in console
   //! Not working for some reason, not super important for now
@@ -162,7 +162,7 @@ class WebSocketInstance {
     };
   }
 
-  // Abandoned
+  // Abandoned code
   // Don't send anything, just specify what behavior you want when receive backend response
   receive(setResult) {
     this.socketRef.onmessage = function (e) {
