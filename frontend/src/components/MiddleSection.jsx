@@ -2,6 +2,7 @@ import GameBoard from "./GameBoard";
 import Discard from "./Discard";
 import RecentDiscard from "./RecentDiscard";
 import "../index.css";
+import { useState } from "react";
 import { useSocket } from "./SocketProvider";
 
 export default function MiddleSection() {
