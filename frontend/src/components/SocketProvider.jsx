@@ -21,8 +21,8 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // initialize socket instance
     const newSocket = new WebSocketInstance(URL, username);
-    //newSocket.addListener();
     setSocket(newSocket);
+
     // this is the cleanup function, it will be called when the component unmounts (ideally never)
     return () => newSocket.disconnect();
   }, [username]);
@@ -88,16 +88,11 @@ class WebSocketInstance {
   result_type: "room_id" or "tile" etc
   */
   // Add listener to display general messages from backend in console
-  //! Not working for some reason, not super important for now
   addListener() {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received unfiltered: ", message);
-        if (message.status !== "202") {
-          return;
-        }
-        console.log("unsuccesful message");
+        console.log("Received general: ", message);
       }
     };
   }
