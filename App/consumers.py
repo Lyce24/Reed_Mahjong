@@ -12,6 +12,9 @@ import random
 numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 suites = ['bamboo', 'wan', 'circle']
 
+'''
+url = ws://localhost:8000/ws/socket-server
+'''
 
 class AppConsumer(AsyncJsonWebsocketConsumer):
     
@@ -67,25 +70,21 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         # 'game_pause' =>
         # 'discard_tile' => user discards a tile, needs user id + room id + tile suite and number, return none (proceed w game logic)
         # 'draw_tile' (i.e. 'your_turn') => return random tile (suite + number)
-
+        room_id = content.get('room_id')
         event_type = content.get('type')
         if event_type == 'echo':
             await self.send_json(content)
         elif event_type == 'create_room':
             await self.create_room(content)
         elif event_type == 'draw_tile':
-            room_id = content.get('room_id')
             await self.draw_tile(room_id, content)
-        # elif event_type == 'discard_tile':
-        #    await self.discard_tile(content)
+        elif event_type == 'discard_tile':
+           await self.discard_tile(room_id, content)
         elif event_type == 'join_room':
-            room_id = content.get('room_id')
             await self.join_room(room_id, content)
         elif event_type == 'start_game':
-            room_id = content.get('room_id')
             await self.start_game(room_id)
         elif event_type == 'reset_game':
-            room_id = content.get('room_id')
             await self.reset_game(room_id)
         else:
             await self.send_json({
@@ -472,20 +471,27 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             })
 
 
-    async def discard_tiles(self, room_id, content):
+    async def discard_tile(self, room_id, content):
         try:
-            room = self.get_room_model(room_id)
-            player = self.get_player_model(content.get('username'))
-            print(content.get('tile'))
+            room_result = await self.filter_room_models(room_id)
+            room = await sync_to_async(room_result.first)()
+            player_result = await self.filter_player_models(content.get('username'))
+            player1 = await sync_to_async(player_result.first)()
+            
                         
-            await sync_to_async(player.save)()
+            await sync_to_async(player1.save)()
             await sync_to_async(room.save)()
-            await self.send_json({
-                "message": "Tile discarded",
-                "tiles" : content.get('tile'),
-                'result_type': 'room_id',
-                'status': '202'
-            })
+            await self.channel_layer.group_send(
+                        self.room_name,
+                        {
+                        "type": "send_json",
+                        'message': 'Discarded tile',
+                        'player' : content.get('username'),
+                        'tile' : content.get('tile'),
+                        'room_id': str(room_id),
+                        'result_type': 'room_id',
+                        'status': '202'
+                    })
 
             
         except Room.DoesNotExist:
