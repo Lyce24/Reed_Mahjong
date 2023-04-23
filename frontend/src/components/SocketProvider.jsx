@@ -144,8 +144,8 @@ class WebSocketInstance {
     };
   }
 
-  // Abandoned: there is no need to add listener for discard, discard is initiated by frontend
-  /* addDiscardListener(callback) {
+  // Add listener to display tile that has been discarded (by any player)
+  addDiscardListener(setDiscardPile) {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
@@ -156,11 +156,11 @@ class WebSocketInstance {
             console.log("discard error");
             return;
           }
-          callback();
+          setDiscardPile(message.tile);
         }
       }
     };
-  } */
+  }
 
   // Abandoned
   // Don't send anything, just specify what behavior you want when receive backend response
