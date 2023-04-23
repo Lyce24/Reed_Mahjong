@@ -103,6 +103,7 @@ class WebSocketInstance {
   }
 
   // Add listner to set room id and navigate to room page
+  // Ideally, it would be added only once, when user clicks create room button or the join room button
   addRoomListener(setRoomNum, navigate) {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
@@ -122,7 +123,8 @@ class WebSocketInstance {
     };
   }
 
-  addDrawListener(setResult) {
+  // Add listener to set tile that has been drawn
+  addDrawListener(setTile) {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
@@ -130,16 +132,20 @@ class WebSocketInstance {
         if (message.result_type === "draw") {
           console.log("Received: ", message);
           if (message.status !== "202") {
-            setResult(null);
+            setTile(null);
             return;
           }
-          setResult(message);
+          // Tile has suite, number, index, key params
+          // Backend should send suite and number
+          // TODO: generate unique key for tile, use null for index, append to backend response
+          setTile(message.tile);
         }
       }
     };
   }
 
-  addDiscardListener(callback) {
+  // Abandoned: there is no need to add listener for discard, discard is initiated by frontend
+  /* addDiscardListener(callback) {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
@@ -154,7 +160,9 @@ class WebSocketInstance {
         }
       }
     };
-  }
+  } */
+
+  // Abandoned
   // Don't send anything, just specify what behavior you want when receive backend response
   receive(setResult) {
     this.socketRef.onmessage = function (e) {
