@@ -21,7 +21,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // initialize socket instance
     const newSocket = new WebSocketInstance(URL, username);
-    newSocket.addListener();
+    //newSocket.addListener();
     setSocket(newSocket);
     // this is the cleanup function, it will be called when the component unmounts
     return () => newSocket.disconnect();
@@ -42,6 +42,7 @@ class WebSocketInstance {
     this.readyState = this.socketRef.readyState;
     this.username = username;
     this.addCallbacks();
+    this.addListener();
   }
 
   // never used
@@ -86,21 +87,36 @@ class WebSocketInstance {
   status
   result
   */
-  // Add onmessage listener
+  // Add listener to display general messages from backend in console
+  //! Not working for some reason, not super important for now
   addListener() {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received: ", message);
+        console.log("Received unfiltered: ", message);
         if (message.status !== "202") {
           return;
         }
-        switch (message.result_type) {
-          case "room_id":
-            //window.location.href = `/room/${message.room_id}`;
-            break;
-          default:
-            break;
+        console.log("unsuccesful message");
+      }
+    };
+  }
+
+  // Add listner to set room id and navigate to room page
+  addRoomListener(setRoomNum, navigate) {
+    this.socketRef.onmessage = function (e) {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+        //console.log("Received unfiltered: ", message);
+        // only proceed if message is about create room
+        if (message.result_type === "room_id") {
+          console.log("Received: ", message);
+          if (message.status !== "202") {
+            console.log("create room error");
+            return;
+          }
+          setRoomNum(message.room_id);
+          navigate(`/room/${message.room_id}`);
         }
       }
     };
