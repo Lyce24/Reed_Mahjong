@@ -79,7 +79,13 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         elif event_type == 'draw_tile':
             await self.draw_tile(room_id, content)
         elif event_type == 'discard_tile':
-           await self.discard_tile(room_id, content)
+            await self.discard_tile(room_id, content)
+        elif event_type == 'check_chi':
+            await self.check_chi(room_id, content)
+        elif event_type == 'check_peng':
+            await self.check_peng(room_id, content)
+        elif event_type == 'performing_action':
+            await self.performing_action(room_id, content)
         elif event_type == 'join_room':
             await self.join_room(room_id, content)
         elif event_type == 'start_game':
@@ -470,7 +476,11 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'status': '404'
             })
 
-
+    '''
+    If a player discards a tile, the tile is removed from the player's hand and added to the discard pile
+    The discarded tile will be broadcasted to all players in the room
+    Then when the frontend receives the discarded tile, it will perform peng and chi checks (peng > chi as priority-wise)
+    '''
     async def discard_tile(self, room_id, content):
         try:
             room_result = await self.filter_room_models(room_id)
@@ -478,14 +488,28 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             player_result = await self.filter_player_models(content.get('username'))
             player1 = await sync_to_async(player_result.first)()
             
-                        
+            if room.player1 == content.get('username'):
+                room.current_player = room.player2
+                
+            elif room.player2 == content.get('username'):
+                room.current_player = room.player3
+            
+            elif room.player3 == content.get('username'):
+                room.current_player = room.player4
+            
+            elif room.player4 == content.get('username'):
+                room.current_player = room.player1
+                
+            # tile = content.get('tile').get('suite') + content.get('tile').get('number')
+            # player1.__dict__[tile] -= 1
+            
             await sync_to_async(player1.save)()
             await sync_to_async(room.save)()
             await self.channel_layer.group_send(
                         self.room_name,
                         {
                         "type": "send_json",
-                        'message': 'Discarded tile',
+                        'message': 'Discard_tile',
                         'player' : content.get('username'),
                         'tile' : content.get('tile'),
                         'room_id': str(room_id),
@@ -508,59 +532,219 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             })
             return
         
-        
-        
     '''
-    async def discard_tiles(self, room_id, content):
-        1. get the room
-        2. get the player
-        3. check if the player is the current player (by checking content.get('username')
-            4. if not, send a message saying that it is not the player's turn
-            if yes
-            5. check if the player has the tile (almost yes every time if frontend is correct)
-                6. if not, send a message saying that the player does not have the tile 
-                7. if yea, discard the tile (player.__dict__[tile] -= 1)
-                8. broadcast this message to the room
-                send_json_message
-                {tile, username, room_id, result_type, status}
+    
+    check if a player can perform chi or peng.
+    If not, then it will do anything
+    If yes, it will prompt the player to perform peng or chi and wait for the player's response
+    
+    '''
+    
+    async def check_chi(self, room_id, content):
+        try:
+            room_result = await self.filter_room_models(room_id)
+            room = await sync_to_async(room_result.first)()
+            player_result = await self.filter_player_models(content.get('username'))
+            player1 = await sync_to_async(player_result.first)()
+            
+            suite = content.get('tile').get('suite') 
+            number = content.get('tile').get('number')
+            
+            # check if the player can perform Chi or not
+            if int(number) >= 3 and int(number) <= 7:
+                key1 = suite + str(int(number) - 2)
+                key2 = suite + str(int(number) - 1)
+                key3 = suite + str(int(number) + 1)
+                key4 = suite + str(int(number) + 2)
                 
-        check whether other players can perform chi or peng or hu.
-        for example, if the next player can perform chi, send a message to the next player
-        1. if current_player is 1, then next player is 2
-        2. check if player2 has the tiles around the tile that player1 discarded 
-            (if player1 discarded bamboo1, then check if player2 has bamboo2 and bamboo3)
-            (if player1 discarded bamboo5, then check if player2 has bamboo4 and bamboo6 or bamboo6 and bamboo7 or bamboo3 and bamboo4) - fixed range, so O(1) time complexity
-        3. prompt a message to player2 saying that player1 discarded a tile and player2 can perform chi
-           {
-               tile: bamboo5,
-               ...
-           }
-    ''' 
+                if (player1.__dict__[key1] != 0 and player1.__dict__[key2] != 0) or (player1.__dict__[key3] != 0 and player1.__dict__[key4] != 0) or (player1.__dict__[key2] != 0 and player1.__dict__[key3] != 0):
+                    await self.channel_layer.group_send(
+                                self.room_name,
+                                {
+                                "type": "send_json",
+                                'message': 'can_perform_chi',
+                                'player' : content.get('username'),
+                                'tile' : content.get('tile'),
+                                'room_id': str(room_id),
+                                'result_type': 'room_id',
+                                'status': '202'
+                            })
+                    
+            elif int(number) == 2:
+                key1 = suite + str(1)
+                key2 = suite + str(3)
+                key3 = suite + str(4)
+                
+                if (player1.__dict__[key1] != 0 and player1.__dict__[key2] != 0) or (player1.__dict__[key2] != 0 and player1.__dict__[key3] != 0):
+                    await self.channel_layer.group_send(
+                                self.room_name,
+                                {
+                                "type": "send_json",
+                                'message': 'can_perform_chi',
+                                'player' : content.get('username'),
+                                'tile' : content.get('tile'),
+                                'room_id': str(room_id),
+                                'result_type': 'room_id',
+                                'status': '202'
+                            })
+                                        
+            elif int(number) == 8:
+                key1 = suite + str(6)
+                key2 = suite + str(7)
+                key3 = suite + str(9)
+                
+                if (player1.__dict__[key1] != 0 and player1.__dict__[key2] != 0) or (player1.__dict__[key2] != 0 and player1.__dict__[key3] != 0):
+                    await self.channel_layer.group_send(
+                                self.room_name,
+                                {
+                                "type": "send_json",
+                                'message': 'can_perform_chi',
+                                'player' : content.get('username'),
+                                'tile' : content.get('tile'),
+                                'room_id': str(room_id),
+                                'result_type': 'room_id',
+                                'status': '202'
+                            })
+                                        
+            elif int(number) == 1:                
+                key1 = suite + str(2)
+                key2 = suite + str(3)
+                
+                if (player1.__dict__[key1] != 0 and player1.__dict__[key2] != 0):
+                    await self.channel_layer.group_send(
+                                self.room_name,
+                                {
+                                "type": "send_json",
+                                'message': 'can_perform_chi',
+                                'player' : content.get('username'),
+                                'tile' : content.get('tile'),
+                                'room_id': str(room_id),
+                                'result_type': 'room_id',
+                                'status': '202'
+                            })
+                                        
+            elif int(number) == 9:
+                key1 = suite + str(7)
+                key2 = suite + str(8)
+                if (player1.__dict__[key1] != 0 and player1.__dict__[key2] != 0):
+                    await self.channel_layer.group_send(
+                                self.room_name,
+                                {
+                                "type": "send_json",
+                                'message': 'can_perform_chi',
+                                'player' : content.get('username'),
+                                'tile' : content.get('tile'),
+                                'room_id': str(room_id),
+                                'result_type': 'room_id',
+                                'status': '202'
+                            })
+                
+            
+        except Room.DoesNotExist:
+            self.send_json({
+                "message': 'Room doesn't exist"
+                'status': '404'
+            })
+            return
+            
+        except Player.DoesNotExist:
+            self.send_json({
+                "message': 'Player doesn't exist"
+                'status': '404'
+            })
+            return
+        
+    async def check_peng(self, room_id, content):
+        try:
+            room_result = await self.filter_room_models(room_id)
+            room = await sync_to_async(room_result.first)()
+            player_result = await self.filter_player_models(content.get('username'))
+            player1 = await sync_to_async(player_result.first)()
+            
+            tile = content.get('tile').get('suite') + content.get('tile').get('number')
+            
+            # check if the player can perform peng or not
+            if player1.__dict__[tile] >= 2:
+                await self.channel_layer.group_send(
+                            self.room_name,
+                            {
+                            "type": "send_json",
+                            'message': 'can_perform_peng',
+                            'player' : content.get('username'),
+                            'tile' : content.get('tile'),
+                            'room_id': str(room_id),
+                            'result_type': 'room_id',
+                            'status': '202'
+                        })
+                
+        except Room.DoesNotExist:
+            self.send_json({
+                "message': 'Room doesn't exist"
+                'status': '404'
+            })
+            return
+            
+        except Player.DoesNotExist:
+            self.send_json({
+                "message': 'Player doesn't exist"
+                'status': '404'
+            })
+            return
+        
+    '''
     
-    # async def discard_tile(self, content):
-    #     '''
-    #     username
-    #     tile
-    #     '''
-    #     tile = content.get('tile')
-    #     player = content.get('username')
-    #     player.__dict__[tile] -= 1
-    #     # add it to the players discarded tiles
-    #     # player.discarded  somthing something something something 
-    #     await self.channel_layer.group_send(
-    #         self.room_name,
-    #         {
-    #             "type": "send_json_message",
-    #             "message": "Send tile to ppl",
-    #         }
-    #     )
+    if the response is yes, then the player can perform peng or chi
     
     '''
-    async def chi(self, room_id, content):
-        1. get the room
-        2. get the player
+        
+    async def performing_action(self, room_id, content):
+        try:
+            room_result = await self.filter_room_models(room_id)
+            room = await sync_to_async(room_result.first)()
+            player_result = await self.filter_player_models(content.get('username'))
+            player1 = await sync_to_async(player_result.first)()
+            
+            tile = content.get('tile').get('suite') + content.get('tile').get('number')
+            
+            # check if the player can perform peng or not
+            player1.__dict__[tile] += 1
+            room.current_player = content.get('username')
+            await sync_to_async(player1.save)()
+            await sync_to_async(room.save)()
+            
+            await self.channel_layer.group_send(
+                    self.room_name,
+                            {
+                            "type": "send_json",
+                            'message': 'finishing_actions',
+                            'player' : content.get('username'),
+                            'tile' : content.get('tile'),
+                            'room_id': str(room_id),
+                            'result_type': 'room_id',
+                            'status': '202'
+            })
+            
+        except Room.DoesNotExist:
+            self.send_json({
+                "message': 'Room doesn't exist"
+                'status': '404'
+            })
+            return
+            
+        except Player.DoesNotExist:
+            self.send_json({
+                "message': 'Player doesn't exist"
+                'status': '404'
+            })
+            return
+        
+    '''
+    Need implementation
+    
+    async def check_win(self, room_id, content):    
     '''
 
+    
 
 
     async def add_to_group(self):
