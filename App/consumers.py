@@ -102,6 +102,9 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
 
     # Add client to a group with specified room_id
 
+    '''
+    Room Operations
+    '''
     async def create_room(self, content):
         print("Creating room")
         
@@ -200,8 +203,12 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         elif room.player4 == "":
             room.player4 = player.player_id
             player.room = room
+            
             await sync_to_async(player.save)()
             await sync_to_async(room.save)()
+            await self.start_game(room_id)
+            
+            
             
         else:
             print("Room is full")
@@ -217,43 +224,14 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 "status": "202"
             })
         return 
-            
-    async def draw_tile(self, room_id, content):
-        try:
-            room = self.get_room_model(room_id)
-            player = self.get_player_model(content.get('username'))
-            key = random.choice(tiles)
-            while room.__dict__[key] == 0:
-                key = random.choice(tiles)
-            player.__dict__[key] += 1
-            room.__dict__[key] -= 1
-                        
-            await sync_to_async(player.save)()
-            await sync_to_async(room.save)()
-            await self.send_json({
-                "message": "Tile drawn",
-                "tiles" : key,
-                "result_type": "room_id",
-                "status": "202"
-            })
-
-            
-        except Room.DoesNotExist:
-            self.send_json({
-                "message': 'Room doesn't exist"
-                'status': '404'
-            })
-            return
-            
-        except Player.DoesNotExist:
-            self.send_json({
-                "message': 'Player doesn't exist"
-                'status': '404'
-            })
-            return
-
-
-    async def start_game(self, room_id, content):
+    
+    
+    '''
+    
+    Game Operations
+    
+    '''
+    async def start_game(self, room_id):
         try:
             room_result = await self.filter_room_models(room_id)
             room = await sync_to_async(room_result.first)()
@@ -302,7 +280,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                         tiles_json = json.dumps(tiles)
                         
                         await self.send_json({
-                                'message': 'Game started',
+                                'message': 'Player tiles drawn',
                                 'player': player,
                                 'tiles' : tiles_json,
                                 'room_id': room_id,
@@ -340,6 +318,13 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                             'result_type': 'room_id',
                             'status': '202'
                     })
+                    
+                    await self.send_json({
+                        'message': 'Game started',
+                        'room_id': room_id,
+                        'result_type': 'room_id',
+                        'status': '202'
+                    })
             else:
                 print("Game already started")
                 self.send_json({
@@ -352,6 +337,51 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 'status': '404'
             })
             
+            
+    async def draw_tile(self, room_id, content):
+        try:
+            room_result = await self.filter_room_models(room_id)
+            room = await sync_to_async(room_result.first)()
+            player_result = await self.filter_player_models(content.get('username'))
+            player1 = await sync_to_async(player_result.first)()
+                        
+            suite = random.choice(suites)
+            number = random.choice(numbers)
+            new_tile = {'suite' : suite, 'number' : number}
+            key = suite + number
+            while room.__dict__[key] == 0:
+                suite = random.choice(suites)
+                number = random.choice(numbers)
+                new_tile = {'suite' : suite, 'number' : number}
+                key = suite + number
+                                
+            player1.__dict__[key] += 1
+            room.__dict__[key] -= 1
+                            
+            await sync_to_async(player1.save)()
+            await sync_to_async(room.save)()
+            tiles_json = json.dumps(new_tile)
+                
+            await self.send_json({
+                            'message': 'Zhuangjia tile drawn',
+                            'tiles' : tiles_json,
+                            'room_id': room_id,
+                            'result_type': 'room_id',
+                            'status': '202'
+            })
+        except Room.DoesNotExist:
+            self.send_json({
+                "message': 'Room doesn't exist"
+                'status': '404'
+            })
+            
+        except Player.DoesNotExist:
+            self.send_json({
+                "message': 'Player doesn't exist"
+                'status': '404'
+            })
+
+
     async def discard_tiles(self, room_id, content):
         try:
             room = self.get_room_model(room_id)
