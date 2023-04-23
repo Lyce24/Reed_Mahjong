@@ -36,36 +36,43 @@ Useful Resourse:
 8. Django-React WebSockets Example 2: https://blog.logrocket.com/build-chat-application-react-django-channels/
 9. Frontend (establish WebSocket connection) Backend (routers + consumers to handle connection) overview: https://www.youtube.com/watch?v=cw8-KFVXpTE
 
-### Todo
 
-Backend
+## Backend TODO
 - game logic (using signals?)
 - debug all consumers functions
 - `if player.room_id is None:` around line 150 in `consumers.py`, it doesn't throw an error rn but there are some comments there since i don't understand how/ why it works
 - is serializer necessary in `consumers.py`?
 - reimplement room ID generation with a unique ID package, or our own implementation that doesn't require iterating over current rooms to make sure an ID isn't in use
 
-Frontend
+## Game Logic overview 
+- (back) Player 1's turn, Backend send "draw_tile_player1" to all players
+- (front) Player1 receive "draw_tile_player1", can select a tile to discard on webpage (within 60s), and send "discard_tile" to backend
+  - P.S. Other players also receive this, but because they are not player1, don't do anything
+- (back) Backend receive "discard_tile", update database, (*), determine who the next player is, send "draw_tile_{nextplayer}" to all players
+  - (*) If backend realizes that player2 can chi, send "chi_prompt" to player2
+  - (front) Player2 receives "chi_prompt", has the option to accept the prompt and perform chi action on webpage (within 30s), and send "chi_response" to backend
+  - (back) Backend receive "chi_response" from player2, update database, determine who the next player is, send "draw_tile_{nextplayer}" to all players
+
+## Frontend TODO
 
 - Populate room page
   - Implement discard pile at center
-  - Implement discard button (done)
-  - Implement method to reorganize and reindex player tiles after discarding (done)
-  - Implement method to add drawn tile (from backend)
-  - Implement methods to draw and discard tile (done)
-  - Implement methods to organize player tiles (done)
-  - Playerboard and otherboard layout within gameboard (done)
-  - Tile layout within playerboard and gameboard (done)
-  - Make tiles clickable (done)
-  - Implement Tile face up vs face down (done)
-- Get image resources
-  - Get tile images (done)
+- Implement game logic
+  - (important, quick to implement) Change listeners to only proceed if "current_player" matches with your username
+  - (important next step) After receiving "draw_tile" json:  
+    - Activate discard button. 
+    - Implement 60s wait time, if player doesn't discard, then automatically discard the drawn tile. 
+    - Deactive discard button
+  - (important next next step) After receiving "chi_prompt" json:
+    - Display Chi prompt on frontend
+    - Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
+    - Remove Chi prompt from front end
 
-- Integrating with backend using socket
-  - join room (done)
-  - create room (done)
+- Integrating with backend using socket (waiting for backend to finish)
+  - draw tile
+  - discard tile
 
-Template code for using socket in frontend
+### Template code for using socket in frontend
 
 ```
 // In component
