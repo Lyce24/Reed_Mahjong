@@ -97,7 +97,7 @@ class WebSocketInstance {
         }
         switch (message.result_type) {
           case "room_id":
-            window.location.href = `/room/${message.room_id}`;
+            //window.location.href = `/room/${message.room_id}`;
             break;
           default:
             break;
@@ -110,12 +110,13 @@ class WebSocketInstance {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received: ", message);
-        if (message.status !== "202") {
-          setResult(null);
-          return;
-        }
+        // only proceed if message is about draw
         if (message.result_type === "draw") {
+          console.log("Received: ", message);
+          if (message.status !== "202") {
+            setResult(null);
+            return;
+          }
           setResult(message);
         }
       }
@@ -126,12 +127,13 @@ class WebSocketInstance {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received: ", message);
-        if (message.status !== "202") {
-          console.log("discard error");
-          return;
-        }
+        // only proceed if message is about discard
         if (message.result_type === "discard") {
+          console.log("Received: ", message);
+          if (message.status !== "202") {
+            console.log("discard error");
+            return;
+          }
           callback();
         }
       }
