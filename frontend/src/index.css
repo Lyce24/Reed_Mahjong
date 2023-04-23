@@ -63,7 +63,8 @@ img {
 }
 
 .tile.drawn {
-  border: purple 10px solid;
+  border: purple 5px solid;
+  margin-left: 50px;
 }
 
 /* Style boards */

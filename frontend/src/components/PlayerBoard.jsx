@@ -52,8 +52,7 @@ export default function PlayerBoard() {
     }
   }
 
-  //TODO: get drawn tile from backend and
-  // TODO: designate area on the right side of playerboad to display the drawn tile
+  //TODO: get drawn tile from backend (after backend is implemented)
   // initialize drawn tile, for test purposes only
   // change initial value to null after tests
   const [drawnTile, setDrawnTile] = useState({
