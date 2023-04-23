@@ -9,10 +9,12 @@ export default function CreateRoomButton() {
   const socket = useSocket();
   const navigate = useNavigate();
 
+  // Set up room listener upon initial render
   useEffect(() => {
     socket.addRoomListener(setRoomNum, navigate);
   }, []);
 
+  // Redirect to random room when user clicks button
   function handleClick() {
     console.log("Create Room Button Clicked");
     socket.send({
