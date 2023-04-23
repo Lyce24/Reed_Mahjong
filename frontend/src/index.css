@@ -58,8 +58,12 @@ img {
   border: blue 2px solid;
 }
 
-.tile.clicked {
+.tile.selected {
   border: red 3px solid;
+}
+
+.tile.drawn {
+  border: purple 10px solid;
 }
 
 /* Style boards */

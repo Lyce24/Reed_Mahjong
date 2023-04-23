@@ -105,6 +105,19 @@ export default function PlayerBoard() {
           key={tile.key}
         />
       ))}
+      {/* Display drawn tile if it is not null */}
+      {drawnTile && (
+        <Tile
+          suite={drawnTile.suite}
+          number={drawnTile.number}
+          index={drawnTile.index}
+          onClick={handleTileClick}
+          isSelected={selectedTileIndex === drawnTile.index}
+          isDrawn={true}
+          isFacedDown="false"
+          key={drawnTile.key}
+        />
+      )}
       <DiscardButton onClick={handleDiscard} />
     </div>
   );
