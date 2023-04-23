@@ -4,11 +4,15 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import *
+import json
 from asgiref.sync import sync_to_async
 from django.db.utils import IntegrityError
 import random
 
-tiles = ['Bamboo1', 'Bamboo2', 'Bamboo3', 'Bamboo4', 'Bamboo5', 'Bamboo6', 'Bamboo7', 'Bamboo8', 'Bamboo9', 'Character1', 'Character2', 'Character3', 'Character4', 'Character5', 'Character6', 'Character7', 'Character8', 'Character9', 'Circle1', 'Circle2', 'Circle3', 'Circle4', 'Circle5', 'Circle6', 'Circle7', 'Circle8', 'Circle9', 'East', 'South', 'West', 'North', 'Red', 'Green', 'White']
+numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+suites = ['bamboo', 'wan', 'circle']
+
+
 class AppConsumer(AsyncJsonWebsocketConsumer):
     """
     This app  consumer handles websocket connections for chat clients.
@@ -26,6 +30,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             "message": "You are now connected!",
         }))
 
+    
         # self.room_name = self.scope['url_route']['kwargs']['room_id']
         self.room_name = "placeholder"
         # Add the connection to a named group to enable
@@ -48,35 +53,8 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(message)
 
     async def disconnect(self, close_code):
-        # Called when WebSocket closes
-        print("Disconnected")
-
-        client_key = close_code.get('username')
-        room_id = close_code.get('room_id')
-        try:
-            # Delete player model from database
-            player = await self.get_player_model(client_key)
-            await sync_to_async(player.delete)()
-            # Remove player id from the room
-            room = await self.get_room_model(room_id)
-            if room.player1 == client_key:
-                room.player1 = ''
-            elif room.player2 == client_key:
-                room.player2 = ''
-            elif room.player3 == client_key:
-                room.player3 = ''
-            elif room.player4 == client_key:
-                room.player4 = ''
-            else:
-                await self.send_json({
-                    'message': 'Player is not in the room',
-                    'status': '400',
-                })
-        except Player.DoesNotExist:
-            await self.send_json({
-                'message': 'Player does not exist.',
-                'status': '400',
-            })
+        # # Called when WebSocket closes
+        # print("Disconnected")
 
         # Remove connection from group
         await self.remove_from_group()
@@ -212,43 +190,31 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             player.room = room
             await sync_to_async(player.save)()
             await sync_to_async(room.save)()
-            await self.send_json({
-                "message": "player2 joined",
-                "room_id": room_id,
-                "result_type": "room_id",
-                "status": "202"
-            })
- 
+            
         elif room.player3 == "":
             room.player3 = player.player_id
             player.room = room    
             await sync_to_async(player.save)()
             await sync_to_async(room.save)()   
-            await self.send_json({
-                "message": "Player 3 joined",
-                "room_id": room_id,
-                "result_type": "room_id",
-                "status": "202"
-            })
         
         elif room.player4 == "":
             room.player4 = player.player_id
             player.room = room
             await sync_to_async(player.save)()
             await sync_to_async(room.save)()
-            await self.send_json({
-                "message": "Room is full, start game.",
-                "room_id": room_id,
-                "result_type": "room_id",
-                "status": "202"
-            })
-            self.start_game(room_id, content)
             
         else:
             print("Room is full")
             await self.send_json({
                 'Bad Request': 'Room is full',
                 'status': '400'
+            })
+            
+        await self.send_json({
+                "message": "Player joined",
+                "room_id": room_id,
+                "result_type": "room_id",
+                "status": "202"
             })
         return 
             
@@ -289,7 +255,9 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
 
     async def start_game(self, room_id, content):
         try:
-            room = self.get_room_model(room_id)
+            room_result = await self.filter_room_models(room_id)
+            room = await sync_to_async(room_result.first)()
+            
             if room.game_mode == 0:
                 if room.player1 == "" or room.player2 == "" or room.player3 == "" or room.player4 == "":
                     self.send_json({
@@ -299,50 +267,81 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                     return
                 
                 else:
+                    print("Starting game")
                     room.game_mode = 1
                     await sync_to_async(room.save)()
                     players = [room.player1, room.player2, room.player3, room.player4]
                     zhuangjia = random.choice(players)
                     room.current_player = zhuangjia
+                    room.zhuangjia = zhuangjia
                     await sync_to_async(room.save)()
                     
+                      
                     for player in players:
-                        player_result = await self.get_player_model(player)
-                        count = 0
-                        while count < 13:
-                            key = random.choice(tiles)
+                        player_result = await self.filter_player_models(player)
+                        player1 = await sync_to_async(player_result.first)()
+                        
+                        tiles = []
+                        while len(tiles) < 13:
+                            suite = random.choice(suites)
+                            number = random.choice(numbers)
+                            new_tile = {'suite' : suite, 'number' : number}
+                            key = suite + number
                             while room.__dict__[key] == 0:
-                                key = random.choice(tiles)
-                            player_result.__dict__[key] += 1
+                                suite = random.choice(suites)
+                                number = random.choice(numbers)
+                                new_tile = {'suite' : suite, 'number' : number}
+                                key = suite + number
+                                
+                            tiles.append(new_tile)
+                            player1.__dict__[key] += 1
                             room.__dict__[key] -= 1
-                            count += 1
-                        for player in players:
-                            await sync_to_async(player.save)()                    
-                            self.send_json({
-                            'message': 'All players have 13 tiles',
-                            f'{player}' : 'tiles ...',
+                            
+                        await sync_to_async(player1.save)()
+                        await sync_to_async(room.save)()
+                        tiles_json = json.dumps(tiles)
+                        
+                        await self.send_json({
+                                'message': 'Game started',
+                                'player': player,
+                                'tiles' : tiles_json,
+                                'room_id': room_id,
+                                'result_type': 'room_id',
+                                'status': '202'
+                        })
+                        
+                    player_result = await self.filter_player_models(zhuangjia)
+                    player1 = await sync_to_async(player_result.first)()
+                        
+                    tiles = []
+                    suite = random.choice(suites)
+                    number = random.choice(numbers)
+                    new_tile = {'suite' : suite, 'number' : number}
+                    key = suite + number
+                    while room.__dict__[key] == 0:
+                        suite = random.choice(suites)
+                        number = random.choice(numbers)
+                        new_tile = {'suite' : suite, 'number' : number}
+                        key = suite + number
+                                
+                    tiles.append(new_tile)
+                    player1.__dict__[key] += 1
+                    room.__dict__[key] -= 1
+                            
+                    await sync_to_async(player1.save)()
+                    await sync_to_async(room.save)()
+                    tiles_json = json.dumps(tiles)
+                        
+                    await self.send_json({
+                            'message': 'Zhuangjia tile drawn',
+                            'player': player,
+                            'tiles' : tiles_json,
                             'room_id': room_id,
                             'result_type': 'room_id',
                             'status': '202'
-                        })
-                    
-                    key = random.choice(tiles)
-                    while room.__dict__[key] == 0:
-                        key = random.choice(tiles)
-                    zhuangjia.__dict__[key] += 1
-                    room.__dict__[key] -= 1
-                    
-                    await sync_to_async(zhuangjia.save)()
-                    await sync_to_async(room.save)()
-                    self.send_json({
-                        'message': 'Game started',
-                        'room_id': room_id,
-                        'result_type': 'room_id',
-                        'status': '202'
                     })
-                # serialize room data?
-
             else:
+                print("Game already started")
                 self.send_json({
                     'message': 'Game already exists',
                     'status': '400'

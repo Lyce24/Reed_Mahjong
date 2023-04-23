@@ -4,6 +4,6 @@ from django.urls import path, re_path
 
 
 websocket_urlpatterns=[
-    # url(r'^ws/room/(?P<room_id>\w+)/$', AppConsumer.as_asgi()),
+    path('ws/clicked/<room_name>/',AppConsumer.as_asgi(),name="clicked"),
     re_path(r'ws/socket-server', AppConsumer.as_asgi()),
 ]
