@@ -80,6 +80,8 @@ export default function PlayerBoard() {
       let updatedHand = hand.toSpliced(selectedTileIndex, 1);
       // put drawn tile in hand
       updatedHand = [...updatedHand, drawnTile];
+      // set drawn tile to null
+      setDrawnTile(null);
       // reorder tiles
       updatedHand.sort(compareTile);
       // reindex tiles
