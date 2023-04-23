@@ -11,7 +11,7 @@ export default function JoinRoom() {
   // Set up room listener upon initial render
   useEffect(() => {
     socket.addRoomListener(setRoomNum, navigate);
-  }, []);
+  }, [socket, navigate]);
 
   // Redirect to room when user clicks button if roomNum is valid
   function handleSubmit(e) {
