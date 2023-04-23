@@ -28,7 +28,6 @@ export default function PlayerBoard() {
   const socket = useSocket();
 
   // initialize 13 tiles for player hand, for test purposes only
-  // TODO: get initial 13 tiles from backend (after backend is implemented)
   let initialTiles = []; // Array();
   for (let i = 0; i < 13; i++) {
     initialTiles.push({
@@ -39,8 +38,10 @@ export default function PlayerBoard() {
     });
   }
   const [hand, setHand] = useState(initialTiles);
-  const [selectedTileIndex, setSelectedTileIndex] = useState(null);
+  // setup start tiles listener, get initial 'hand' when receive backend 'start_tiles' msg
+  socket.addStartTilesListener(setHand);
 
+  const [selectedTileIndex, setSelectedTileIndex] = useState(null);
   // select the tile that is clicked
   function handleTileClick(index) {
     if (index === selectedTileIndex) {

@@ -85,7 +85,7 @@ class WebSocketInstance {
 
   /* Backend response JSON structure: 
   status: "202" or "400"
-  result_type: "room_id" or "tile" etc
+  result_type: "room_id", "start_tiles", "draw_tile" etc
   */
   // Add listener to display general messages from backend in console
   addListener() {
@@ -103,7 +103,6 @@ class WebSocketInstance {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        //console.log("Received unfiltered: ", message);
         // only proceed if message is about create room
         if (message.result_type === "room_id") {
           console.log("Received: ", message);
@@ -118,13 +117,38 @@ class WebSocketInstance {
     };
   }
 
+  addStartTilesListener(setTiles) {
+    this.socketRef.onmessage = function (e) {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+        // only proceed if message if for this player
+        if (message.player !== this.username) {
+          return;
+        }
+        // only proceed if message is about start game
+        else if (message.result_type === "start_tiles") {
+          console.log("Received: ", message);
+          if (message.status !== "202") {
+            console.log("distribute start tiles error");
+            return;
+          }
+          setTiles(message.tiles);
+        }
+      }
+    };
+  }
+
   // Add listener to set tile that has been drawn
   addDrawListener(setTile) {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
+        // only proceed if message if for this player
+        if (message.player !== this.username) {
+          return;
+        }
         // only proceed if message is about draw
-        if (message.result_type === "draw") {
+        else if (message.result_type === "draw_tile") {
           console.log("Received: ", message);
           if (message.status !== "202") {
             setTile(null);
@@ -133,6 +157,11 @@ class WebSocketInstance {
           // Tile has suite, number, index, key params
           // Backend should send suite and number
           // TODO: generate unique key for tile, use null for index, append to backend response
+          /* const newmessage = {
+            ...message.tile,
+            index: null,
+            key: nanoid(),
+          }; */
           setTile(message.tile);
         }
       }
