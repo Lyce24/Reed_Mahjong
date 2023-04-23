@@ -237,11 +237,12 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             await sync_to_async(player.save)()
             await sync_to_async(room.save)()
             await self.send_json({
-                "message": "Room is full",
+                "message": "Room is full, start game.",
                 "room_id": room_id,
                 "result_type": "room_id",
                 "status": "202"
             })
+            self.start_game(room_id, content)
             
         else:
             print("Room is full")
@@ -251,6 +252,39 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
             })
         return 
             
+    async def draw_tile(self, room_id, content):
+        try:
+            room = self.get_room_model(room_id)
+            player = self.get_player_model(content.get('username'))
+            key = random.choice(tiles)
+            while room.__dict__[key] == 0:
+                key = random.choice(tiles)
+            player.__dict__[key] += 1
+            room.__dict__[key] -= 1
+                        
+            await sync_to_async(player.save)()
+            await sync_to_async(room.save)()
+            await self.send_json({
+                "message": "Tile drawn",
+                "tiles" : key,
+                "result_type": "room_id",
+                "status": "202"
+            })
+
+            
+        except Room.DoesNotExist:
+            self.send_json({
+                "message': 'Room doesn't exist"
+                'status': '404'
+            })
+            return
+            
+        except Player.DoesNotExist:
+            self.send_json({
+                "message': 'Player doesn't exist"
+                'status': '404'
+            })
+            return
 
 
     async def start_game(self, room_id, content):
@@ -267,22 +301,30 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 else:
                     room.game_mode = 1
                     await sync_to_async(room.save)()
-                    player_result = await self.filter_player_models(room_id)
-                    index = random.randint(1, 4)
-                    room.current_player = index
-                    zhuangjia_name = room.__dict__[f'player{index}']
-                    zhuangjia = await self.get_player_model(zhuangjia_name)
+                    players = [room.player1, room.player2, room.player3, room.player4]
+                    zhuangjia = random.choice(players)
+                    room.current_player = zhuangjia
+                    await sync_to_async(room.save)()
                     
-                    for player in player_result:
+                    for player in players:
+                        player_result = await self.get_player_model(player)
                         count = 0
                         while count < 13:
                             key = random.choice(tiles)
                             while room.__dict__[key] == 0:
                                 key = random.choice(tiles)
-                            player.__dict__[key] += 1
+                            player_result.__dict__[key] += 1
                             room.__dict__[key] -= 1
                             count += 1
-                        await sync_to_async(player.save)()
+                        for player in players:
+                            await sync_to_async(player.save)()                    
+                            self.send_json({
+                            'message': 'All players have 13 tiles',
+                            f'{player}' : 'tiles ...',
+                            'room_id': room_id,
+                            'result_type': 'room_id',
+                            'status': '202'
+                        })
                     
                     key = random.choice(tiles)
                     while room.__dict__[key] == 0:
@@ -310,6 +352,39 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 "message': 'Room doesn't exist"
                 'status': '404'
             })
+            
+    async def discard_tiles(self, room_id, content):
+        try:
+            room = self.get_room_model(room_id)
+            player = self.get_player_model(content.get('username'))
+            player.__dict__[content.get('tile')] -= 1
+                        
+            await sync_to_async(player.save)()
+            await sync_to_async(room.save)()
+            await self.send_json({
+                "message": "Tile discarded",
+                "tiles" : content.get('tile'),
+                'result_type': 'room_id',
+                'status': '202'
+            })
+
+            
+        except Room.DoesNotExist:
+            self.send_json({
+                "message': 'Room doesn't exist"
+                'status': '404'
+            })
+            return
+            
+        except Player.DoesNotExist:
+            self.send_json({
+                "message': 'Player doesn't exist"
+                'status': '404'
+            })
+            return
+        
+        
+        
     '''
     async def discard_tiles(self, room_id, content):
         1. get the room

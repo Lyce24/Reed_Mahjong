@@ -31,7 +31,8 @@ class Room(models.Model):
     player3 = models.CharField(max_length=50, default="")
     player4 = models.CharField(max_length=50, default="")
     
-    current_player = models.IntegerField(default=1)
+    current_player = models.CharField(max_length = 50, default= player1)
+    zhuangjia = models.CharField(max_length = 50, default= player1)
     
     Bamboo1 = models.SmallIntegerField(default=4)
     Bamboo2 = models.SmallIntegerField(default=4)
