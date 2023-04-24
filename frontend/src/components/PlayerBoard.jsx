@@ -39,7 +39,6 @@ export default function PlayerBoard() {
   }
   const [hand, setHand] = useState(initialTiles);
   // setup start tiles listener, get initial 'hand' when receive backend 'start_tiles' msg
-  socket.addStartTilesListener(setHand);
 
   const [selectedTileIndex, setSelectedTileIndex] = useState(null);
   // select the tile that is clicked
@@ -62,8 +61,10 @@ export default function PlayerBoard() {
     index: 100,
     key: nanoid(),
   });
+
+  socket.addPlayerListener(setHand, setDrawnTile);
   // setup draw listener, updates 'drawnTile' when receive backend 'draw_tile' msg
-  socket.addDrawListener(setDrawnTile);
+  //socket.addDrawListener(setDrawnTile);
 
   // remove selected tile from hand, submit 'discard_tile' msg to backend
   // add drawn tile to hand, reorder and reindex hand tiles

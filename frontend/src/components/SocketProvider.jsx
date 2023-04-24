@@ -87,12 +87,12 @@ class WebSocketInstance {
   status: "202" or "400"
   result_type: "room_id", "start_tiles", "draw_tile" etc
   */
-  // Add listener to display general messages from backend in console
+  // Add default listener to display messages from backend in console
   addListener() {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received general: ", message);
+        console.log("Received from general listener: ", message);
       }
     };
   }
@@ -103,6 +103,7 @@ class WebSocketInstance {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
+        console.log("Received from room listener: ", message);
         // only proceed if message is about create room
         if (message.result_type === "room_id") {
           console.log("Received: ", message);
@@ -117,22 +118,22 @@ class WebSocketInstance {
     };
   }
 
-  addStartTilesListener(setTiles) {
+  addPlayerListener(setHand, setDrawnTile) {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        // only proceed if message if for this player
+        console.log("Received from player listener: ", message);
+        // only proceed if message is for this player, and message is successful
         if (message.player !== this.username) {
           return;
+        } else if (message.status !== "202") {
+          console.log("Received error message", message);
+          return;
         }
-        // only proceed if message is about start game
-        else if (message.result_type === "start_tiles") {
-          console.log("Received: ", message);
-          if (message.status !== "202") {
-            console.log("distribute start tiles error");
-            return;
-          }
-          setTiles(message.tiles);
+        console.log("Received: ", message);
+        switch (message.result_type) {
+          case "start_tiles":
+            setHand(message.tiles);
         }
       }
     };
@@ -143,6 +144,7 @@ class WebSocketInstance {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
+        console.log("Received event from draw listener: ", message);
         // only proceed if message if for this player
         if (message.player !== this.username) {
           return;
@@ -173,8 +175,9 @@ class WebSocketInstance {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
+        console.log("Received event from discard listener: ", message);
         // only proceed if message is about discard
-        if (message.result_type === "discard") {
+        if (message.result_type === "discard_tile") {
           console.log("Received: ", message);
           if (message.status !== "202") {
             console.log("discard error");
