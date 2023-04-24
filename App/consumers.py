@@ -530,23 +530,34 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await sync_to_async(player1.save)()
             await sync_to_async(room.save)()
             
-            if (await self.check_chi(room_id, content)) != 'successful' and (await self.check_peng(room_id, content)) != 'successful':
+            response_peng = await self.check_peng(room_id, content)
+            response_chi = await self.check_chi(room_id, content)
+            
+            if room.player1 == content.get('username'):
+                room.current_player = room.player2
+            elif room.player2 == content.get('username'):
+                room.current_player = room.player3
+            elif room.player3 == content.get('username'):
+                room.current_player = room.player4
+            elif room.player4 == content.get('username'):
+                room.current_player = room.player1       
+            
+            await sync_to_async(room.save)()
+			
+            if response_peng != 'successful' and response_chi != 'successful':
                 print("Next player draw tile")
-                if room.player1 == content.get('username'):
-                    player = room.player2
-                elif room.player2 == content.get('username'):
-                    player = room.player3
-                elif room.player3 == content.get('username'):
-                    player = room.player4
-                elif room.player4 == content.get('username'):
-                    player = room.player1
-                    
-                await self.draw_tile(room_id, uid = player)
+                await self.draw_tile(room_id, uid = room.current_player)
             
             else:
-                print("Chi or Peng")
+                if response_peng == 'successful' and response_chi == 'successful':
+                    print("Can perform peng and chi")
 
-            
+                elif response_peng == 'successful':
+                    print("Can perform peng")
+
+                elif response_chi == 'successful':
+                    print("Can perform chi")
+                    
         except Room.DoesNotExist:
             self.send_json({
                 "message': 'Room doesn't exist"
@@ -781,7 +792,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         self.room_name,
                                 {
                                 "type": "send_json",
-                                'message': 'finishing_actions',
+                                'message': 'action finished',
                                 'player' : content.get('username'),
                                 'tile' : content.get('tile'),
                                 'room_id': str(room_id),
@@ -797,9 +808,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     player = room.player4
                 elif room.player4 == content.get('username'):
                     player = room.player1
-                await self.draw_tile(room_id, player)
+
             else:
-                await self.draw_tile(room_id, content.get('username'))
+                await self.draw_tile(room_id, room.current_player)
             
         except Room.DoesNotExist:
             self.send_json({
