@@ -136,7 +136,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                     "type": "send_json",
                     "message": f"You are now connected to the group {self.room_name}!",
                     'room_id': str(random_room_id),
-                    'result_type': 'room_id',
+                    'result_type': 'notification',
                     'status': '202'
                 }
             )
@@ -204,7 +204,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                 "type": "send_json",
                 "message": f"{content.get('username')} join {self.room_name}!",
                         'room_id': str(room_id),
-                        'result_type': 'room_id',
+                        'result_type': 'notification',
                         'status': '202'
             }
         )
@@ -250,6 +250,32 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
     
     '''
     async def start_game(self, room_id):
+
+        # test start game broadcast to front end
+        """ print("Starting game")
+        await self.send_json(
+            {
+                "type": "send_json",
+                "message": "Temporary message",
+                'player': 'placeholder player',
+                'tiles': 'placeholder tiles',
+                'room_id': str(room_id),
+                'result_type': 'start_tiles',
+                'status': '202'
+            })
+        await self.channel_layer.group_send(
+            self.room_name,
+            {
+                "type": "send_json",
+                "message": "Player drawn tiles",
+                'player': 'placeholder player',
+                'tiles': 'placeholder tiles',
+                'room_id': str(room_id),
+                'result_type': 'start_tiles',
+                'status': '202'
+            })
+        return """
+
         try:
             room_result = await self.filter_room_models(room_id)
             room = await sync_to_async(room_result.first)()
@@ -403,7 +429,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                         "type": "send_json",
                         'message': 'Game reset',
                         'room_id': str(room_id),
-                        'result_type': 'room_id',
+                        'result_type': 'notification',
                         'status': '202'
                     })
             else:
@@ -514,7 +540,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                             'player': content.get('username'),
                             'tile': content.get('tile'),
                             'room_id': str(room_id),
-                            'result_type': 'room_id',
+                            'result_type': 'discard_tile',
                             'status': '202'
                 })
 
@@ -566,7 +592,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                                     'player': content.get('username'),
                                     'tile': content.get('tile'),
                                     'room_id': str(room_id),
-                                    'result_type': 'room_id',
+                                    'result_type': 'chi_prompt',
                                     'status': '202'
                         })
 
@@ -584,7 +610,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                                     'player': content.get('username'),
                                     'tile': content.get('tile'),
                                     'room_id': str(room_id),
-                                    'result_type': 'room_id',
+                                    'result_type': 'chi_prompt',
                                     'status': '202'
                         })
 
@@ -602,7 +628,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                                     'player': content.get('username'),
                                     'tile': content.get('tile'),
                                     'room_id': str(room_id),
-                                    'result_type': 'room_id',
+                                    'result_type': 'chi_prompt',
                                     'status': '202'
                         })
 
@@ -619,7 +645,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                                     'player': content.get('username'),
                                     'tile': content.get('tile'),
                                     'room_id': str(room_id),
-                                    'result_type': 'room_id',
+                                    'result_type': 'chi_prompt',
                                     'status': '202'
                         })
 
@@ -635,7 +661,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                                     'player': content.get('username'),
                                     'tile': content.get('tile'),
                                     'room_id': str(room_id),
-                                    'result_type': 'room_id',
+                                    'result_type': 'chi_prompt',
                                     'status': '202'
                         })
 
@@ -673,7 +699,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                                 'player': content.get('username'),
                                 'tile': content.get('tile'),
                                 'room_id': str(room_id),
-                                'result_type': 'room_id',
+                                'result_type': 'peng_prompt',
                                 'status': '202'
                     })
 
@@ -721,7 +747,7 @@ class AppConsumer(AsyncJsonWebsocketConsumer):
                     'player': content.get('username'),
                     'tile': content.get('tile'),
                     'room_id': str(room_id),
-                    'result_type': 'room_id',
+                    'result_type': 'placeholder',
                     'status': '202'
                 })
 
