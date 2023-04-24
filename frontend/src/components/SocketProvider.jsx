@@ -1,6 +1,7 @@
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useUsername } from "./UsernameProvider";
+import { nanoid } from "nanoid";
 
 // create SocketContext with value = the socket instance
 // so all components can read this value with useContext(SocketContext)
@@ -163,20 +164,19 @@ class WebSocketInstance {
           // only proceed if message if for this player
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
-            setTile(JSON.parse(message.tile)[0]);
+            const tile = JSON.parse(message.tile)[0];
+            // backend only sends suite and number
+            // generate unique key for tile, use null for index, append to backend response
+            const new_tile = {
+              ...tile,
+              index: null,
+              key: nanoid(),
+            };
+            setTile(new_tile);
           } else if (message.player === username) {
             console.log("message is for this player, but error");
             setTile(null);
           }
-          // Tile has suite, number, index, key params
-          // Backend should send suite and number
-          // TODO: generate unique key for tile, use null for index, append to backend response
-          /* const newmessage = {
-            ...message.tile,
-            index: null,
-            key: nanoid(),
-          }; */
-          //setTile(message.tile);
         }
       }
     });
