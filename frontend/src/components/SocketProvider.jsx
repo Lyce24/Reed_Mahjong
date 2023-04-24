@@ -88,11 +88,20 @@ class WebSocketInstance {
   result_type: "room_id", "start_tiles", "draw_tile" etc
   */
   // Add default listener to display messages from backend in console
+  //* Not necessary to use this
   addListener() {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received from general listener: ", message);
+        console.log("Received message from backend");
+
+        // only proceed if message is a notification
+        if (
+          message.result_type === "notification" ||
+          message.result_type === "placeholder"
+        ) {
+          console.log("Received from general listener: ", message);
+        }
       }
     };
   }
@@ -103,64 +112,38 @@ class WebSocketInstance {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received from room listener");
 
         // only proceed if message is about create room
         if (message.result_type === "room_id") {
-          console.log("Received: ", message);
+          console.log("Received from room listener: ", message);
 
           if (message.status !== "202") {
             console.log("create room error");
             return;
           }
 
-          setRoomNum(message.room_id);
-          //navigate(`/room/${message.room_id}`);
-        }
-      }
-    });
-    /* this.socketRef.onmessage = function (e) {
-      if (typeof e.data === "string") {
-        const message = JSON.parse(e.data);
-        console.log("Received from room listener");
-        // only proceed if message is about create room
-        if (message.result_type === "room_id") {
-          console.log("Received: ", message);
-          if (message.status !== "202") {
-            console.log("create room error");
-            return;
-          }
           setRoomNum(message.room_id);
           navigate(`/room/${message.room_id}`);
         }
       }
-    }; */
+    });
   }
 
   addPlayerListener(setHand, username) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received from player listener to ", message);
 
-        // only proceed if message is for this player, and message is successful
-        if (message.plyaer === username && message.status === "202") {
-          console.log("message is for this player", username);
-          console.log("Received: ", message);
-          switch (message.result_type) {
-            case "start_tiles":
-            //setHand(message.tiles);
+        // only proceed if message is about start tiles
+        if (message.result_type === "start_tiles") {
+          console.log("Received from player listener: ", message);
+          // only proceed if message is for this player, and message is successful
+          if (message.player === username && message.status === "202") {
+            console.log("message is for this player", username);
+            setHand(message.tiles);
+            console.log(message.tiles);
           }
         }
-
-        /*         if (message.player !== this.username) {
-          return;
-        } else if (message.status !== "202") {
-          console.log("Received error message", message);
-          return;
-        } else {
-          
-        } */
       }
     });
   }
@@ -170,16 +153,15 @@ class WebSocketInstance {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received event from draw listener: ");
 
         // only proceed if message if for this player
-        if (message.player !== this.username) {
-          return;
-        }
 
         // only proceed if message is about draw
-        else if (message.result_type === "draw_tile") {
-          console.log("Received: ", message);
+        if (message.result_type === "draw_tile") {
+          console.log("Received message from draw listener: ", message);
+          if (message.player !== this.username) {
+            return;
+          }
           if (message.status !== "202") {
             setTile(null);
             return;
@@ -203,11 +185,10 @@ class WebSocketInstance {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received event from discard listener");
 
         // only proceed if message is about discard
         if (message.result_type === "discard_tile") {
-          console.log("Received: ", message);
+          console.log("Received from discard listener: ", message);
 
           if (message.status !== "202") {
             console.log("discard error");

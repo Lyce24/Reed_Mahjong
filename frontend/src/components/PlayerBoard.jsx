@@ -4,6 +4,7 @@ import "../index.css";
 import DiscardButton from "./DiscardButton";
 import { nanoid } from "nanoid";
 import { useSocket } from "./SocketProvider";
+import { useUsername } from "./UsernameProvider";
 
 function compareTile(a, b) {
   // wan < circle < bamboo
@@ -26,6 +27,7 @@ function compareTile(a, b) {
 
 export default function PlayerBoard() {
   const socket = useSocket();
+  const username = useUsername();
 
   // initialize 13 tiles for player hand, for test purposes only
   let initialTiles = []; // Array();
@@ -62,7 +64,8 @@ export default function PlayerBoard() {
     key: nanoid(),
   });
 
-  socket.addPlayerListener(setHand, setDrawnTile);
+  socket.addPlayerListener(setHand, username);
+  console.log("add player listener");
   // setup draw listener, updates 'drawnTile' when receive backend 'draw_tile' msg
   //socket.addDrawListener(setDrawnTile);
 
