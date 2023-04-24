@@ -98,7 +98,8 @@ class WebSocketInstance {
         // only proceed if message is a notification
         if (
           message.result_type === "notification" ||
-          message.result_type === "placeholder"
+          message.result_type === "placeholder" ||
+          message.status === "400"
         ) {
           console.log("Received from general listener: ", message);
         }
@@ -141,6 +142,9 @@ class WebSocketInstance {
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
             setHand(JSON.parse(message.tiles));
+          } else if (message.player === username) {
+            console.log("message is for this player, but error");
+            setHand(null);
           }
         }
       }
@@ -148,22 +152,21 @@ class WebSocketInstance {
   }
 
   // Add listener to set tile that has been drawn
-  addDrawListener(setTile) {
+  addDrawListener(setTile, username) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
 
-        // only proceed if message if for this player
-
         // only proceed if message is about draw
         if (message.result_type === "draw_tile") {
           console.log("Received message from draw listener: ", message);
-          if (message.player !== this.username) {
-            return;
-          }
-          if (message.status !== "202") {
+          // only proceed if message if for this player
+          if (message.player === username && message.status === "202") {
+            console.log("message is for this player", username);
+            setTile(JSON.parse(message.tile)[0]);
+          } else if (message.player === username) {
+            console.log("message is for this player, but error");
             setTile(null);
-            return;
           }
           // Tile has suite, number, index, key params
           // Backend should send suite and number
@@ -173,7 +176,7 @@ class WebSocketInstance {
             index: null,
             key: nanoid(),
           }; */
-          setTile(message.tile);
+          //setTile(message.tile);
         }
       }
     });

@@ -7,22 +7,21 @@ import { useSocket } from "./SocketProvider";
 import { useUsername } from "./UsernameProvider";
 import { nanoid } from "nanoid";
 
+/* structure of tiles:
+let temporaryDrawnTile = {
+    suite: "bamboo",
+    number: 2,
+    index: 100, // the order of this tile in hand tiles
+    key: nanoid(),
+  }; 
+*/
 export default function GameBoard() {
   const socket = useSocket();
   const username = useUsername();
 
-  // initialize 13 tiles for player hand, for test purposes only
-  let initialTiles = []; // Array();
-  for (let i = 0; i < 13; i++) {
-    initialTiles.push({
-      suite: "bamboo",
-      number: Math.min(i + 1, 9),
-      index: i,
-      key: nanoid(),
-    });
-  }
   const [hand, setHand] = useState(null);
-  // setup start tiles listener, get initial 'hand' when receive backend 'start_tiles' msg
+  socket.addStartTileListener(setHand, username);
+  // setup start tiles listener, display initial 'hand' when receive backend 'start_tiles' msg
 
   const [selectedTileIndex, setSelectedTileIndex] = useState(null);
   // select the tile that is clicked
@@ -36,20 +35,9 @@ export default function GameBoard() {
     }
   }
 
-  //TODO: get drawn tile from backend (after backend is implemented)
-  // initialize drawn tile, for test purposes only
-  // change initial value to null after tests
-  const [drawnTile, setDrawnTile] = useState({
-    suite: "bamboo",
-    number: 2,
-    index: 100,
-    key: nanoid(),
-  });
-
-  socket.addStartTileListener(setHand, username);
-  console.log("add player listener");
-  // setup draw listener, updates 'drawnTile' when receive backend 'draw_tile' msg
-  //socket.addDrawListener(setDrawnTile);
+  const [drawnTile, setDrawnTile] = useState(null);
+  socket.addDrawListener(setDrawnTile, username);
+  // setup draw listener, display 'drawnTile' when receive backend 'draw_tile' msg
 
   // remove selected tile from hand, submit 'discard_tile' msg to backend
   // add drawn tile to hand, reorder and reindex hand tiles
