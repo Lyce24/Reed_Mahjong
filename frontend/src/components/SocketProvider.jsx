@@ -129,7 +129,7 @@ class WebSocketInstance {
     });
   }
 
-  addPlayerListener(setHand, username) {
+  addStartTileListener(setHand, username) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);

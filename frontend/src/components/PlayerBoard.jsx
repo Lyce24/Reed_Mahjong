@@ -64,7 +64,7 @@ export default function PlayerBoard() {
     key: nanoid(),
   });
 
-  socket.addPlayerListener(setHand, username);
+  socket.addStartTileListener(setHand, username);
   console.log("add player listener");
   // setup draw listener, updates 'drawnTile' when receive backend 'draw_tile' msg
   //socket.addDrawListener(setDrawnTile);
