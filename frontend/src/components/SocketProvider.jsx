@@ -98,12 +98,31 @@ class WebSocketInstance {
   }
 
   // Add listner to set room id and navigate to room page
-  // Ideally, it would be added only once, when user clicks create room button or the join room button
+  // Ideally, it would be added only once in main page component
   addRoomListener(setRoomNum, navigate) {
-    this.socketRef.onmessage = function (e) {
+    this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received from room listener: ", message);
+        console.log("Received from room listener");
+
+        // only proceed if message is about create room
+        if (message.result_type === "room_id") {
+          console.log("Received: ", message);
+
+          if (message.status !== "202") {
+            console.log("create room error");
+            return;
+          }
+
+          setRoomNum(message.room_id);
+          //navigate(`/room/${message.room_id}`);
+        }
+      }
+    });
+    /* this.socketRef.onmessage = function (e) {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+        console.log("Received from room listener");
         // only proceed if message is about create room
         if (message.result_type === "room_id") {
           console.log("Received: ", message);
@@ -115,40 +134,49 @@ class WebSocketInstance {
           navigate(`/room/${message.room_id}`);
         }
       }
-    };
+    }; */
   }
 
-  addPlayerListener(setHand, setDrawnTile) {
-    this.socketRef.onmessage = function (e) {
+  addPlayerListener(setHand, username) {
+    this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received from player listener: ", message);
+        console.log("Received from player listener to ", message);
+
         // only proceed if message is for this player, and message is successful
-        if (message.player !== this.username) {
+        if (message.plyaer === username && message.status === "202") {
+          console.log("message is for this player", username);
+          console.log("Received: ", message);
+          switch (message.result_type) {
+            case "start_tiles":
+            //setHand(message.tiles);
+          }
+        }
+
+        /*         if (message.player !== this.username) {
           return;
         } else if (message.status !== "202") {
           console.log("Received error message", message);
           return;
-        }
-        console.log("Received: ", message);
-        switch (message.result_type) {
-          case "start_tiles":
-            setHand(message.tiles);
-        }
+        } else {
+          
+        } */
       }
-    };
+    });
   }
 
   // Add listener to set tile that has been drawn
   addDrawListener(setTile) {
-    this.socketRef.onmessage = function (e) {
+    this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received event from draw listener: ", message);
+        console.log("Received event from draw listener: ");
+
         // only proceed if message if for this player
         if (message.player !== this.username) {
           return;
         }
+
         // only proceed if message is about draw
         else if (message.result_type === "draw_tile") {
           console.log("Received: ", message);
@@ -167,26 +195,29 @@ class WebSocketInstance {
           setTile(message.tile);
         }
       }
-    };
+    });
   }
 
   // Add listener to display tile that has been discarded (by any player)
   addDiscardListener(setDiscardPile) {
-    this.socketRef.onmessage = function (e) {
+    this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received event from discard listener: ", message);
+        console.log("Received event from discard listener");
+
         // only proceed if message is about discard
         if (message.result_type === "discard_tile") {
           console.log("Received: ", message);
+
           if (message.status !== "202") {
             console.log("discard error");
             return;
           }
+
           setDiscardPile(message.tile);
         }
       }
-    };
+    });
   }
 
   // Abandoned code
