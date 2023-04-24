@@ -5,7 +5,6 @@ import "../index.css";
 import { useEffect, useState } from "react";
 import { useSocket } from "./SocketProvider";
 import { useUsername } from "./UsernameProvider";
-import { nanoid } from "nanoid";
 
 /* structure of tiles:
 let temporaryDrawnTile = {
@@ -19,12 +18,12 @@ export default function GameBoard() {
   const socket = useSocket();
   const username = useUsername();
 
+  // setup start tiles listener, display 'hand' tiles when receive backend 'start_tiles' msg
   const [hand, setHand] = useState(null);
   socket.addStartTileListener(setHand, username);
-  // setup start tiles listener, display initial 'hand' when receive backend 'start_tiles' msg
 
-  const [selectedTileIndex, setSelectedTileIndex] = useState(null);
   // select the tile that is clicked
+  const [selectedTileIndex, setSelectedTileIndex] = useState(null);
   function handleTileClick(index) {
     if (index === selectedTileIndex) {
       // If the clicked child is already selected, deselect it
@@ -35,9 +34,9 @@ export default function GameBoard() {
     }
   }
 
+  // setup draw listener, display 'drawnTile' when receive backend 'draw_tile' msg
   const [drawnTile, setDrawnTile] = useState(null);
   socket.addDrawListener(setDrawnTile, username);
-  // setup draw listener, display 'drawnTile' when receive backend 'draw_tile' msg
 
   // remove selected tile from hand, submit 'discard_tile' msg to backend
   // add drawn tile to hand, reorder and reindex hand tiles

@@ -58,12 +58,14 @@ Useful Resourse:
 - Populate room page
   - Implement discard pile at center
 - Implement game logic
-  - (important, quick to implement) Change listeners to only proceed if "current_player" matches with your username
-  - (important next step) After receiving "draw_tile" json:  
-    - Activate discard button. 
-    - Implement 60s wait time, if player doesn't discard, then automatically discard the drawn tile. 
-    - Deactive discard button
-  - (important next next step) After receiving "chi_prompt" json:
+  - (done) Change listeners to only proceed if "current_player" matches with your username 
+  - After receiving "draw_tile" json:  
+    - (done) Activate discard button. 
+    - (important next step) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
+    - (done) Deactive discard button 
+
+  - (simple next step) Design Chi prompt component
+  - (important next step) After receiving "chi_prompt" json:
     - Display Chi prompt on frontend
     - Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
     - Remove Chi prompt from front end
