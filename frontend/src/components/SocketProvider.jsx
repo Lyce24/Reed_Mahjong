@@ -140,8 +140,7 @@ class WebSocketInstance {
           // only proceed if message is for this player, and message is successful
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
-            setHand(message.tiles);
-            console.log(message.tiles);
+            setHand(JSON.parse(message.tiles));
           }
         }
       }
