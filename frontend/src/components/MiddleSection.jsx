@@ -11,6 +11,7 @@ export default function MiddleSection() {
 
   // Set up discard listener upon initial render of middle section
   socket.addDiscardListener(setDiscardPile);
+  console.log("add discard listener");
 
   return (
     <div className="middleSection">

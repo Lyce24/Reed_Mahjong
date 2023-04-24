@@ -3,22 +3,22 @@ import { useSocket } from "./SocketProvider";
 import "../index.css";
 import { useNavigate } from "react-router-dom";
 
-export default function JoinRoom() {
-  const [roomNum, setRoomNum] = useState(0);
-  const socket = useSocket();
-  const navigate = useNavigate();
+export default function JoinRoom(props) {
+  // const [roomNum, setRoomNum] = useState(0);
+  //const socket = useSocket();
+  // const navigate = useNavigate();
 
   // Set up room listener upon initial render
-  useEffect(() => {
+  /* useEffect(() => {
     socket.addRoomListener(setRoomNum, navigate);
-  }, [socket, navigate]);
+  }, [socket, navigate]); */
 
   // Redirect to room when user clicks button if roomNum is valid
   function handleSubmit(e) {
     e.preventDefault(); // prevent form submission
-    socket.send({
+    props.socket.send({
       type: "join_room",
-      room_id: roomNum,
+      room_id: props.roomNum,
     });
   }
 
@@ -29,8 +29,8 @@ export default function JoinRoom() {
           <span>Room Code: </span>
           <input
             type="text"
-            value={roomNum}
-            onChange={(e) => setRoomNum(e.target.value)}
+            value={props.roomNum}
+            onChange={(e) => props.setRoomNum(e.target.value)}
             maxLength={8}
             minLength={8}
           />

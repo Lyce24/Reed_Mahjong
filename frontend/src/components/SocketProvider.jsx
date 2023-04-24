@@ -1,6 +1,7 @@
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useUsername } from "./UsernameProvider";
+import { nanoid } from "nanoid";
 
 // create SocketContext with value = the socket instance
 // so all components can read this value with useContext(SocketContext)
@@ -21,8 +22,8 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // initialize socket instance
     const newSocket = new WebSocketInstance(URL, username);
-    //newSocket.addListener();
     setSocket(newSocket);
+
     // this is the cleanup function, it will be called when the component unmounts (ideally never)
     return () => newSocket.disconnect();
   }, [username]);
@@ -85,81 +86,121 @@ class WebSocketInstance {
 
   /* Backend response JSON structure: 
   status: "202" or "400"
-  result_type: "room_id" or "tile" etc
+  result_type: "room_id", "start_tiles", "draw_tile" etc
   */
-  // Add listener to display general messages from backend in console
-  //! Not working for some reason, not super important for now
+  // Add default listener to display messages from backend in console
+  //* Not necessary to use this
   addListener() {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received unfiltered: ", message);
-        if (message.status !== "202") {
-          return;
+        console.log("Received message from backend");
+
+        // only proceed if message is a notification
+        if (
+          message.result_type === "notification" ||
+          message.result_type === "placeholder" ||
+          message.status === "400"
+        ) {
+          console.log("Received from general listener: ", message);
         }
-        console.log("unsuccesful message");
       }
     };
   }
 
   // Add listner to set room id and navigate to room page
-  // Ideally, it would be added only once, when user clicks create room button or the join room button
+  // Ideally, it would be added only once in main page component
   addRoomListener(setRoomNum, navigate) {
-    this.socketRef.onmessage = function (e) {
+    this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        //console.log("Received unfiltered: ", message);
+
         // only proceed if message is about create room
         if (message.result_type === "room_id") {
-          console.log("Received: ", message);
+          console.log("Received from room listener: ", message);
+
           if (message.status !== "202") {
             console.log("create room error");
             return;
           }
+
           setRoomNum(message.room_id);
           navigate(`/room/${message.room_id}`);
         }
       }
-    };
+    });
+  }
+
+  addStartTileListener(setHand, username) {
+    this.socketRef.addEventListener("message", (e) => {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+
+        // only proceed if message is about start tiles
+        if (message.result_type === "start_tiles") {
+          console.log("Received from player listener: ", message);
+          // only proceed if message is for this player, and message is successful
+          if (message.player === username && message.status === "202") {
+            console.log("message is for this player", username);
+            setHand(JSON.parse(message.tiles));
+          } else if (message.player === username) {
+            console.log("message is for this player, but error");
+            setHand(null);
+          }
+        }
+      }
+    });
   }
 
   // Add listener to set tile that has been drawn
-  addDrawListener(setTile) {
-    this.socketRef.onmessage = function (e) {
+  addDrawListener(setTile, username) {
+    this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
+
         // only proceed if message is about draw
-        if (message.result_type === "draw") {
-          console.log("Received: ", message);
-          if (message.status !== "202") {
+        if (message.result_type === "draw_tile") {
+          console.log("Received message from draw listener: ", message);
+          // only proceed if message if for this player
+          if (message.player === username && message.status === "202") {
+            console.log("message is for this player", username);
+            const tile = JSON.parse(message.tile)[0];
+            // backend only sends suite and number
+            // generate unique key for tile, use null for index, append to backend response
+            const new_tile = {
+              ...tile,
+              index: null,
+              key: nanoid(),
+            };
+            setTile(new_tile);
+          } else if (message.player === username) {
+            console.log("message is for this player, but error");
             setTile(null);
-            return;
           }
-          // Tile has suite, number, index, key params
-          // Backend should send suite and number
-          // TODO: generate unique key for tile, use null for index, append to backend response
-          setTile(message.tile);
         }
       }
-    };
+    });
   }
 
   // Add listener to display tile that has been discarded (by any player)
   addDiscardListener(setDiscardPile) {
-    this.socketRef.onmessage = function (e) {
+    this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
+
         // only proceed if message is about discard
-        if (message.result_type === "discard") {
-          console.log("Received: ", message);
+        if (message.result_type === "discard_tile") {
+          console.log("Received from discard listener: ", message);
+
           if (message.status !== "202") {
             console.log("discard error");
             return;
           }
+
           setDiscardPile(message.tile);
         }
       }
-    };
+    });
   }
 
   // Abandoned code
