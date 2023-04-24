@@ -32,7 +32,8 @@ export default function PlayerBoard(props) {
           key={props.drawnTile.key}
         />
       )}
-      <DiscardButton onClick={props.handleDiscard} />
+      {/* Display discard button only if there is a drawn tile */}
+      {props.drawnTile && <DiscardButton onClick={props.handleDiscard} />}
     </div>
   );
 }
