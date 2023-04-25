@@ -142,7 +142,7 @@ class WebSocketInstance {
           // only proceed if message is for this player, and message is successful
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
-            let hand = JSON.parse(message.tiles);
+            let hand = message.tiles;
             // add index and key to each tile
             hand.forEach((tile) => {
               tile.index = null;
@@ -176,7 +176,7 @@ class WebSocketInstance {
           // only proceed if message if for this player
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
-            const tile = JSON.parse(message.tile)[0];
+            const tile = message.tile;
             // backend only sends suite and number
             // generate unique key for tile, use null for index, append to backend response
             const new_tile = {
@@ -208,7 +208,7 @@ class WebSocketInstance {
             console.log("discard error");
             return;
           }
-          console.log("received discard tile", JSON.parse(message.tile));
+          console.log("Received discard tile", message.tile);
           //setDiscardPile(message.tile);
         }
       }

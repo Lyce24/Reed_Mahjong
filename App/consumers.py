@@ -325,7 +325,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
                         await sync_to_async(player1.save)()
                         await sync_to_async(room.save)()
-                        tiles_json = json.dumps(tiles)
 
                         await self.channel_layer.group_send(
                             self.room_name,
@@ -333,7 +332,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                                 "type": "send_json",
                                 "message": "Player drawn tiles",
                                 'player': player,
-                                'tiles': tiles_json,
+                                'tiles': tiles,
                                 'room_id': str(room_id),
                                 'result_type': 'start_tiles',
                                 'status': '202'
@@ -344,7 +343,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     player_result = await self.filter_player_models(zhuangjia)
                     player1 = await sync_to_async(player_result.first)()
 
-                    tiles = []
                     suite = random.choice(suites)
                     number = random.choice(numbers)
                     new_tile = {'suite': suite, 'number': number}
@@ -355,13 +353,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         new_tile = {'suite': suite, 'number': number}
                         key = suite + number
 
-                    tiles.append(new_tile)
                     player1.__dict__[key] += 1
                     room.__dict__[key] -= 1
 
                     await sync_to_async(player1.save)()
                     await sync_to_async(room.save)()
-                    tile_json = json.dumps(tiles)
 
                     await self.channel_layer.group_send(
                         self.room_name,
@@ -370,7 +366,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             'message': 'Zhuangjia tile drawn',
 
                             'player': room.zhuangjia,
-                            'tile': tile_json,
+                            'tile': new_tile,
 
                             'room_id': str(room_id),
                             'result_type': 'draw_tile',
@@ -498,8 +494,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 await sync_to_async(player1.save)()
                 await sync_to_async(room.save)()
 
-                tile_json = json.dumps(new_tile)
-
                 await self.channel_layer.group_send(
                     self.room_name,
                     {
@@ -507,9 +501,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                                 'message': 'tile drawn',
                                 'player': player1.player_id,
                                 'current_player': room.current_player,
-                                'tile': tile_json,
+                                'tile': new_tile,
                                 'room_id': str(room_id),
-                                'result_type': 'room_id',
+                                'result_type': 'draw_tile',
                                 'status': '202'
                     })
 
