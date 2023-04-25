@@ -131,6 +131,7 @@ class WebSocketInstance {
     });
   }
 
+  // Broadcasted message, so need to check if message is for this player
   addStartTileListener(setHand, username, compareTile) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
@@ -165,6 +166,7 @@ class WebSocketInstance {
   }
 
   // Add listener to set tile that has been drawn
+  // Broadcasted message, so need to check if message is for this player
   addDrawListener(setTile, username) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
@@ -194,6 +196,7 @@ class WebSocketInstance {
     });
   }
 
+  // Broadcasted message, but all playes need to receive, so no need to check if message is for this player
   // Add listener to display tile that has been discarded (by any player)
   addDiscardListener(setDiscardPile) {
     this.socketRef.addEventListener("message", (e) => {
@@ -210,6 +213,36 @@ class WebSocketInstance {
           }
           console.log("Received discard tile", message.tile);
           //setDiscardPile(message.tile);
+        }
+      }
+    });
+  }
+
+  // Broadcasted message, so need to check if message is for this player
+  // Add listener to display peng prompt from backend
+  addPengListener(setPengPrompt, setPengTile, username) {
+    this.socketRef.addEventListener("message", (e) => {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+        if (message.result_type == "peng_prompt") {
+          console.log("peng listener", message);
+          // only proceed if message is for this player, and message is successful
+          if (message.player === username && message.status === "202") {
+            console.log("message is for this player", username);
+            setPengPrompt(true);
+            const tile = message.tile;
+            // backend only sends suite and number
+            // generate unique key for tile, use null for index, append to backend response
+            const new_tile = {
+              ...tile,
+              index: null,
+              key: nanoid(),
+            };
+            setPengTile(new_tile);
+          } else if (message.player === username) {
+            console.log("message is for this player, but error");
+            setPengPrompt(false);
+          }
         }
       }
     });

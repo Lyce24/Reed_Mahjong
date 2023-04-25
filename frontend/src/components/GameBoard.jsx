@@ -28,6 +28,7 @@ export default function GameBoard({ room_id }) {
     socket.addDrawListener(setDrawnTile, username);
     //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
     socket.addDiscardListener(setDrawnTile);
+    socket.addPengListener(setPengPrompt, setPengTile, username);
   }, []);
 
   const [hand, setHand] = useState(null);
@@ -45,16 +46,17 @@ export default function GameBoard({ room_id }) {
     }
   }
 
+  // drawn tile, due to normal game logic or peng logic
   const [drawnTile, setDrawnTile] = useState(null);
 
   // remove selected tile from hand, submit 'discard_tile' msg to backend
   // add drawn tile to hand, reorder and reindex hand tiles
+  // remove discard button
   function handleDiscard(params) {
     if (selectedTileIndex == null) {
       //alert("You have not selected any tile!");
       console.log(hand);
     } else {
-      //TODO: send discard_tile msg to backend
       socket.send({
         type: "discard_tile",
         tile: hand[selectedTileIndex],
@@ -64,8 +66,6 @@ export default function GameBoard({ room_id }) {
       let updatedHand = hand.toSpliced(selectedTileIndex, 1);
       // put drawn tile in hand
       updatedHand = [...updatedHand, drawnTile];
-      // set drawn tile to null
-      setDrawnTile(null);
       // reorder tiles
       updatedHand.sort(compareTile);
       // reindex tiles
@@ -73,8 +73,39 @@ export default function GameBoard({ room_id }) {
         tile.index = index;
       });
       setHand(updatedHand);
+      setDrawnTile(null);
       setSelectedTileIndex(null);
     }
+  }
+
+  const [pengTile, setPengTile] = useState(null);
+  const [pengPrompt, setPengPrompt] = useState(false);
+
+  // If user rejects Peng prompt, send reject message to backend, remove peng tile and peng prompt
+  function handlePengReject() {
+    console.log("peng reject clicked");
+    socket.send({
+      type: "performing_action",
+      action: "0",
+      tile: pengTile,
+      room_id: room_id,
+    });
+    setPengTile(null);
+    setPengPrompt(false);
+  }
+
+  // If user accepts peng for: send accept message to backend, move peng tile to drawn tile, remove peng tile and peng prompt
+  function handlePengAccept() {
+    console.log("peng accept clicked");
+    socket.send({
+      type: "performing_action",
+      action: "1",
+      tile: pengTile,
+      room_id: room_id,
+    });
+    setDrawnTile(pengTile);
+    setPengTile(null);
+    setPengPrompt(false);
   }
 
   return (
@@ -82,9 +113,13 @@ export default function GameBoard({ room_id }) {
       <PlayerBoard
         hand={hand}
         selectedTileIndex={selectedTileIndex}
+        pengPrompt={pengPrompt}
         drawnTile={drawnTile}
+        pengTile={pengTile}
         handleTileClick={handleTileClick}
         handleDiscard={handleDiscard}
+        handlePengAccept={handlePengAccept}
+        handlePengReject={handlePengReject}
       />
       <br />
       <OtherBoard orientation="leftBoard" />
