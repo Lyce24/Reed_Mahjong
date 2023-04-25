@@ -560,6 +560,10 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             response_peng = await self.check_peng(room_id, content)
             response_chi = await self.check_chi(room_id, content)
 
+            # for testing only
+            """ response_chi = "unsuccesful"
+            response_peng = "unsuccesful" """
+
             if room.player1 == content.get('username'):
                 room.current_player = room.player2
             elif room.player2 == content.get('username'):
