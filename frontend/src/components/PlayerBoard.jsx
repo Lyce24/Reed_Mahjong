@@ -26,11 +26,11 @@ export default function PlayerBoard(props) {
           suite={props.drawnTile.suite}
           number={props.drawnTile.number}
           index={props.drawnTile.index}
+          key={props.drawnTile.key}
           onClick={props.handleTileClick}
           isSelected={props.selectedTileIndex === props.drawnTile.index}
           isDrawn={true}
           isFacedDown="false"
-          key={props.drawnTile.key}
         />
       )}
       {/* Display discard button only if there is a drawn tile */}
@@ -40,10 +40,10 @@ export default function PlayerBoard(props) {
           suite={props.pengTile.suite}
           number={props.pengTile.number}
           index={props.pengTile.index}
+          key={props.pengTile.key}
           isSelected={false}
           isDrawn={true}
           isFacedDown="false"
-          key={props.pengTile.key}
         />
       )}
       {props.pengPrompt && (
