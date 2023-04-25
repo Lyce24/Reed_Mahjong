@@ -94,7 +94,7 @@ class WebSocketInstance {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received message from backend");
+        console.log("Received message from backend", message.result_type);
 
         // only proceed if message is a notification
         if (
@@ -117,7 +117,7 @@ class WebSocketInstance {
 
         // only proceed if message is about create room
         if (message.result_type === "room_id") {
-          console.log("Received from room listener: ", message);
+          console.log("Room listener: ", message);
 
           if (message.status !== "202") {
             console.log("create room error");
@@ -138,20 +138,21 @@ class WebSocketInstance {
 
         // only proceed if message is about start tiles
         if (message.result_type === "start_tiles") {
-          console.log("Received from player listener: ", message);
+          console.log("Player listener: ", message);
           // only proceed if message is for this player, and message is successful
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
             let hand = JSON.parse(message.tiles);
-            /* for (let tile in hand) {
-              tile = {
-                ...tile,
-                index: null,
-                key: nanoid(),
-              };
-            } */
-            // sort hand by suite and number
+            // add index and key to each tile
+            hand.forEach((tile) => {
+              tile.index = null;
+              tile.key = nanoid();
+            });
+            // sort hand by suite and number, reindex
             hand.sort(compareTile);
+            hand.forEach((tile, index) => {
+              tile.index = index;
+            });
             console.log("received hand", hand);
             setHand(hand);
           } else if (message.player === username) {
@@ -171,7 +172,7 @@ class WebSocketInstance {
 
         // only proceed if message is about draw
         if (message.result_type === "draw_tile") {
-          console.log("Received message from draw listener: ", message);
+          console.log("Draw listener: ", message);
           // only proceed if message if for this player
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
@@ -201,7 +202,7 @@ class WebSocketInstance {
 
         // only proceed if message is about discard
         if (message.result_type === "discard_tile") {
-          console.log("Received from discard listener: ", message);
+          console.log("Discard listener: ", message);
 
           if (message.status !== "202") {
             console.log("discard error");

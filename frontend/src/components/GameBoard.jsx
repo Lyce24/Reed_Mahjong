@@ -5,6 +5,7 @@ import "../index.css";
 import { useEffect, useState } from "react";
 import { useSocket } from "./SocketProvider";
 import { useUsername } from "./UsernameProvider";
+import { useLayoutEffect } from "react";
 
 /* structure of tiles:
 let temporaryDrawnTile = {
@@ -19,9 +20,10 @@ export default function GameBoard() {
   const username = useUsername();
 
   // setup listeners once upon initial render of game board
-  useEffect(() => {
+  useLayoutEffect(() => {
     // setup start tiles listener: display 'hand' tiles when receive backend 'start_tiles' msg
     socket.addStartTileListener(setHand, username, compareTile);
+    console.log("add start tile listener");
     // setup draw listener: display 'drawnTile' when receive backend 'draw_tile' msg
     socket.addDrawListener(setDrawnTile, username);
     //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
@@ -33,7 +35,7 @@ export default function GameBoard() {
   // select the tile that is clicked
   const [selectedTileIndex, setSelectedTileIndex] = useState(null);
   function handleTileClick(index) {
-    console.log("tile clicked", index);
+    console.log("tile clicked", index, selectedTileIndex);
     if (index === selectedTileIndex) {
       // If the clicked child is already selected, deselect it
       setSelectedTileIndex(null);
@@ -78,7 +80,7 @@ export default function GameBoard() {
     <div className="gameBoard">
       <PlayerBoard
         hand={hand}
-        setSelectedTileIndex={setSelectedTileIndex}
+        selectedTileIndex={selectedTileIndex}
         drawnTile={drawnTile}
         handleTileClick={handleTileClick}
         handleDiscard={handleDiscard}
