@@ -5,6 +5,7 @@ import "../index.css";
 import { useEffect, useState } from "react";
 import { useSocket } from "./SocketProvider";
 import { useUsername } from "./UsernameProvider";
+import { useLayoutEffect } from "react";
 
 /* structure of tiles:
 let temporaryDrawnTile = {
@@ -14,17 +15,27 @@ let temporaryDrawnTile = {
     key: nanoid(),
   }; 
 */
-export default function GameBoard() {
+export default function GameBoard({ room_id }) {
   const socket = useSocket();
   const username = useUsername();
 
-  // setup start tiles listener, display 'hand' tiles when receive backend 'start_tiles' msg
+  // setup listeners once upon initial render of game board
+  useLayoutEffect(() => {
+    // setup start tiles listener: display 'hand' tiles when receive backend 'start_tiles' msg
+    socket.addStartTileListener(setHand, username, compareTile);
+    console.log("add start tile listener");
+    // setup draw listener: display 'drawnTile' when receive backend 'draw_tile' msg
+    socket.addDrawListener(setDrawnTile, username);
+    //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
+    socket.addDiscardListener(setDrawnTile);
+  }, []);
+
   const [hand, setHand] = useState(null);
-  socket.addStartTileListener(setHand, username);
 
   // select the tile that is clicked
   const [selectedTileIndex, setSelectedTileIndex] = useState(null);
   function handleTileClick(index) {
+    console.log("tile clicked", index, selectedTileIndex);
     if (index === selectedTileIndex) {
       // If the clicked child is already selected, deselect it
       setSelectedTileIndex(null);
@@ -34,9 +45,7 @@ export default function GameBoard() {
     }
   }
 
-  // setup draw listener, display 'drawnTile' when receive backend 'draw_tile' msg
   const [drawnTile, setDrawnTile] = useState(null);
-  socket.addDrawListener(setDrawnTile, username);
 
   // remove selected tile from hand, submit 'discard_tile' msg to backend
   // add drawn tile to hand, reorder and reindex hand tiles
@@ -49,6 +58,7 @@ export default function GameBoard() {
       socket.send({
         type: "discard_tile",
         tile: hand[selectedTileIndex],
+        room_id: room_id,
       });
       // remove tile that is selected
       let updatedHand = hand.toSpliced(selectedTileIndex, 1);
@@ -71,7 +81,7 @@ export default function GameBoard() {
     <div className="gameBoard">
       <PlayerBoard
         hand={hand}
-        setSelectedTileIndex={setSelectedTileIndex}
+        selectedTileIndex={selectedTileIndex}
         drawnTile={drawnTile}
         handleTileClick={handleTileClick}
         handleDiscard={handleDiscard}
@@ -83,7 +93,7 @@ export default function GameBoard() {
       <br />
       <OtherBoard orientation="topBoard" />
       <br />
-      <MiddleSection />
+      {/* <MiddleSection /> */}
     </div>
   );
 }

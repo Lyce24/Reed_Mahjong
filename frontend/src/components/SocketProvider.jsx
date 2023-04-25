@@ -94,7 +94,7 @@ class WebSocketInstance {
     this.socketRef.onmessage = function (e) {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-        console.log("Received message from backend");
+        console.log("Received message from backend", message.result_type);
 
         // only proceed if message is a notification
         if (
@@ -117,7 +117,7 @@ class WebSocketInstance {
 
         // only proceed if message is about create room
         if (message.result_type === "room_id") {
-          console.log("Received from room listener: ", message);
+          console.log("Room listener: ", message);
 
           if (message.status !== "202") {
             console.log("create room error");
@@ -131,25 +131,29 @@ class WebSocketInstance {
     });
   }
 
-  addStartTileListener(setHand, username) {
+  addStartTileListener(setHand, username, compareTile) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
 
         // only proceed if message is about start tiles
         if (message.result_type === "start_tiles") {
-          console.log("Received from player listener: ", message);
+          console.log("Player listener: ", message);
           // only proceed if message is for this player, and message is successful
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
-            let hand = JSON.parse(message.tiles);
-            for (tile in hand) {
-              tile = {
-                ...tile,
-                index: null,
-                key: nanoid(),
-              };
-            }
+            let hand = message.tiles;
+            // add index and key to each tile
+            hand.forEach((tile) => {
+              tile.index = null;
+              tile.key = nanoid();
+            });
+            // sort hand by suite and number, reindex
+            hand.sort(compareTile);
+            hand.forEach((tile, index) => {
+              tile.index = index;
+            });
+            console.log("received hand", hand);
             setHand(hand);
           } else if (message.player === username) {
             console.log("message is for this player, but error");
@@ -168,11 +172,11 @@ class WebSocketInstance {
 
         // only proceed if message is about draw
         if (message.result_type === "draw_tile") {
-          console.log("Received message from draw listener: ", message);
+          console.log("Draw listener: ", message);
           // only proceed if message if for this player
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
-            const tile = JSON.parse(message.tile)[0];
+            const tile = message.tile;
             // backend only sends suite and number
             // generate unique key for tile, use null for index, append to backend response
             const new_tile = {
@@ -198,14 +202,14 @@ class WebSocketInstance {
 
         // only proceed if message is about discard
         if (message.result_type === "discard_tile") {
-          console.log("Received from discard listener: ", message);
+          console.log("Discard listener: ", message);
 
           if (message.status !== "202") {
             console.log("discard error");
             return;
           }
-
-          setDiscardPile(message.tile);
+          console.log("Received discard tile", message.tile);
+          //setDiscardPile(message.tile);
         }
       }
     });

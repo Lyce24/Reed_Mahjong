@@ -10,7 +10,7 @@ export default function MiddleSection() {
   const [discardPile, setDiscardPile] = useState(null);
 
   // Set up discard listener upon initial render of middle section
-  socket.addDiscardListener(setDiscardPile);
+  //socket.addDiscardListener(setDiscardPile);
   console.log("add discard listener");
 
   return (
