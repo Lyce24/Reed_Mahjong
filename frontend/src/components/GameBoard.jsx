@@ -18,13 +18,22 @@ export default function GameBoard() {
   const socket = useSocket();
   const username = useUsername();
 
-  // setup start tiles listener, display 'hand' tiles when receive backend 'start_tiles' msg
+  // setup listeners once upon initial render of game board
+  useEffect(() => {
+    // setup start tiles listener: display 'hand' tiles when receive backend 'start_tiles' msg
+    socket.addStartTileListener(setHand, username, compareTile);
+    // setup draw listener: display 'drawnTile' when receive backend 'draw_tile' msg
+    socket.addDrawListener(setDrawnTile, username);
+    //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
+    socket.addDiscardListener(setDrawnTile);
+  }, []);
+
   const [hand, setHand] = useState(null);
-  socket.addStartTileListener(setHand, username);
 
   // select the tile that is clicked
   const [selectedTileIndex, setSelectedTileIndex] = useState(null);
   function handleTileClick(index) {
+    console.log("tile clicked", index);
     if (index === selectedTileIndex) {
       // If the clicked child is already selected, deselect it
       setSelectedTileIndex(null);
@@ -34,9 +43,7 @@ export default function GameBoard() {
     }
   }
 
-  // setup draw listener, display 'drawnTile' when receive backend 'draw_tile' msg
   const [drawnTile, setDrawnTile] = useState(null);
-  socket.addDrawListener(setDrawnTile, username);
 
   // remove selected tile from hand, submit 'discard_tile' msg to backend
   // add drawn tile to hand, reorder and reindex hand tiles
@@ -83,7 +90,7 @@ export default function GameBoard() {
       <br />
       <OtherBoard orientation="topBoard" />
       <br />
-      <MiddleSection />
+      {/* <MiddleSection /> */}
     </div>
   );
 }
