@@ -220,7 +220,7 @@ class WebSocketInstance {
 
   // Broadcasted message, so need to check if message is for this player
   // Add listener to display peng prompt from backend
-  addPengListener(setPengPrompt, setDrawnTile, username) {
+  addPengListener(setPengPrompt, setPengTile, username) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
@@ -230,7 +230,15 @@ class WebSocketInstance {
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
             setPengPrompt(true);
-            setDrawnTile(message.tile);
+            const tile = message.tile;
+            // backend only sends suite and number
+            // generate unique key for tile, use null for index, append to backend response
+            const new_tile = {
+              ...tile,
+              index: null,
+              key: nanoid(),
+            };
+            setPengTile(new_tile);
           } else if (message.player === username) {
             console.log("message is for this player, but error");
             setPengPrompt(false);

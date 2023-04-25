@@ -35,7 +35,23 @@ export default function PlayerBoard(props) {
       )}
       {/* Display discard button only if there is a drawn tile */}
       {props.drawnTile && <DiscardButton onClick={props.handleDiscard} />}
-      {props.pengPrompt && <PengPrompt onClick={props.handlePeng} />}
+      {props.pengPrompt && (
+        <Tile
+          suite={props.pengTile.suite}
+          number={props.pengTile.number}
+          index={props.pengTile.index}
+          isSelected={false}
+          isDrawn={true}
+          isFacedDown="false"
+          key={props.pengTile.key}
+        />
+      )}
+      {props.pengPrompt && (
+        <PengPrompt
+          handlePengAccept={props.handlePengAccept}
+          handlePengReject={props.handlePengReject}
+        />
+      )}
     </div>
   );
 }
