@@ -56,12 +56,13 @@ Useful Resourse:
 ## Frontend TODO
 
 - Populate room page
-  - Implement discard pile at center
+  - (Jacob) Implement discard pile at center
+  - Display a waiting message when it's not your turn: remove it after receive draw tile message, and add it back after click discard button or time is up
 - Implement game logic
   - (done) Change listeners to only proceed if "current_player" matches with your username 
   - After receiving "draw_tile" json:  
     - (done) Activate discard button. 
-    - (important next step) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
+    - (El: important next step) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
     - (done) Deactive discard button 
 
   - (simple next step) Design Chi prompt component
