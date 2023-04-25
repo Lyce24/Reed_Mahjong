@@ -224,15 +224,17 @@ class WebSocketInstance {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
-
-        // only proceed if message is for this player, and message is successful
-        if (message.player === username && message.status === "202") {
-          console.log("message is for this player", username);
-          setPengPrompt(true);
-          setDrawnTile(message.tile);
-        } else if (message.player === username) {
-          console.log("message is for this player, but error");
-          setPengPrompt(false);
+        if (message.result_type == "peng_prompt") {
+          console.log("peng listener", message);
+          // only proceed if message is for this player, and message is successful
+          if (message.player === username && message.status === "202") {
+            console.log("message is for this player", username);
+            setPengPrompt(true);
+            setDrawnTile(message.tile);
+          } else if (message.player === username) {
+            console.log("message is for this player, but error");
+            setPengPrompt(false);
+          }
         }
       }
     });
