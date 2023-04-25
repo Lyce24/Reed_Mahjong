@@ -15,7 +15,7 @@ let temporaryDrawnTile = {
     key: nanoid(),
   }; 
 */
-export default function GameBoard() {
+export default function GameBoard({ room_id }) {
   const socket = useSocket();
   const username = useUsername();
 
@@ -58,6 +58,7 @@ export default function GameBoard() {
       socket.send({
         type: "discard_tile",
         tile: hand[selectedTileIndex],
+        room_id: room_id,
       });
       // remove tile that is selected
       let updatedHand = hand.toSpliced(selectedTileIndex, 1);
