@@ -56,30 +56,35 @@ Useful Resourse:
 ## Frontend TODO
 
 - Populate room page
-  - (Jacob: important next step) Implement discard pile at center
+  - (**Jacob**: important next step) Implement discard pile at center
   - (unclaimed) Display a waiting message when it's not your turn: remove it after receive draw tile message, and add it back after click discard button or time is up
 - Implement game logic
   - (done) Change listeners to only proceed if "current_player" matches with your username 
   - After receiving "draw_tile" json:  
     - (done) Activate discard button. 
-    - (El: important next step) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
+    - (**El**: important next step) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
     - (done) Deactive discard button 
 
-  - (simple) Design Chi prompt component
-  - (important next step, unclaimed) After receiving "chi_prompt" json:
-    - Display Chi prompt on frontend
-    - Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
-    - Remove Chi prompt from front end
+  -  (done) Design Chi prompt component
+  -  After receiving "chi_prompt" json:
+    - (done) Display Chi prompt on frontend
+    - (**El**: important next step) Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
+    - (done) Remove Chi prompt from front end
 
 - Integrating with backend using socket (waiting for backend to finish)
   - (done) draw tile
   - (done) discard tile
   - chi prompt
-  - peng prompt
+  - (done) peng prompt
+
+- Testing framwork
+  - (**Louise**) create room and let four players join
+
 
 Backend/frontend BUG: 
 
 - Doesn't check whether room id has 8 valid characters: e.g. space character with 7 numbers 
+- Frontend BUG: user cannot select drawn tile
 
 ### Template code for using socket in frontend
 

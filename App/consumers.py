@@ -561,8 +561,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             response_chi = await self.check_chi(room_id, content)
 
             # for testing only
-            """ response_chi = "unsuccesful"
-            response_peng = "unsuccesful" """
+            response_chi = "unsuccesful"
+            """ response_peng = "unsuccesful" """
 
             if room.player1 == content.get('username'):
                 room.current_player = room.player2
@@ -773,7 +773,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 player_result = await self.filter_player_models(player)
                 player1 = await sync_to_async(player_result.first)()
             # check if the player can perform peng or not
-                if player1.__dict__[tile] >= 2:
+                # for testing: send peng to first player
+                if index == 0:
+                    # if player1.__dict__[tile] >= 2:
                     index += 1
                     await self.channel_layer.group_send(
                         self.room_name,
