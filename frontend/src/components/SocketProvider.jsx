@@ -131,7 +131,7 @@ class WebSocketInstance {
     });
   }
 
-  addStartTileListener(setHand, username) {
+  addStartTileListener(setHand, username, compareTile) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
@@ -143,13 +143,16 @@ class WebSocketInstance {
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
             let hand = JSON.parse(message.tiles);
-            for (tile in hand) {
+            /* for (let tile in hand) {
               tile = {
                 ...tile,
                 index: null,
                 key: nanoid(),
               };
-            }
+            } */
+            // sort hand by suite and number
+            hand.sort(compareTile);
+            console.log("received hand", hand);
             setHand(hand);
           } else if (message.player === username) {
             console.log("message is for this player, but error");
@@ -204,8 +207,8 @@ class WebSocketInstance {
             console.log("discard error");
             return;
           }
-
-          setDiscardPile(message.tile);
+          console.log("received discard tile", JSON.parse(message.tile));
+          //setDiscardPile(message.tile);
         }
       }
     });
