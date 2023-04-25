@@ -1,6 +1,7 @@
 import Tile from "./Tile";
 import "../index.css";
 import DiscardButton from "./DiscardButton";
+import PengPrompt from "./PengPrompt";
 
 export default function PlayerBoard(props) {
   return (
@@ -34,6 +35,7 @@ export default function PlayerBoard(props) {
       )}
       {/* Display discard button only if there is a drawn tile */}
       {props.drawnTile && <DiscardButton onClick={props.handleDiscard} />}
+      {props.pengPrompt && <PengPrompt onClick={props.handlePeng} />}
     </div>
   );
 }

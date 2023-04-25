@@ -28,6 +28,7 @@ export default function GameBoard({ room_id }) {
     socket.addDrawListener(setDrawnTile, username);
     //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
     socket.addDiscardListener(setDrawnTile);
+    socket.addPengListener(setPengPrompt, setDrawnTile, username);
   }, []);
 
   const [hand, setHand] = useState(null);
@@ -54,7 +55,6 @@ export default function GameBoard({ room_id }) {
       //alert("You have not selected any tile!");
       console.log(hand);
     } else {
-      //TODO: send discard_tile msg to backend
       socket.send({
         type: "discard_tile",
         tile: hand[selectedTileIndex],
@@ -64,8 +64,6 @@ export default function GameBoard({ room_id }) {
       let updatedHand = hand.toSpliced(selectedTileIndex, 1);
       // put drawn tile in hand
       updatedHand = [...updatedHand, drawnTile];
-      // set drawn tile to null
-      setDrawnTile(null);
       // reorder tiles
       updatedHand.sort(compareTile);
       // reindex tiles
@@ -73,7 +71,39 @@ export default function GameBoard({ room_id }) {
         tile.index = index;
       });
       setHand(updatedHand);
+      setDrawnTile(null);
       setSelectedTileIndex(null);
+    }
+  }
+
+  const [pengPrompt, setPengPrompt] = useState(false);
+
+  //* Assume user only accepts peng for now: move drawn_tile to hand, remove peng prompt, send discard_tile msg to backend
+  function handlePeng() {
+    console.log("peng clicked");
+    if (selectedTileIndex == null) {
+      //alert("You have not selected any tile!");
+      console.log(hand);
+    } else {
+      socket.send({
+        type: "discard_tile",
+        tile: hand[selectedTileIndex],
+        room_id: room_id,
+      });
+      // remove tile that is selected
+      let updatedHand = hand.toSpliced(selectedTileIndex, 1);
+      // put drawn tile in hand
+      updatedHand = [...updatedHand, drawnTile];
+      // reorder tiles
+      updatedHand.sort(compareTile);
+      // reindex tiles
+      updatedHand.forEach((tile, index) => {
+        tile.index = index;
+      });
+      setHand(updatedHand);
+      setDrawnTile(null);
+      setSelectedTileIndex(null);
+      setPengPrompt(false);
     }
   }
 
@@ -82,9 +112,11 @@ export default function GameBoard({ room_id }) {
       <PlayerBoard
         hand={hand}
         selectedTileIndex={selectedTileIndex}
+        pengPrompt={pengPrompt}
         drawnTile={drawnTile}
         handleTileClick={handleTileClick}
         handleDiscard={handleDiscard}
+        handlePeng={handlePeng}
       />
       <br />
       <OtherBoard orientation="leftBoard" />
