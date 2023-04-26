@@ -33,6 +33,7 @@ export default function JoinRoom(props) {
             onChange={(e) => props.setRoomNum(e.target.value)}
             maxLength={8}
             minLength={8}
+            pattern="[0-9]*8"
           />
         </label>
         <input type="submit" value="Submit" className="button" />
