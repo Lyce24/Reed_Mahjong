@@ -83,10 +83,9 @@ Useful Resourse:
   - (**Louise**) create room and let four players join
 
 
-Backend/frontend BUG: 
+BUG: 
 
-- Doesn't check whether room id has 8 valid characters: e.g. space character with 7 numbers 
-- Frontend BUG: user cannot select drawn tile
+- Frontend: Doesn't check whether room id has 8 valid characters: e.g. space character with 7 numbers 
 
 ### Template code for using socket in frontend
 
