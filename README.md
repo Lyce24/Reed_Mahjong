@@ -56,25 +56,27 @@ Useful Resourse:
 ## Frontend TODO
 
 - Populate room page
-  - (**Jacob**: important next step) Implement discard pile at center
+  - (**Jacob**) Implement discard pile at center
   - (unclaimed) Display a waiting message when it's not your turn: remove it after receive draw tile message, and add it back after click discard button or time is up
 - Implement game logic
   - (done) Change listeners to only proceed if "current_player" matches with your username 
   - After receiving "draw_tile" json:  
     - (done) Activate discard button. 
-    - (**El**: important next step) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
+    - (**El/Yifang**) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
     - (done) Deactive discard button 
 
-  -  (done) Design Chi prompt component
+  -  (done) Design Chi/Peng prompt component
   -  After receiving "chi_prompt" json:
     - (done) Display Chi prompt on frontend
-    - (**El**: important next step) Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
+    - (**El/Yifang**) Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
     - (done) Remove Chi prompt from front end
+
+  - (**Louise**) After user accepts Chi/Peng prompt, isolate the three tiles to the left side
 
 - Integrating with backend using socket (waiting for backend to finish)
   - (done) draw tile
   - (done) discard tile
-  - chi prompt
+  - (done) chi prompt
   - (done) peng prompt
 
 - Testing framwork

@@ -220,7 +220,7 @@ class WebSocketInstance {
 
   // Broadcasted message, so need to check if message is for this player
   // Add listener to display peng prompt from backend
-  addPengListener(setPengPrompt, setPengTile, username) {
+  addPengListener(setPrompt, setTile, username) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
@@ -229,7 +229,7 @@ class WebSocketInstance {
           // only proceed if message is for this player, and message is successful
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
-            setPengPrompt(true);
+            setPrompt(true);
             const tile = message.tile;
             // backend only sends suite and number
             // generate unique key for tile, use null for index, append to backend response
@@ -238,10 +238,40 @@ class WebSocketInstance {
               index: null,
               key: nanoid(),
             };
-            setPengTile(new_tile);
+            setTile(new_tile);
           } else if (message.player === username) {
             console.log("message is for this player, but error");
-            setPengPrompt(false);
+            setPrompt(false);
+          }
+        }
+      }
+    });
+  }
+
+  // Broadcasted message, so need to check if message is for this player
+  // Add listener to display chi prompt from backend
+  addChiListener(setPrompt, setTile, username) {
+    this.socketRef.addEventListener("message", (e) => {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+        if (message.result_type == "chi_prompt") {
+          console.log("chi listener", message);
+          // only proceed if message is for this player, and message is successful
+          if (message.player === username && message.status === "202") {
+            console.log("message is for this player", username);
+            setPrompt(true);
+            const tile = message.tile;
+            // backend only sends suite and number
+            // generate unique key for tile, use null for index, append to backend response
+            const new_tile = {
+              ...tile,
+              index: null,
+              key: nanoid(),
+            };
+            setTile(new_tile);
+          } else if (message.player === username) {
+            console.log("message is for this player, but error");
+            setPrompt(false);
           }
         }
       }

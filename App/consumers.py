@@ -446,7 +446,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 "message': 'Room doesn't exist"
                 'status': '404'
             })
-            
+
     '''
     Game Logic
     - start game (current player = zhuangjia)
@@ -517,7 +517,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 room.__dict__[key] -= 1
 
                 print(f'{player1.player_id} drew {suite}{number}')
-                
+
                 await sync_to_async(player1.save)()
                 await sync_to_async(room.save)()
 
@@ -567,7 +567,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             tile = content.get('tile').get('suite') + \
                 str(content.get('tile').get('number'))
             player1.__dict__[tile] -= 1
-            
+
             if room.player1 == content.get('username'):
                 room.current_player = room.player2
             elif room.player2 == content.get('username'):
@@ -592,13 +592,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
             await sync_to_async(player1.save)()
             await sync_to_async(room.save)()
-            
-            
+
             '''
             Check whether can perform peng or not.
             '''
             await self.check_peng(room_id, content)
-
 
         except Room.DoesNotExist:
             await self.send_json({
@@ -621,20 +619,18 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     If yes, it will prompt the player to perform peng or chi and wait for the player's response
     
     '''
-    
+
     '''
     Need implementation
     
     async def check_win(self, room_id, content):    
     '''
 
-    
-
     async def check_peng(self, room_id, content):
         try:
             room_result = await self.filter_room_models(room_id)
             room = await sync_to_async(room_result.first)()
-            
+
             suite = content.get('tile').get('suite')
             number = str(content.get('tile').get('number'))
 
@@ -650,7 +646,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 player_result = await self.filter_player_models(player)
                 player1 = await sync_to_async(player_result.first)()
             # check if the player can perform peng or not
-                # for testing: send peng to first player
+                # for testing: send chi to first player
                 if player1.__dict__[tile] >= 2:
                     print(f'{player} can perform peng')
                     await self.channel_layer.group_send(
@@ -665,8 +661,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                                     'status': '202'
                         })
                     return 'successful'
-            
-            await self.check_chi(room_id, uid = room.current_player, suite = suite, number = number)
+
+            await self.check_chi(room_id, uid=room.current_player, suite=suite, number=number)
 
         except Room.DoesNotExist:
             await self.send_json({
@@ -713,7 +709,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         "type": "send_json",
                         'message': 'peng performed',
                         'player': content.get('username'),
-                        'current_player' : room.current_player,
+                        'current_player': room.current_player,
                         'tile': content.get('tile'),
                         'room_id': str(room_id),
                         'result_type': 'placeholder',
@@ -721,7 +717,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     })
 
             else:
-                await self.check_chi(room_id, uid = room.current_player, suite = suite, number = number)
+                await self.check_chi(room_id, uid=room.current_player, suite=suite, number=number)
 
         except Room.DoesNotExist:
             await self.send_json({
@@ -736,13 +732,12 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 'status': '404'
             })
             return
-    
 
     async def check_chi(self, room_id, uid, suite, number):
         try:
             room_result = await self.filter_room_models(room_id)
             room = await sync_to_async(room_result.first)()
-            
+
             if room.player1 == uid:
                 player_result = await self.filter_player_models(room.player1)
                 player1 = await sync_to_async(player_result.first)()
@@ -759,10 +754,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 player_result = await self.filter_player_models(room.player4)
                 player1 = await sync_to_async(player_result.first)()
 
-
             print("Checking chi for tile " + suite + str(number))
             print("Checking chi for player: " + player1.player_id)
-
 
             # check if the player can perform Chi or not
             if int(number) >= 3 and int(number) <= 7:
@@ -780,7 +773,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'
@@ -827,7 +820,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                                     'status': '202'
                         })
                     return 'successful'
-                
+
             elif int(number) == 1:
 
                 key1 = suite + str(2)
@@ -869,7 +862,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
             print(f"Cannot perform chi, drawing tile for {player1.player_id}")
             await self.draw_tile(room_id, room.current_player)
-            
+
         except Room.DoesNotExist:
             await self.send_json({
                 "message': 'Room doesn't exist"
@@ -884,7 +877,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             })
             return
 
-        
     async def performing_chi(self, room_id, content):
         try:
             room_result = await self.filter_room_models(room_id)
@@ -908,7 +900,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         "type": "send_json",
                         'message': 'action finished',
                         'player': content.get('username'),
-                        'current_player' : room.current_player,
+                        'current_player': room.current_player,
                         'tile': content.get('tile'),
                         'room_id': str(room_id),
                         'result_type': 'placeholder',
@@ -931,7 +923,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 'status': '404'
             })
             return
-
 
     async def add_to_group(self):
         await self.channel_layer.group_add(

@@ -29,6 +29,7 @@ export default function GameBoard({ room_id }) {
     //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
     socket.addDiscardListener(setDrawnTile);
     socket.addPengListener(setPengPrompt, setPengTile, username);
+    socket.addChiListener(setChiPrompt, setChiTile, username);
   }, []);
 
   const [hand, setHand] = useState(null);
@@ -117,7 +118,7 @@ export default function GameBoard({ room_id }) {
     socket.send({
       type: "performing_chi",
       action: "0",
-      tile: pengTile,
+      tile: chiTile,
       room_id: room_id,
     });
     setChiTile(null);
@@ -130,10 +131,10 @@ export default function GameBoard({ room_id }) {
     socket.send({
       type: "performing_chi",
       action: "1",
-      tile: pengTile,
+      tile: chiTile,
       room_id: room_id,
     });
-    setDrawnTile(pengTile);
+    setDrawnTile(chiTile);
     setChiTile(null);
     setChiPrompt(false);
   }
