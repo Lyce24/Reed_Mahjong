@@ -2,6 +2,7 @@ import Tile from "./Tile";
 import "../index.css";
 import DiscardButton from "./DiscardButton";
 import PengPrompt from "./PengPrompt";
+import ChiPrompt from "./ChiPrompt";
 
 export default function PlayerBoard(props) {
   return (
@@ -35,6 +36,7 @@ export default function PlayerBoard(props) {
       )}
       {/* Display discard button only if there is a drawn tile */}
       {props.drawnTile && <DiscardButton onClick={props.handleDiscard} />}
+      {/* Display peng only when available */}
       {props.pengPrompt && (
         <Tile
           suite={props.pengTile.suite}
@@ -50,6 +52,24 @@ export default function PlayerBoard(props) {
         <PengPrompt
           handlePengAccept={props.handlePengAccept}
           handlePengReject={props.handlePengReject}
+        />
+      )}
+      {/* Display chi only when available */}
+      {props.chiPrompt && (
+        <Tile
+          suite={props.chiTile.suite}
+          number={props.chiTile.number}
+          index={props.chiTile.index}
+          key={props.chiTile.key}
+          isSelected={false}
+          isDrawn={true}
+          isFacedDown="false"
+        />
+      )}
+      {props.chiPrompt && (
+        <ChiPrompt
+          handleChiAccept={props.handleChiAccept}
+          handleChiReject={props.handleChiReject}
         />
       )}
     </div>

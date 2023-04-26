@@ -81,11 +81,11 @@ export default function GameBoard({ room_id }) {
   const [pengTile, setPengTile] = useState(null);
   const [pengPrompt, setPengPrompt] = useState(false);
 
-  // If user rejects Peng prompt, send reject message to backend, remove peng tile and peng prompt
+  // If user rejects Peng prompt: send reject message to backend, remove peng tile and peng prompt
   function handlePengReject() {
     console.log("peng reject clicked");
     socket.send({
-      type: "performing_action",
+      type: "performing_peng",
       action: "0",
       tile: pengTile,
       room_id: room_id,
@@ -94,11 +94,11 @@ export default function GameBoard({ room_id }) {
     setPengPrompt(false);
   }
 
-  // If user accepts peng for: send accept message to backend, move peng tile to drawn tile, remove peng tile and peng prompt
+  // If user accepts peng: send accept message to backend, move peng tile to drawn tile, remove peng tile and peng prompt
   function handlePengAccept() {
     console.log("peng accept clicked");
     socket.send({
-      type: "performing_action",
+      type: "performing_peng",
       action: "1",
       tile: pengTile,
       room_id: room_id,
@@ -108,18 +108,52 @@ export default function GameBoard({ room_id }) {
     setPengPrompt(false);
   }
 
+  const [chiTile, setChiTile] = useState(null);
+  const [chiPrompt, setChiPrompt] = useState(false);
+
+  // If user rejects Chi prompt: send reject message to backend, remove chi tile and chi prompt
+  function handleChiReject() {
+    console.log("chi reject clicked");
+    socket.send({
+      type: "performing_chi",
+      action: "0",
+      tile: pengTile,
+      room_id: room_id,
+    });
+    setChiTile(null);
+    setChiPrompt(false);
+  }
+
+  // If user accepts chi: send accept message to backend, move chi tile to drawn tile, remove chi tile and chi prompt
+  function handleChiAccept() {
+    console.log("chi accept clicked");
+    socket.send({
+      type: "performing_chi",
+      action: "1",
+      tile: pengTile,
+      room_id: room_id,
+    });
+    setDrawnTile(pengTile);
+    setChiTile(null);
+    setChiPrompt(false);
+  }
+
   return (
     <div className="gameBoard">
       <PlayerBoard
         hand={hand}
         selectedTileIndex={selectedTileIndex}
-        pengPrompt={pengPrompt}
         drawnTile={drawnTile}
+        pengPrompt={pengPrompt}
         pengTile={pengTile}
+        chiPrompt={chiPrompt}
+        chiTile={chiTile}
         handleTileClick={handleTileClick}
         handleDiscard={handleDiscard}
         handlePengAccept={handlePengAccept}
         handlePengReject={handlePengReject}
+        handleChiAccept={handleChiAccept}
+        handleChiReject={handleChiReject}
       />
       <br />
       <OtherBoard orientation="leftBoard" />
