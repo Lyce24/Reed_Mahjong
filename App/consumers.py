@@ -75,8 +75,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json(content)
         elif event_type == 'create_room':
             await self.create_room(content)
-        elif event_type == 'draw_tile':
-            await self.draw_tile(room_id, content)
         elif event_type == 'discard_tile':
             await self.discard_tile(room_id, content)
         elif event_type == 'check_peng':
