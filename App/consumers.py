@@ -4,8 +4,7 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import *
-import json
-from asgiref.sync import sync_to_async, async_to_sync
+from asgiref.sync import sync_to_async
 from django.db.utils import IntegrityError
 import random
 
@@ -920,14 +919,14 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 await self.draw_tile(room_id, room.current_player)
 
         except Room.DoesNotExist:
-            self.send_json({
+            await self.send_json({
                 "message': 'Room doesn't exist"
                 'status': '404'
             })
             return
 
         except Player.DoesNotExist:
-            self.send_json({
+            await self.send_json({
                 "message': 'Player doesn't exist"
                 'status': '404'
             })
