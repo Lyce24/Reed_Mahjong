@@ -167,7 +167,7 @@ class WebSocketInstance {
 
   // Add listener to set tile that has been drawn
   // Broadcasted message, so need to check if message is for this player
-  addDrawListener(setTile, username) {
+  addDrawListener(setTile, setSelectedTileIndex, username) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
@@ -183,10 +183,11 @@ class WebSocketInstance {
             // generate unique key for tile, use null for index, append to backend response
             const new_tile = {
               ...tile,
-              index: null,
+              index: 14,
               key: nanoid(),
             };
             setTile(new_tile);
+            setSelectedTileIndex(14);
           } else if (message.player === username) {
             console.log("message is for this player, but error");
             setTile(null);
@@ -235,7 +236,7 @@ class WebSocketInstance {
             // generate unique key for tile, use null for index, append to backend response
             const new_tile = {
               ...tile,
-              index: null,
+              index: 14,
               key: nanoid(),
             };
             setTile(new_tile);
@@ -265,7 +266,7 @@ class WebSocketInstance {
             // generate unique key for tile, use null for index, append to backend response
             const new_tile = {
               ...tile,
-              index: null,
+              index: 14,
               key: nanoid(),
             };
             setTile(new_tile);

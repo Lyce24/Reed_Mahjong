@@ -794,7 +794,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'
@@ -814,7 +814,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'
@@ -835,7 +835,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'
@@ -853,7 +853,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'

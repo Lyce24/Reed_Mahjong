@@ -58,13 +58,14 @@ img {
   border: blue 2px solid;
 }
 
-.tile.selected {
-  border: red 3px solid;
+/* Place draw ontop of selected, so selected has priority over draw */
+.tile.drawn {
+  border: purple 3px solid;
+  margin-left: 50px;
 }
 
-.tile.drawn {
-  border: purple 5px solid;
-  margin-left: 50px;
+.tile.selected {
+  border: red 10px solid;
 }
 
 /* Style boards */

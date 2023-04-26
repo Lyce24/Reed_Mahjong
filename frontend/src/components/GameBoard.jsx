@@ -25,7 +25,7 @@ export default function GameBoard({ room_id }) {
     socket.addStartTileListener(setHand, username, compareTile);
     console.log("add start tile listener");
     // setup draw listener: display 'drawnTile' when receive backend 'draw_tile' msg
-    socket.addDrawListener(setDrawnTile, username);
+    socket.addDrawListener(setDrawnTile, setSelectedTileIndex, username);
     //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
     socket.addDiscardListener(setDrawnTile);
     socket.addPengListener(setPengPrompt, setPengTile, username);
@@ -58,9 +58,12 @@ export default function GameBoard({ room_id }) {
       //alert("You have not selected any tile!");
       console.log(hand);
     } else {
+      // discard drawn tile or selected tile
+      let selectedTile =
+        selectedTileIndex == 14 ? drawnTile : hand[selectedTileIndex];
       socket.send({
         type: "discard_tile",
-        tile: hand[selectedTileIndex],
+        tile: selectedTile,
         room_id: room_id,
       });
       // remove tile that is selected
