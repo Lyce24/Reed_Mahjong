@@ -6,11 +6,9 @@ import { UsernameProvider } from './components/UsernameProvider';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-    <BrowserRouter>
-        <UsernameProvider>
-            <SocketProvider>
-                <App/> 
-            </SocketProvider>
-        </UsernameProvider>
-    </BrowserRouter>
+    <UsernameProvider>
+        <SocketProvider>
+            <App/> 
+        </SocketProvider>
+    </UsernameProvider>
 );
