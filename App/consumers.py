@@ -11,6 +11,11 @@ import random
 numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 suites = ['bamboo', 'wan', 'circle']
 
+tiles = list(range(1, 10)) + list(range(11, 20)) + list(range(21, 30))
+convert_table = {'bamboo1': 1, 'bamboo2': 2, 'bamboo3': 3, 'bamboo4': 4, 'bamboo5': 5, 'bamboo6': 6, 'bamboo7': 7, 'bamboo8': 8, 'bamboo9': 9, 'wan1': 11, 'wan2': 12, 'wan3': 13, 'wan4': 14,
+                 'wan5': 15, 'wan6': 16, 'wan7': 17, 'wan8': 18, 'wan9': 19, 'circle1': 21, 'circle2': 22, 'circle3': 23, 'circle4': 24, 'circle5': 25, 'circle6': 26, 'circle7': 27, 'circle8': 28, 'circle9': 29}
+
+
 '''
 url = ws://localhost:8000/ws/socket-server
 '''
@@ -75,12 +80,10 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json(content)
         elif event_type == 'create_room':
             await self.create_room(content)
-        elif event_type == 'draw_tile':
-            await self.draw_tile(room_id, content)
         elif event_type == 'discard_tile':
             await self.discard_tile(room_id, content)
-        elif event_type == 'check_peng':
-            await self.check_peng(room_id, content)
+        elif event_type == 'performing_hu':
+            await self.performing_hu(room_id, content)
         elif event_type == 'performing_peng':
             await self.performing_peng(room_id, content)
         elif event_type == 'performing_chi':
@@ -311,7 +314,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             number = random.choice(numbers)
                             new_tile = {'suite': suite, 'number': number}
                             key = suite + number
-                            # if no more such tile in the room, draw another tile
+                            # if no more such tile in the room, draw another
+                            # tile
                             while room.__dict__[key] == 0:
                                 suite = random.choice(suites)
                                 number = random.choice(numbers)
@@ -435,6 +439,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         'result_type': 'notification',
                         'status': '202'
                     })
+                
+                await self.start_game(room_id)
             else:
                 print("Game already started")
                 await self.send_json({
@@ -536,6 +542,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
             else:
                 print("Out of tiles")
+                await self.reset_game(room_id)
                 await self.send_json({
                     'message': "out of tiles",
                     'status': '400'
@@ -594,9 +601,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await sync_to_async(room.save)()
 
             '''
-            Check whether can perform peng or not.
+            Check whether can perform hu or peng or chi.
             '''
-            await self.check_peng(room_id, content)
+
+            await self.check_hu(room_id, content)
+
 
         except Room.DoesNotExist:
             await self.send_json({
@@ -620,13 +629,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     
     '''
 
-    '''
-    Need implementation
-    
-    async def check_win(self, room_id, content):    
-    '''
-
-    async def check_peng(self, room_id, content):
+    async def check_hu(self, room_id, content):
         try:
             room_result = await self.filter_room_models(room_id)
             room = await sync_to_async(room_result.first)()
@@ -638,7 +641,172 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
             players = [room.player1, room.player2, room.player3, room.player4]
             players.remove(content.get('username'))
+            
+            print("\n Start checking wins")
+            print("players remaining: ", players)
 
+            # helper function - basic recurssion
+            # maybe can be implement as dynamic programming, but haven't thought of a way yet
+            def is_win(tiles):
+                    # checking pair (base case)
+                if len(tiles) == 2 and tiles[0] == tiles[1]:
+                    return True
+
+                # checking triplet
+                for i in range(len(tiles) - 2):
+                    if i < len(tiles) - 4 and tiles[i] == tiles[i + 4]:
+                        return False
+
+                for i in range(len(tiles) - 2):
+                    tmp = tiles[i]
+                    # shunzi
+                    if (tmp in tiles) and (tmp + 1 in tiles) and (tmp + 2 in tiles):
+                        # take out the shunzi
+                        this_tiles = tiles.copy()
+                        this_tiles.remove(tmp)
+                        this_tiles.remove(tmp + 1)
+                        this_tiles.remove(tmp + 2)
+                        if is_win(this_tiles):
+                            return True
+                    # kezi
+                    elif tmp == tiles[i + 2]:
+                        # take out the kezi
+                        this_tiles = tiles.copy()
+                        if tiles.count(tmp) == 3:
+                            this_tiles.remove(tmp)
+                            this_tiles.remove(tmp)
+                            this_tiles.remove(tmp)
+                        elif tiles.count(tmp) == 4:
+                            this_tiles.remove(tmp)
+                            this_tiles.remove(tmp)
+                            this_tiles.remove(tmp)
+                            this_tiles.remove(tmp)
+                        if is_win(this_tiles):
+                            return True
+                return False
+
+            for player in players:
+                print("checking hu for player: ", player)
+                player_result = await self.filter_player_models(player)
+                player1 = await sync_to_async(player_result.first)()
+
+                tiles = []
+                for keys in convert_table:
+                    for _ in range(player1.__dict__[keys]):
+                        tiles.append(convert_table[keys])
+                tiles.append(convert_table[tile])
+                tiles.sort()
+                print("tiles: ", tiles)
+
+                if is_win(tiles):
+                    print(f'{player} can perform hu')
+                    await self.channel_layer.group_send(
+                        self.room_name,
+                        {
+                            "type": "send_json",
+                                    'message': 'can_perform_hu',
+                                    'player': player,
+                                    'tile': content.get('tile'),
+                                    'room_id': str(room_id),
+                                    'result_type': 'hu_prompt',
+                                    'status': '202'
+                        })
+                    return 'successful'
+                
+            print("No one can perform hu")
+            await self.check_peng(room_id, uid=content.get('username'), suite=suite, number=number)
+
+        except Room.DoesNotExist:
+            await self.send_json({
+                "message': 'Room doesn't exist"
+                'status': '404'
+            })
+            return
+
+        except Player.DoesNotExist:
+            await self.send_json({
+                "message': 'Player doesn't exist"
+                'status': '404'
+            })
+            return
+
+
+    
+
+    if the response is yes, then the player can perform peng or chi
+    
+    '''
+
+    async def performing_hu(self, room_id, content):
+        try:
+            room_result = await self.filter_room_models(room_id)
+            room = await sync_to_async(room_result.first)()
+            player_result = await self.filter_player_models(content.get('username'))
+            player1 = await sync_to_async(player_result.first)()
+
+
+
+            suite = content.get('tile').get('suite')
+            number = str(content.get('tile').get('number'))
+
+            tile = suite + number
+
+            if content.get('action') == '1':
+                print("Player performing hu")
+                player1.__dict__[tile] += 1
+                room.current_player = content.get('username')
+                await sync_to_async(player1.save)()
+                await sync_to_async(room.save)()
+
+                await self.channel_layer.group_send(
+                    self.room_name,
+                    {
+                        "type": "send_json",
+                        'message': 'game ends',
+                        'player': content.get('username'),
+                        'current_player' : room.current_player,
+                        'tile': content.get('tile'),
+                        'room_id': str(room_id),
+                        'result_type': 'placeholder',
+                        'status': '202'
+                    })
+                
+                await self.reset_game(room_id)
+
+            else:
+                print("Player not performing hu")
+                await self.check_peng(room_id, uid = room.current_player, suite = suite,
+                number = number)
+
+        except Room.DoesNotExist:
+                await self.send_json({
+                            "message': 'Room doesn't exist"
+                            'status': '404'
+                        })
+                return
+
+        except Player.DoesNotExist:
+                await self.send_json({
+                            "message': 'Player doesn't exist"
+                            'status': '404'
+                        })
+                return
+
+    '''
+    Checking peng and performing peng
+    '''
+    
+    async def check_peng(self, room_id, uid, suite, number):
+        try:
+            room_result = await self.filter_room_models(room_id)
+            room = await sync_to_async(room_result.first)()
+
+            tile = suite + number
+
+            players = [room.player1, room.player2, room.player3, room.player4]
+            players.remove(uid)
+
+            print("\n Start checking peng")
             print("players remaining: ", players)
 
             for player in players:
@@ -655,12 +823,15 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_peng',
                                     'player': player,
-                                    'tile': content.get('tile'),
+                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
                                     'room_id': str(room_id),
                                     'result_type': 'peng_prompt',
                                     'status': '202'
                         })
                     return 'successful'
+
+                
+            print("No one can perform peng")
 
             await self.check_chi(room_id, uid=room.current_player, suite=suite, number=number)
 
@@ -698,6 +869,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
             if content.get('action') == '1':
                 # check if the player can perform peng or not
+                print("Player performing peng")
                 player1.__dict__[tile] += 1
                 room.current_player = content.get('username')
                 await sync_to_async(player1.save)()
@@ -717,6 +889,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     })
 
             else:
+
+                print("Player not performing peng")
+
                 await self.check_chi(room_id, uid=room.current_player, suite=suite, number=number)
 
         except Room.DoesNotExist:
@@ -732,6 +907,12 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 'status': '404'
             })
             return
+
+        
+    '''
+    Checking chi if no pengs are available
+    '''
+
 
     async def check_chi(self, room_id, uid, suite, number):
         try:
@@ -753,6 +934,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             elif room.player4 == uid:
                 player_result = await self.filter_player_models(room.player4)
                 player1 = await sync_to_async(player_result.first)()
+
+
+            print("\n Start checking chi")
 
             print("Checking chi for tile " + suite + str(number))
             print("Checking chi for player: " + player1.player_id)
@@ -889,6 +1073,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
             if content.get('action') == '1':
                 # check if the player can perform peng or not
+                print("Performing chi")
                 player1.__dict__[tile] += 1
                 room.current_player = content.get('username')
                 await sync_to_async(player1.save)()
@@ -908,6 +1093,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     })
 
             else:
+                print("Player not performing chi, drawing tile for " + str(room.current_player))
                 await self.draw_tile(room_id, room.current_player)
 
         except Room.DoesNotExist:
