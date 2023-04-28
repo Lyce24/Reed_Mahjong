@@ -59,21 +59,14 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         '''
         FORMATTING:
         'type': 'getVariable',
+        'player' : 'player_id', //* should be set by backend, put here now for testing
+        'tile' : {'suite': 'bamboo', 'number': '1'}, //* should be set by backend, put here now for testing
+        'tiles' : {{'suite': 'bamboo', 'number': '1'}, {'suite': 'bamboo', 'number': '2'}, {'suite': 'bamboo', 'number': '3'}}, //* should be set by backend, put here now for testing (start_game)
         'result_type': 'variable', //* should be set by backend, put here now for testing
         'room_id': `000`, //* should be set by backend, put here now for testing
         'status': '202', //* should be set by backend, put here now for testing
         '''
-
-        # 'register' => user registers, return a random new user id in uuid4
-        # 'create_room' => user creates a room, needs user id as own, return a random room id in uuid4 if success otherwise indicate fail
-        # 'join_room' => user joins a room, needs user id and room id, return a success or fail message
-        # 'start_game' => user starts a game, needs user id and room id, return a success or fail message
-        # 'game_move' =>
-        # 'game_end' =>
-        # 'game_reset' =>
-        # 'game_pause' =>
-        # 'discard_tile' => user discards a tile, needs user id + room id + tile suite and number, return none (proceed w game logic)
-        # 'draw_tile' (i.e. 'your_turn') => return random tile (suite + number)
+        
         room_id = content.get('room_id')
         event_type = content.get('type')
         if event_type == 'echo':
@@ -99,8 +92,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 'message': 'not an event type'
             })
 
-    # Add client to a group with specified room_id
-
     '''
     Room Operations
     '''
@@ -109,6 +100,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         # creates a room
 
         try:
+            # Generating random_id for room
             while True:
                 random_room_id = random.randint(10000000, 99999999)
                 qs = await self.filter_room_models(random_room_id)
@@ -116,19 +108,24 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     break
                 else:
                     continue
+                
+            # create room and player models
             player = await self.create_player_model(player_id=content.get('username'))
             room = await self.create_room_model(random_room_id)
             player.room = room
             room.player1 = player.player_id
+            
+            # save models
             await sync_to_async(room.save)()
             await sync_to_async(player.save)()
 
+            # set room_name for groups
             self.room_name = "Room" + str(random_room_id)
 
             # Add the connection to a named group to enable
             # sending messages to a group of connections at once.
             await self.channel_layer.group_add(
-                self.room_name,  # `room_id` is the group name
+                self.room_name,  # Group name
                 self.channel_name
             )
 

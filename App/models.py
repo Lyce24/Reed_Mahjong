@@ -75,10 +75,3 @@ class Player(models.Model):
     circle8 = models.SmallIntegerField(default=0)
     circle9 = models.SmallIntegerField(default=0)
 
-
-    
-#TODO: add more fields and function     
-# class Game(models.Model):
-#     room_id = models.ForeignKey(Room, on_delete=models.CASCADE)
-#     is_finished = models.SmallIntegerField(default=0)
-    

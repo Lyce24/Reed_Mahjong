@@ -8,6 +8,9 @@ router.register(r'room', views.RoomView, 'room')
 router.register(r'player', views.PlayerView, 'player')
 
 urlpatterns = [ 
-    # Room APIs 
+    # APIs to view rooms and players
+    
+    # type api/room/{id} to view room detail
+    # type api/player/{id} to view player detail
     path('api/', include(router.urls)),
 ]
