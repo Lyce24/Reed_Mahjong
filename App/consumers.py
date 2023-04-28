@@ -439,6 +439,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         'result_type': 'notification',
                         'status': '202'
                     })
+                
+                await self.start_game(room_id)
             else:
                 print("Game already started")
                 await self.send_json({
@@ -540,6 +542,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
             else:
                 print("Out of tiles")
+                await self.reset_game(room_id)
                 await self.send_json({
                     'message': "out of tiles",
                     'status': '400'
@@ -762,6 +765,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         'result_type': 'placeholder',
                         'status': '202'
                     })
+                
+                await self.reset_game(room_id)
 
             else:
                 print("Player not performing hu")
