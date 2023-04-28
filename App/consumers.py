@@ -730,7 +730,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             })
             return
 
-
+    '''
     
 
     if the response is yes, then the player can perform peng or chi
