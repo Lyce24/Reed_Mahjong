@@ -603,7 +603,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             '''
             Check whether can perform hu or peng or chi.
             '''
+
             await self.check_hu(room_id, content)
+
 
         except Room.DoesNotExist:
             await self.send_json({
@@ -640,7 +642,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             players = [room.player1, room.player2, room.player3, room.player4]
             players.remove(content.get('username'))
             
-            print("Start checking wins \n")
+            print("\n Start checking wins")
             print("players remaining: ", players)
 
             # helper function - basic recurssion
@@ -728,8 +730,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             })
             return
 
-    '''
+
     
+
     if the response is yes, then the player can perform peng or chi
     
     '''
@@ -740,6 +743,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             room = await sync_to_async(room_result.first)()
             player_result = await self.filter_player_models(content.get('username'))
             player1 = await sync_to_async(player_result.first)()
+
+
 
             suite = content.get('tile').get('suite')
             number = str(content.get('tile').get('number'))
@@ -801,7 +806,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             players = [room.player1, room.player2, room.player3, room.player4]
             players.remove(uid)
 
-            print("Start checking peng \n")
+            print("\n Start checking peng")
             print("players remaining: ", players)
 
             for player in players:
@@ -809,7 +814,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 player_result = await self.filter_player_models(player)
                 player1 = await sync_to_async(player_result.first)()
             # check if the player can perform peng or not
-                # for testing: send peng to first player
+                # for testing: send chi to first player
                 if player1.__dict__[tile] >= 2:
                     print(f'{player} can perform peng')
                     await self.channel_layer.group_send(
@@ -824,8 +829,10 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                                     'status': '202'
                         })
                     return 'successful'
+
                 
             print("No one can perform peng")
+
             await self.check_chi(room_id, uid=room.current_player, suite=suite, number=number)
 
         except Room.DoesNotExist:
@@ -882,7 +889,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     })
 
             else:
+
                 print("Player not performing peng")
+
                 await self.check_chi(room_id, uid=room.current_player, suite=suite, number=number)
 
         except Room.DoesNotExist:
@@ -898,10 +907,12 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 'status': '404'
             })
             return
+
         
     '''
     Checking chi if no pengs are available
     '''
+
 
     async def check_chi(self, room_id, uid, suite, number):
         try:
@@ -924,7 +935,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 player_result = await self.filter_player_models(room.player4)
                 player1 = await sync_to_async(player_result.first)()
 
-            print("Start checking chi \n")
+
+            print("\n Start checking chi")
+
             print("Checking chi for tile " + suite + str(number))
             print("Checking chi for player: " + player1.player_id)
 
@@ -944,7 +957,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'
@@ -965,7 +978,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'
@@ -985,7 +998,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'
@@ -1006,7 +1019,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'
@@ -1024,7 +1037,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                                     'message': 'can_perform_chi',
                                     'player': player1.player_id,
-                                    'tile': '{ "suite" : "' + suite + '", "number" : ' + str(number) + '}',
+                                    'tile': {"suite": suite, "number": str(number)},
                                     'room_id': str(room_id),
                                     'result_type': 'chi_prompt',
                                     'status': '202'

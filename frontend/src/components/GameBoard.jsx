@@ -25,10 +25,11 @@ export default function GameBoard({ room_id }) {
     socket.addStartTileListener(setHand, username, compareTile);
     console.log("add start tile listener");
     // setup draw listener: display 'drawnTile' when receive backend 'draw_tile' msg
-    socket.addDrawListener(setDrawnTile, username);
+    socket.addDrawListener(setDrawnTile, setSelectedTileIndex, username);
     //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
     socket.addDiscardListener(setDrawnTile);
     socket.addPengListener(setPengPrompt, setPengTile, username);
+    socket.addChiListener(setChiPrompt, setChiTile, username);
   }, []);
 
   const [hand, setHand] = useState(null);
@@ -57,9 +58,12 @@ export default function GameBoard({ room_id }) {
       //alert("You have not selected any tile!");
       console.log(hand);
     } else {
+      // discard drawn tile or selected tile
+      let selectedTile =
+        selectedTileIndex == 14 ? drawnTile : hand[selectedTileIndex];
       socket.send({
         type: "discard_tile",
-        tile: hand[selectedTileIndex],
+        tile: selectedTile,
         room_id: room_id,
       });
       // remove tile that is selected
@@ -81,11 +85,11 @@ export default function GameBoard({ room_id }) {
   const [pengTile, setPengTile] = useState(null);
   const [pengPrompt, setPengPrompt] = useState(false);
 
-  // If user rejects Peng prompt, send reject message to backend, remove peng tile and peng prompt
+  // If user rejects Peng prompt: send reject message to backend, remove peng tile and peng prompt
   function handlePengReject() {
     console.log("peng reject clicked");
     socket.send({
-      type: "performing_action",
+      type: "performing_peng",
       action: "0",
       tile: pengTile,
       room_id: room_id,
@@ -94,11 +98,11 @@ export default function GameBoard({ room_id }) {
     setPengPrompt(false);
   }
 
-  // If user accepts peng for: send accept message to backend, move peng tile to drawn tile, remove peng tile and peng prompt
+  // If user accepts peng: send accept message to backend, move peng tile to drawn tile, remove peng tile and peng prompt
   function handlePengAccept() {
     console.log("peng accept clicked");
     socket.send({
-      type: "performing_action",
+      type: "performing_peng",
       action: "1",
       tile: pengTile,
       room_id: room_id,
@@ -108,18 +112,52 @@ export default function GameBoard({ room_id }) {
     setPengPrompt(false);
   }
 
+  const [chiTile, setChiTile] = useState(null);
+  const [chiPrompt, setChiPrompt] = useState(false);
+
+  // If user rejects Chi prompt: send reject message to backend, remove chi tile and chi prompt
+  function handleChiReject() {
+    console.log("chi reject clicked");
+    socket.send({
+      type: "performing_chi",
+      action: "0",
+      tile: chiTile,
+      room_id: room_id,
+    });
+    setChiTile(null);
+    setChiPrompt(false);
+  }
+
+  // If user accepts chi: send accept message to backend, move chi tile to drawn tile, remove chi tile and chi prompt
+  function handleChiAccept() {
+    console.log("chi accept clicked");
+    socket.send({
+      type: "performing_chi",
+      action: "1",
+      tile: chiTile,
+      room_id: room_id,
+    });
+    setDrawnTile(chiTile);
+    setChiTile(null);
+    setChiPrompt(false);
+  }
+
   return (
     <div className="gameBoard">
       <PlayerBoard
         hand={hand}
         selectedTileIndex={selectedTileIndex}
-        pengPrompt={pengPrompt}
         drawnTile={drawnTile}
+        pengPrompt={pengPrompt}
         pengTile={pengTile}
+        chiPrompt={chiPrompt}
+        chiTile={chiTile}
         handleTileClick={handleTileClick}
         handleDiscard={handleDiscard}
         handlePengAccept={handlePengAccept}
         handlePengReject={handlePengReject}
+        handleChiAccept={handleChiAccept}
+        handleChiReject={handleChiReject}
       />
       <br />
       <OtherBoard orientation="leftBoard" />
