@@ -1,15 +1,10 @@
-import MainPage from './components/MainPage';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import RoomPage from './components/RoomPage';
+import { BrowserRouter } from 'react-router-dom';
+import GameRoutes from './routes.js';
 
-export default function App(prop) {
+export default function App() {
     return (
       <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<MainPage />}/>
-          <Route path='/room/:roomid' element={<RoomPage/>}/>
-        </Routes>
+        <GameRoutes/>
       </BrowserRouter>
-      
     );
 }
