@@ -11,7 +11,7 @@ import random
 numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 suites = ['bamboo', 'wan', 'circle']
 
-tiles = list(range(1, 10)) + list(range(11, 20)) + list(range(21, 30))
+# convert table for tile suite and number
 convert_table = {'bamboo1': 1, 'bamboo2': 2, 'bamboo3': 3, 'bamboo4': 4, 'bamboo5': 5, 'bamboo6': 6, 'bamboo7': 7, 'bamboo8': 8, 'bamboo9': 9, 'wan1': 11, 'wan2': 12, 'wan3': 13, 'wan4': 14,
                  'wan5': 15, 'wan6': 16, 'wan7': 17, 'wan8': 18, 'wan9': 19, 'circle1': 21, 'circle2': 22, 'circle3': 23, 'circle4': 24, 'circle5': 25, 'circle6': 26, 'circle7': 27, 'circle8': 28, 'circle9': 29}
 
@@ -642,7 +642,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             players = [room.player1, room.player2, room.player3, room.player4]
             players.remove(content.get('username'))
             
-            print("\n Start checking wins")
+            print("\nStart checking wins")
             print("players remaining: ", players)
 
             # helper function - basic recurssion
@@ -806,7 +806,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             players = [room.player1, room.player2, room.player3, room.player4]
             players.remove(uid)
 
-            print("\n Start checking peng")
+            print("\nStart checking peng")
             print("players remaining: ", players)
 
             for player in players:
@@ -936,7 +936,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 player1 = await sync_to_async(player_result.first)()
 
 
-            print("\n Start checking chi")
+            print("\nStart checking chi")
 
             print("Checking chi for tile " + suite + str(number))
             print("Checking chi for player: " + player1.player_id)

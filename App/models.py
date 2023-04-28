@@ -1,26 +1,4 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
-import random
-import string
-import datetime
-
-# def create_tiles():
-#     suites = ['bamboo', 'wan', 'circle']
-#     honors = ['East', 'South', 'West', 'North', 'Red', 'Green', 'White']
-#     tiles = []
-#     for suite in suites:
-#         for i in range(1, 10):
-#             tiles.append(suite + str(i))
-#     for honor in honors:
-#         tiles.append(honor)
-#     return tiles
-
-    # add player 1, player 2, player 3, player 4 (default = "")
-    # each time a player joins, add the player to the room
-    # when a player leaves, remove the player from the room
-    # check if the room is full, if it is pop a notification
-    # if the room is full and game_mode is true, start the game
-
  
 class Room(models.Model):
     room_id = models.CharField(max_length=8, unique = True) 

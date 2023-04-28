@@ -5,6 +5,6 @@ from django.views.static import serve
 
 urlpatterns = [
     path('admin/',admin.site.urls),
-    path('api/', include('App.urls')),
+    path('',include('App.urls')),
 ] 
 

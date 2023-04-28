@@ -1,5 +1,4 @@
 
-# 公共参数，1套牌库，注意总共是4套。
 tiles = list(range(1, 10)) + list(range(11, 20)) + list(range(21, 30))
 convert_table = {'bamboo1': 1, 'bamboo2': 2, 'bamboo3': 3, 'bamboo4': 4, 'bamboo5': 5, 'bamboo6': 6, 'bamboo7': 7, 'bamboo8': 8, 'bamboo9': 9, 'wan1': 11, 'wan2': 12, 'wan3': 13, 'wan4': 14,
                  'wan5': 15, 'wan6': 16, 'wan7': 17, 'wan8': 18, 'wan9': 19, 'circle1': 21, 'circle2': 22, 'circle3': 23, 'circle4': 24, 'circle5': 25, 'circle6': 26, 'circle7': 27, 'circle8': 28, 'circle9': 29}
@@ -24,7 +23,6 @@ def is_win(tile):
     
     # checking triplet
     for i in range(len(tile) - 2):
-        # if 
         if i < len(tile) - 4 and tile[i] == tile[i + 4]:
             return False
     
@@ -53,26 +51,6 @@ def is_win(tile):
             if is_win(this_tile):
                 return True
     return False
-# 单元测试：
-#assert hepai([1,1,2,2,3,3,4,4,5,5,6,6,7,7])==True,'7对和牌'
-
-
-# try:
-#     print('单元测试开始：',
-#     hepai([1,1,2,2,3,3,4,4,5,5,6,6,7,7])==True,#7对和牌。
-#     hepai([1,1,1,1,13,13,4,4,5,5,6,6,17,17]),#含4个一样牌的7对。
-#     hepai([1,9,11,19,21,29]+list(range(31,38,2))+list(range(41,46,2))+[29,])==True, #十三幺测试。
-#     hepai([1,1,2,2,2,2,3,3])==True,#不连续和牌。首次写的时候，这里给忽略掉了。
-#     hepai([1,1,1,2,2,2,3,3,3,4,5,17,18,19])==True, #正常和牌。
-#     hepai([18,18,31,33,35,31,31,33,33,35,35])==True, #东西南北风
-#     hepai([33,34,35,36,36])==False, #参数错误。
-#     hepai([1,2,3,4])==False, #数量不正确。
-#     hepai([1,2,3,4,5])==False, #无对子。
-#     hepai([1,1,2,3,5,6,7,8])==False) #遍历完成，不和牌。
-#     print('单元测试结束，如果有False，请检查。')
-#     print('*'*50)
-# except:
-#     print('运行测试未通过，请检查。')
 
 def convert_tiles(tiles):
     new_lst = []
