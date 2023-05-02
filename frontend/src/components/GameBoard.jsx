@@ -30,6 +30,7 @@ export default function GameBoard({ room_id }) {
     socket.addDiscardListener(setDrawnTile);
     socket.addPengListener(setPengPrompt, setPengTile, username);
     socket.addChiListener(setChiPrompt, setChiTile, username);
+	socket.addWinListener(setWinPrompt, setWinTile, username);
   }, []);
 
   const [hand, setHand] = useState(null);
@@ -114,6 +115,32 @@ export default function GameBoard({ room_id }) {
 
   const [chiTile, setChiTile] = useState(null);
   const [chiPrompt, setChiPrompt] = useState(false);
+  const [winPrompt, setWinPrompt] = useState(false);
+
+  function handleWinReject() {
+	console.log("win reject clicked");
+	socket.send({
+	  type: "performing_win",
+	  action: "0",
+	  tile: winTile,
+	  room_id: room_id,			// this might pose a problem if the backend is relying on the frontend to reliably send it a room ID
+	});							// someone could potentially modify their client and send the backend a different room ID
+	setWinTile(null);			// i'll check how the backend handles this and make sure it retuns an error if sent room ID doesn't match the user's room - El
+	setWinPrompt(false);
+  }								
+
+  function handleWinAccept() {
+	console.log("win accept clicked");
+	socket.send({
+	  type: "performing_win",
+	  action: "1",
+	  tile: winTile,
+	  room_id: room_id,
+	});
+    setDrawnTile(winTile);
+    setWinTile(null);
+    setWinPrompt(false);
+  }
 
   // If user rejects Chi prompt: send reject message to backend, remove chi tile and chi prompt
   function handleChiReject() {
@@ -158,6 +185,8 @@ export default function GameBoard({ room_id }) {
         handlePengReject={handlePengReject}
         handleChiAccept={handleChiAccept}
         handleChiReject={handleChiReject}
+		handleWinAccept={handleWinAccept}
+		handleWinReject={handleWinReject}
       />
       <br />
       <OtherBoard orientation="leftBoard" />
