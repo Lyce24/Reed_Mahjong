@@ -113,9 +113,8 @@ export default function GameBoard({ room_id }) {
     setPengPrompt(false);
   }
 
-  const [chiTile, setChiTile] = useState(null);
-  const [chiPrompt, setChiPrompt] = useState(false);
   const [winPrompt, setWinPrompt] = useState(false);
+  const [winTile, setWinTile] = useState(null);
 
   function handleWinReject() {
 	console.log("win reject clicked");
@@ -141,6 +140,9 @@ export default function GameBoard({ room_id }) {
     setWinTile(null);
     setWinPrompt(false);
   }
+
+  const [chiTile, setChiTile] = useState(null);
+  const [chiPrompt, setChiPrompt] = useState(false);
 
   // If user rejects Chi prompt: send reject message to backend, remove chi tile and chi prompt
   function handleChiReject() {
@@ -179,6 +181,8 @@ export default function GameBoard({ room_id }) {
         pengTile={pengTile}
         chiPrompt={chiPrompt}
         chiTile={chiTile}
+		winPrompt={winPrompt}
+		winTile={winTile}
         handleTileClick={handleTileClick}
         handleDiscard={handleDiscard}
         handlePengAccept={handlePengAccept}
