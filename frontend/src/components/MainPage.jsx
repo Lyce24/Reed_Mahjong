@@ -5,14 +5,17 @@ import { useEffect, useState } from "react";
 import { useSocket } from "./SocketProvider";
 
 export default function MainPage() {
-  const socket = useSocket();
+  const socket = null;
+  const roomNum = null;
+  const setRoomNum = () => null;
+  //const socket = useSocket();
   const navigate = useNavigate();
-  const [roomNum, setRoomNum] = useState(0);
+  // const [roomNum, setRoomNum] = useState(0);
 
   // Setup room listener when Main Page is mounted
-  useEffect(() => {
+  /* useEffect(() => {
     socket.addRoomListener(setRoomNum, navigate);
-  }, [socket, navigate]);
+  }, [socket, navigate]); */
 
   return (
     <div className="page mainPage">
