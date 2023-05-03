@@ -31,12 +31,6 @@ describe('Render without mock functions', () => {
       const joinRoomButton = screen.getByText('Submit');
       expect(joinRoomButton).toBeInTheDocument();
     });
-    xit('renders app without crashing with snapshot', () => {
-      const tree = renderer
-        .create(<App />)
-        .toJSON();
-      expect(tree).toMatchSnapshot();
-    });
   });
   describe('Main Page component', () => {
     it('renders with context and router', async () => {
@@ -106,9 +100,7 @@ describe('Render without mock functions', () => {
   });
 });
 
-/* jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn(),
-})); */
+
 
 /* let mockSocket = {
   addRoomListener: jest.fn(),
@@ -121,16 +113,11 @@ jest.mock('./components/SocketProvider', () => ({
 
 describe('Render with mock functions', () => {
   describe('Main Page component', () => {
-    xit('create button click, mock navigate', async () => {
-      //let mockNavigate = jest.fn();
-
-      /* let mockedUsedNavigate = jest.fn();
+    it('render main page, mock navigate', async () => {
       jest.mock('react-router-dom', () => ({
         ...jest.requireActual('react-router-dom'),
-        useNavigate: () => mockedUsedNavigate,
-      })); */
-      /* const navigate = jest.fn();
-      useNavigate.mockReturnValue(navigate); */
+        useNavigate: jest.fn(),
+      }));
   
       renderWithContext(<MainPage/>);
   
