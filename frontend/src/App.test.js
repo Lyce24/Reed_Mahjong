@@ -125,7 +125,10 @@ describe('Render with mock functions', () => {
       // Assert that the page header is rendered
       expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
 
-      // expect(mockUseNavigate).toHaveBeenCalled();
+      const createGameButton = screen.getByText('Create a Game!');
+      expect(createGameButton).toBeInTheDocument();
+      fireEvent.click(createGameButton);
+      //expect(mockUseNavigate).toHaveBeenCalled();
   
       // Assert that the socket.addRoomListener function is called with the expected arguments
       //expect(mockSocket.addRoomListener).toHaveBeenCalledWith(mockSetRoomNum, mockedUsedNavigate);//.toHaveBeenCalled();
@@ -151,25 +154,30 @@ describe('Render with mock functions', () => {
       //expect(mockSocket.addRoomListener).toHaveBeenCalledWith(mockSetRoomNum, mockedUsedNavigate);//.toHaveBeenCalled();
     });
 
-    xit('create button click, mock socket', async () => {
-      let mockSocket = {
-        addRoomListener: jest.fn(),
+    it('create button click, mock socket', async () => {
+      const mockWebSocket = {
         send: jest.fn(),
+        addRoomListener: jest.fn(),
+        close: jest.fn(),
       };
-      //let mockNavigate = jest.fn();
-      let mockSetRoomNum = jest.fn();
+      
+      // Mock the implementation of the SocketContext provider
+      jest.mock('./components/SocketProvider', () => ({
+        ...jest.requireActual('./components/SocketProvider'),
+        useSocket: () => mockWebSocket,
+      }));
   
       // Mock the useSocket hook to return the mock socket instance
-      jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockSocket);
+      //jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockSocket);
       /* let mockedUsedNavigate = jest.fn();
       jest.mock('react-router-dom', () => ({
         ...jest.requireActual('react-router-dom'),
         useNavigate: () => mockedUsedNavigate,
       })); */
-      const navigate = jest.fn();
+     // const navigate = jest.fn();
       //useNavigate.mockReturnValue(navigate);
   
-      renderWithContext(<MainPage setRoomNum={mockSetRoomNum} />);
+      renderWithContext(<MainPage/>);
   
       // Assert that the page header is rendered
       expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
