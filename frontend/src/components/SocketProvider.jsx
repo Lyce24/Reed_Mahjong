@@ -279,6 +279,36 @@ class WebSocketInstance {
     });
   }
 
+  //Listener for Hu prompt sent from backend
+  //At the moment hu is just treated like a peng or chi move; some functionality should be added later to display an end of game message
+  addHuListener(setPrompt, setTile, username) {
+    this.socketRef.addEventListener("message", (e) => {
+	  if(typeof e.data === "string") {
+	  	const message = JSON.parse(e.data);
+		  if (message.result_type == "hu_prompt") {
+			console.log("hu listener", message);
+			// only proceed if message is for this player, and message is successful
+			if (message.player === username && message.status === "202") {
+			  console.log("message is for this player", username);
+			  setPrompt(true);
+			  const tile = message.tile;
+			  // backend only sends suite and number
+			  // generate unique key for tile, use null for index, append to backend response
+			  const new_tile = {
+				...tile,
+				index: 14,
+				key: nanoid(),
+			  };
+			  setTile(new_tile);
+			} else if (message.player === username) {
+			  console.log("message is for this player, but error");
+			  setPrompt(false);
+			}
+		  }
+	  }
+	});
+  }
+
   // Abandoned code
   // Don't send anything, just specify what behavior you want when receive backend response
   receive(setResult) {
