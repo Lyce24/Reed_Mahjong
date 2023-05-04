@@ -131,7 +131,7 @@ jest.mock('./components/SocketProvider', () => ({
 })); */
 
 describe('Render with mock functions', () => {
-  xdescribe('Main Page component', () => {
+  describe('Main Page component', () => {
     it('render main page, mock all functions', async () => {
       // Mock use navigate
       const mockUseNavigate = jest.fn();
@@ -142,7 +142,7 @@ describe('Render with mock functions', () => {
 
       // Mock use state
       const mockUseState = jest.fn();
-      const mockRoomNum = '000';
+      const mockRoomNum = 0;
       const mockSetRoomNum = jest.fn();
       mockUseState.mockReturnValueOnce([mockRoomNum, mockSetRoomNum ]);
       jest.mock('react', () => ({
@@ -170,14 +170,7 @@ describe('Render with mock functions', () => {
       expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);//.toHaveBeenCalledWith(mockSetRoomNum, mockUseNavigate);// Assert that the socket.addRoomListener function is called with the expected arguments
     });
 
-    it('render main page, click create button', async () => {
-      // Mock use navigate
-      const mockUseNavigate = jest.fn();
-      jest.mock('react-router-dom', () => ({
-        ...jest.requireActual('react-router-dom'),
-        useNavigate: mockUseNavigate,
-      }));
-
+    it('render main page, click create button, send create message', async () => {
       // Mock the implementation of the SocketContext provider
       const mockWebSocket = {
         send: jest.fn(),
@@ -201,18 +194,17 @@ describe('Render with mock functions', () => {
       expect(mockWebSocket.send).toHaveBeenCalledWith({
         type: "create_room",
       });
-
-      // Assert that page navigates to new room
-      //expect(mockUseNavigate).toHaveBeenCalledTimes(1);
-      //expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 000');
     });
 
-    it('render main page, click join button', async () => {
-      // Mock use navigate
-      const mockUseNavigate = jest.fn();
-      jest.mock('react-router-dom', () => ({
-        ...jest.requireActual('react-router-dom'),
-        useNavigate: mockUseNavigate,
+    it('render main page, click join button, send join message w default room num 0', async () => {
+      // Mock use state
+      const mockUseState = jest.fn();
+      const mockRoomNum = 0;
+      const mockSetRoomNum = jest.fn();
+      mockUseState.mockReturnValueOnce([mockRoomNum, mockSetRoomNum ]);
+      jest.mock('react', () => ({
+        ...jest.requireActual('react'),
+        useState: mockUseState,
       }));
 
       // Mock the implementation of the SocketContext provider
@@ -230,44 +222,19 @@ describe('Render with mock functions', () => {
       expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);
 
       // Assert that socket send is called after clicking the create game button
-      const createGameButton = screen.getByText('Create a Game!');
-      expect(createGameButton).toBeInTheDocument();
+      const joinGameButton = screen.getByText('Submit');
+      expect(joinGameButton).toBeInTheDocument();
       expect(mockWebSocket.send).toHaveBeenCalledTimes(0);
-      fireEvent.click(createGameButton);
+      fireEvent.click(joinGameButton);
       expect(mockWebSocket.send).toHaveBeenCalledTimes(1);
       expect(mockWebSocket.send).toHaveBeenCalledWith({
-        type: "create_room",
+        type: "join_room",
+        room_id: mockRoomNum,
       });
 
       // Assert that page navigates to new room
       //expect(mockUseNavigate).toHaveBeenCalledTimes(1);
       //expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 000');
-    });
-  
-    xit('renders correctly with mock useNavigate', async () => {
-      render(<MainPage />);
-  
-      expect(screen.getByRole('heading', {level: 3})).toHaveTextContent('Welcome to Reed Mahjong!')
-      const createGameButton = screen.getByText('Create a Game!');
-      expect(createGameButton).toBeInTheDocument();
-      const joinRoomButton = screen.getByText('Submit');
-      expect(joinRoomButton).toBeInTheDocument();
-    });
-  
-    xit('click create game button', async () => {
-      
-      //const history = createMemoryHistory(); // create a mock history object
-      render(
-          <MainPage />);
-      const createGameButton = screen.getByText('Create a Game!');
-      expect(createGameButton).toBeInTheDocument();
-      await fireEvent.click(createGameButton);
-      await waitFor(() => {
-        expect(history.location.pathname).toMatch(/\/room\/\d+/);
-        //const roomHeading = getByText('Room'); // get the Room heading
-        //expect(roomHeading).toBeInTheDocument(); // check that the Room heading is rendered
-      }, { timeout: 5000 }); // increase the timeout if needed
-      //expect(screen.getByRole('heading')).toHaveTextContent('Room');
     });
   });
 });
