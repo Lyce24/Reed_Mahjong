@@ -1,12 +1,17 @@
-import MainPage from './components/MainPage';
-import { Route, Routes } from 'react-router-dom';
-import RoomPage from './components/RoomPage';
+import { BrowserRouter } from 'react-router-dom';
+import GameRoutes from './routes.js';
+import { SocketProvider } from './components/SocketProvider'
+import { UsernameProvider } from './components/UsernameProvider';
 
-export default function App(prop) {
+export default function App() {
     return (
-      <Routes>
-        <Route path='/' element={<MainPage />}/>
-        <Route path='/room/:roomid' element={<RoomPage/>}/>
-      </Routes>
+      <UsernameProvider>
+        <SocketProvider>
+          <BrowserRouter>
+            <GameRoutes/>
+          </BrowserRouter>
+        </SocketProvider>
+    </UsernameProvider>
+
     );
 }
