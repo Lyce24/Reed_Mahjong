@@ -17,6 +17,56 @@ import MainPage from './components/MainPage';
 import RoomPage from './components/RoomPage';
 import CreateRoomButton from './components/CreateRoomButton';
 
+// wrapper functions to render components with context
+function renderWithinApp(component) {
+  return render(
+    <App>{component}</App>
+  );
+}
+
+function renderWithContext(component){
+  render(
+    <UsernameProvider>
+      <SocketProvider>
+        <BrowserRouter>
+          {component}  
+        </BrowserRouter>
+      </SocketProvider>
+    </UsernameProvider>
+  )
+}
+
+function renderFromURL(route) {
+
+  return render(
+    <UsernameProvider>
+      <SocketProvider>
+        <MemoryRouter initialEntries={route}>
+          <Routes>
+            <Route path='/' element={<MainPage />}/>
+            <Route path='/room/:roomid' element={<RoomPage/>}/>
+          </Routes>
+        </MemoryRouter>
+      </SocketProvider>
+    </UsernameProvider>
+  );
+};
+
+function renderFromHistory(history) {
+  return render(
+    <UsernameProvider>
+      <SocketProvider>
+        <Router history={history}>
+          <Routes>
+            <Route path='/' element={<MainPage />}/>
+            <Route path='/room/:roomid' element={<RoomPage/>}/>
+          </Routes>
+        </Router>
+      </SocketProvider>
+    </UsernameProvider>
+  );
+};
+
 // test app renders correctly with context
 describe('Render without mock functions', () => {
   describe('App component', () => {
@@ -118,17 +168,6 @@ describe('Render without mock functions', () => {
     });
   });
 });
-
-
-
-/* let mockSocket = {
-  addRoomListener: jest.fn(),
-  send: jest.fn(),
-};
-
-jest.mock('./components/SocketProvider', () => ({
-  useSocket: () => mockSocket,
-})); */
 
 describe('Render with mock functions', () => {
   describe('Main Page component', () => {
@@ -238,164 +277,3 @@ describe('Render with mock functions', () => {
     });
   });
 });
-/* 
-// Mock the implementation of the SocketContext provider
-jest.mock('./SocketProvider', () => ({
-  SocketProvider: {
-    Consumer: ({ children }) => children(mockWebSocket),
-  },
-}));
-
-test('useSocket returns the correct socket instance', () => {
-  const { result } = renderHook(() => useSocket());
-  expect(result.current).toBe(mockWebSocket);
-}); */
-
-/* xdescribe('MainPage Mock', () => {
-  test('renders main page correctly', () => {
-    const mockSocket = {
-      addRoomListener: jest.fn(),
-    };
-    const mockNavigate = jest.fn();
-    const mockSetRoomNum = jest.fn();
-
-    // Mock the useSocket hook to return the mock socket instance
-    jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockSocket);
-    jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(mockNavigate);
-
-    render(<MainPage navigate={mockNavigate} setRoomNum={mockSetRoomNum} />);
-
-    // Assert that the page header is rendered
-    expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
-
-    // Assert that the CreateRoomButton component is rendered
-    expect(screen.getByRole('button', { name: /Create Room/i })).toBeInTheDocument();
-
-    // Assert that the JoinRoom component is rendered
-    expect(screen.getByRole('button', { name: /Join Room/i })).toBeInTheDocument();
-
-    // Assert that the socket.addRoomListener function is called with the expected arguments
-    expect(mockSocket.addRoomListener).toHaveBeenCalledWith(mockSetRoomNum, mockNavigate);
-  });
-});
- */
-// wrapper function to render components with context
-function renderWithinApp(component) {
-  return render(
-    <App>{component}</App>
-  );
-}
-
-function renderWithContext(component){
-  render(
-    <UsernameProvider>
-      <SocketProvider>
-        <BrowserRouter>
-          {component}  
-        </BrowserRouter>
-      </SocketProvider>
-    </UsernameProvider>
-  )
-}
-
-function renderFromURL(route) {
-
-  return render(
-    <UsernameProvider>
-      <SocketProvider>
-        <MemoryRouter initialEntries={route}>
-          <Routes>
-            <Route path='/' element={<MainPage />}/>
-            <Route path='/room/:roomid' element={<RoomPage/>}/>
-          </Routes>
-        </MemoryRouter>
-      </SocketProvider>
-    </UsernameProvider>
-  );
-};
-
-function renderFromHistory(history) {
-  return render(
-    <UsernameProvider>
-      <SocketProvider>
-        <Router history={history}>
-          <Routes>
-            <Route path='/' element={<MainPage />}/>
-            <Route path='/room/:roomid' element={<RoomPage/>}/>
-          </Routes>
-        </Router>
-      </SocketProvider>
-    </UsernameProvider>
-  );
-};
-
-/* xdescribe("<Navigate> with test renderer", () => {
-  describe("with an absolute href", () => {
-    xit("navigates to the correct test URL", () => {
-      let renderer: TestRenderer.ReactTestRenderer;
-      TestRenderer.act(() => {
-        renderer = TestRenderer.create(
-          <UsernameProvider>
-            <SocketProvider>
-            <MemoryRouter initialEntries={["/test"]}>
-            <Routes>
-              <Route path='/' element={<MainPage />}/>
-              <Route path='/test' element={<h1>About</h1>}/>
-              <Route path='/room/:roomid' element={<RoomPage/>}/>
-            </Routes>
-          </MemoryRouter>
-            </SocketProvider>
-          </UsernameProvider>
-          
-        );
-      });
-
-      expect(renderer.toJSON()).toMatchInlineSnapshot(`
-        <h1>
-          About
-        </h1>
-      `);
-    });
-
-    xit("navigates to the correct main URL", () => {
-      let renderer: TestRenderer.ReactTestRenderer;
-      TestRenderer.act(() => {
-        renderer = TestRenderer.create(
-          <UsernameProvider>
-            <SocketProvider>
-              <MemoryRouter initialEntries={["/"]}>
-                <Routes>
-                  <Route path='/' element={<MainPage />}/>
-                  <Route path='/test' element={<h1>About</h1>}/>
-                  <Route path='/room/:roomid' element={<RoomPage/>}/>
-                </Routes>
-              </MemoryRouter>
-            </SocketProvider>
-          </UsernameProvider>
-          
-        );
-      });
-
-
-      expect(renderer.root.findByProps({className: 'createRoomButton'}).children[0].props.type).toBe('button');
-      //console.log(renderer.root.findAllByType(CreateRoomButton).type);
-      //console.log(renderer.root.findByType('div').children);
-      console.log(renderer.toJSON())
-    });
-  });
-}) */
-
-
-
-xtest('loads and displays greeting', async () => {
-  // ARRANGE
-  //render(<Fetch url="/room/000/" />)
-
-  // ACT
-  //await userEvent.click(screen.getByText('Load Greeting'))
-  await screen.findByRole('heading')
-
-  // ASSERT
-  expect(screen.getByRole('heading')).toHaveTextContent('Welcome')
-  //expect(screen.getByRole('button')).toBeDisabled()
-})
