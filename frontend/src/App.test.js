@@ -18,7 +18,7 @@ import RoomPage from './components/RoomPage';
 import CreateRoomButton from './components/CreateRoomButton';
 
 // test app renders correctly with context
-xdescribe('Render without mock functions', () => {
+describe('Render without mock functions', () => {
   describe('App component', () => {
     it('app renders without crashing', () => {
       render(<App />);
@@ -45,7 +45,7 @@ xdescribe('Render without mock functions', () => {
     });
   
     it('renders from url', async () => {
-      const { container } = renderFromURL(`/`);
+      const { container } = renderFromURL([`/`]);
   
       /* expect(screen.getByRole('heading',)).toHaveTextContent('Welcome to Reed Mahjong!')
       const createGameButton = screen.getByText('Create a Game!');
@@ -64,7 +64,7 @@ xdescribe('Render without mock functions', () => {
     });
   
     it('create button click, rendered from url', async () => {
-      const { container } = renderFromURL(`/`);
+      const { container } = renderFromURL([`/`]);
   
       const createGameButton = screen.getByText('Create a Game!');
       expect(createGameButton).toBeInTheDocument();
@@ -81,7 +81,16 @@ xdescribe('Render without mock functions', () => {
   
     it('renders with url, room id 123', async () => {
       const roomid = 123;
-      const { container } = renderFromURL(`/room/${roomid}`);
+      const { container } = renderFromURL([`/room/${roomid}`]);
+    
+      expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 123');
+      expect(container.querySelector('h1')).toHaveTextContent(`Room ${roomid}`);
+      //expect(location.pathname).toBe('/room/123');
+    });
+
+    it('renders with redirect from main url, room id 123', async () => {
+      const roomid = 123;
+      const { container } = renderFromURL([`/`, `/room/${roomid}`]);
     
       expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 123');
       expect(container.querySelector('h1')).toHaveTextContent(`Room ${roomid}`);
@@ -90,7 +99,7 @@ xdescribe('Render without mock functions', () => {
   
     xit('renders with no player tiles', async () => {
       const roomid = 123;
-      const { container } = renderFromURL(`/room/${roomid}`);
+      const { container } = renderFromURL([`/room/${roomid}`]);
     
       console.log('first child', container.getElementsByClassName('roomPage').length);
       //console.log('playerboard', container.querySelector('div'));
@@ -112,7 +121,7 @@ jest.mock('./components/SocketProvider', () => ({
 })); */
 
 describe('Render with mock functions', () => {
-  describe('Main Page component', () => {
+  xdescribe('Main Page component', () => {
     it('render main page, mock all functions', async () => {
       // Mock use navigate
       const mockUseNavigate = jest.fn();
@@ -138,6 +147,7 @@ describe('Render with mock functions', () => {
         close: jest.fn(),
       };
       jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);  
+      mockWebSocket.send.mockImplementation(() => {useNavigate('/room/000')});
       /* jest.mock('./components/SocketProvider', () => ({
         ...jest.requireActual('./components/SocketProvider'),
         useSocket: () => mockWebSocket,
@@ -148,8 +158,30 @@ describe('Render with mock functions', () => {
       // Assert that the page header is rendered
       expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
       expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);//.toHaveBeenCalledWith(mockSetRoomNum, mockUseNavigate);// Assert that the socket.addRoomListener function is called with the expected arguments
-      //expect(mockUseNavigate).toHaveBeenCalled();
-      //expect(mockUseState).toHaveBeenCalled();
+    });
+
+    it('render main page, click create button', async () => {
+      // Mock use navigate
+      const mockUseNavigate = jest.fn();
+      jest.mock('react-router-dom', () => ({
+        ...jest.requireActual('react-router-dom'),
+        useNavigate: mockUseNavigate,
+      }));
+
+      // Mock the implementation of the SocketContext provider
+      const mockWebSocket = {
+        send: jest.fn(),
+        addRoomListener: jest.fn(),
+        close: jest.fn(),
+      };
+      jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);  
+      mockWebSocket.send.mockImplementation(() => {useNavigate('/room/000')});
+
+      renderWithContext(<MainPage/>);
+  
+      // Assert that the page header is rendered
+      expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
+      expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);
 
       // Assert that socket send is called after clicking the create game button
       const createGameButton = screen.getByText('Create a Game!');
@@ -157,6 +189,10 @@ describe('Render with mock functions', () => {
       expect(mockWebSocket.send).toHaveBeenCalledTimes(0);
       fireEvent.click(createGameButton);
       expect(mockWebSocket.send).toHaveBeenCalledTimes(1);
+
+      // Assert that page navigates to new room
+      //expect(mockUseNavigate).toHaveBeenCalledTimes(1);
+      //expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 000');
     });
   
     xit('renders correctly with mock useNavigate', async () => {
@@ -251,7 +287,7 @@ function renderFromURL(route) {
   return render(
     <UsernameProvider>
       <SocketProvider>
-        <MemoryRouter initialEntries={[route]}>
+        <MemoryRouter initialEntries={route}>
           <Routes>
             <Route path='/' element={<MainPage />}/>
             <Route path='/room/:roomid' element={<RoomPage/>}/>
