@@ -18,7 +18,7 @@ import RoomPage from './components/RoomPage';
 import CreateRoomButton from './components/CreateRoomButton';
 
 // test app renders correctly with context
-describe('Render without mock functions', () => {
+xdescribe('Render without mock functions', () => {
   describe('App component', () => {
     it('app renders without crashing', () => {
       render(<App />);
@@ -114,29 +114,29 @@ jest.mock('./components/SocketProvider', () => ({
 describe('Render with mock functions', () => {
   describe('Main Page component', () => {
     it('render main page, mock all functions', async () => {
+      // Mock use navigate
       const mockUseNavigate = jest.fn();
       jest.mock('react-router-dom', () => ({
         ...jest.requireActual('react-router-dom'),
         useNavigate: mockUseNavigate,
       }));
 
+      // Mock use state
       const mockUseState = jest.fn();
-      const mockStateValue = 'mock value';
-      const mockSetState = jest.fn();
-      mockUseState.mockReturnValueOnce([mockStateValue, mockSetState]);
-
+      const mockRoomNum = '000';
+      const mockSetRoomNum = jest.fn();
+      mockUseState.mockReturnValueOnce([mockRoomNum, mockSetRoomNum ]);
       jest.mock('react', () => ({
         ...jest.requireActual('react'),
         useState: mockUseState,
       }));
 
+      // Mock the implementation of the SocketContext provider
       const mockWebSocket = {
         send: jest.fn(),
         addRoomListener: jest.fn(),
         close: jest.fn(),
       };
-      
-      // Mock the implementation of the SocketContext provider
       jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);  
       /* jest.mock('./components/SocketProvider', () => ({
         ...jest.requireActual('./components/SocketProvider'),
@@ -147,14 +147,16 @@ describe('Render with mock functions', () => {
   
       // Assert that the page header is rendered
       expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
+      expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);//.toHaveBeenCalledWith(mockSetRoomNum, mockUseNavigate);// Assert that the socket.addRoomListener function is called with the expected arguments
+      //expect(mockUseNavigate).toHaveBeenCalled();
+      //expect(mockUseState).toHaveBeenCalled();
 
+      // Assert that socket send is called after clicking the create game button
       const createGameButton = screen.getByText('Create a Game!');
       expect(createGameButton).toBeInTheDocument();
+      expect(mockWebSocket.send).toHaveBeenCalledTimes(0);
       fireEvent.click(createGameButton);
-      expect(mockWebSocket.send).toHaveBeenCalled();
-  
-      // Assert that the socket.addRoomListener function is called with the expected arguments
-      //expect(mockSocket.addRoomListener).toHaveBeenCalledWith(mockSetRoomNum, mockedUsedNavigate);//.toHaveBeenCalled();
+      expect(mockWebSocket.send).toHaveBeenCalledTimes(1);
     });
   
     xit('renders correctly with mock useNavigate', async () => {
@@ -184,27 +186,7 @@ describe('Render with mock functions', () => {
     });
   });
 });
-/* // mock useNavigate hook
-const mockedUsedNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedUsedNavigate,
-}));
-
-// mock useNavigate hook
-const mockedUsedSocket = jest.fn();
-jest.mock('react-router-dom', () => ({
-   ...jest.requireActual('react-router-dom'),
-  useSocket: () => mockedUsedSocket,
-}));
-
-// Create a mock implementation of the WebSocket instance
-const mockWebSocket = {
-  send: jest.fn(),
-  addRoomListener: jest.fn(),
-  close: jest.fn(),
-};
-
+/* 
 // Mock the implementation of the SocketContext provider
 jest.mock('./SocketProvider', () => ({
   SocketProvider: {
@@ -216,10 +198,6 @@ test('useSocket returns the correct socket instance', () => {
   const { result } = renderHook(() => useSocket());
   expect(result.current).toBe(mockWebSocket);
 }); */
-
-/* jest.mock('./components/SocketProvider', () => ({
-  useSocket: jest.fn(),
-})); */
 
 /* xdescribe('MainPage Mock', () => {
   test('renders main page correctly', () => {

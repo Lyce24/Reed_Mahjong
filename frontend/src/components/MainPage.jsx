@@ -13,9 +13,9 @@ export default function MainPage() {
   const [roomNum, setRoomNum] = useState(0);
 
   // Setup room listener when Main Page is mounted
-  /* useEffect(() => {
+  useEffect(() => {
     socket.addRoomListener(setRoomNum, navigate);
-  }, [socket, navigate]); */
+  }, [socket, navigate]);
 
   return (
     <div className="page mainPage">
