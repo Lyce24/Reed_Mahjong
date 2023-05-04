@@ -1,6 +1,6 @@
 //import { useState } from 'react';
-//const images = require.context("../tiles", false);
-const images = () => "";
+const images = require.context("../tiles", false);
+//const images = () => "";
 
 export default function Tile(props) {
   function handleClick() {

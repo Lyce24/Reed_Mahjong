@@ -131,7 +131,9 @@ class WebSocketInstance {
     });
   }
 
-  // Broadcasted message, so need to check if message is for this player
+  // Broadcasted message, so need to check
+  // If message is for this player, dislay start tiles
+  // If message is not for this layer, label discard pile with username
   addStartTileListener(setHand, username, compareTile) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
@@ -199,7 +201,7 @@ class WebSocketInstance {
 
   // Broadcasted message, but all playes need to receive, so no need to check if message is for this player
   // Add listener to display tile that has been discarded (by any player)
-  addDiscardListener(setDiscardPile) {
+  addDiscardListener(discardPile, setDiscardPile) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
@@ -212,8 +214,15 @@ class WebSocketInstance {
             console.log("discard error");
             return;
           }
-          console.log("Received discard tile", message.tile);
-          //setDiscardPile(message.tile);
+          console.log(
+            "Received discard tile",
+            message.tile,
+            "from",
+            message.player
+          );
+          let updateDiscardPile = [...discardPile, message.tile];
+          console.log("discard pile", updateDiscardPile);
+          setDiscardPile(updateDiscardPile);
         }
       }
     });

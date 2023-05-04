@@ -1,21 +1,22 @@
-// import Tile from './Tile';
+import Tile from "./Tile";
 // import middleSection from './MiddleSection';
-import '../index.css';
+import "../index.css";
 
-export default function Discard({orientation}) {
+export default function Discard({ orientation, discardPile }) {
+  // let initialTiles = Array(4).fill({
+  //     suite: "bamboo",
+  //     number: 1
+  // })
 
-    // let initialTiles = Array(4).fill({
-    //     suite: "bamboo",
-    //     number: 1
-    // })
-    
-    // const [hand, setHand] = useState(initialTiles);
-    
-    return (
-        <div className={'discard ' + orientation}>
-            {/* {hand.map(tile => (
-                <Tile suite={tile.suite} number={tile.number} isFacedDown="true"/>
-            ))} */}
-        </div>
-    );
+  // const [hand, setHand] = useState(initialTiles);
+
+  return (
+    <div className={"discard " + orientation}>
+      {discardPile &&
+        discardPile.length > 0 &&
+        discardPile.map((tile) => (
+          <Tile suite={tile.suite} number={tile.number} isFacedDown="false" />
+        ))}
+    </div>
+  );
 }

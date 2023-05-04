@@ -19,7 +19,7 @@ let temporaryDrawnTile = {
 export default function GameBoard({ room_id }) {
   const socket = useSocket();
   const username = useUsername();
-  const [gameEndStatus, setGameEndStatus] = useState(true);
+  const [gameEndStatus, setGameEndStatus] = useState(false);
 
   // setup listeners once upon initial render of game board
   useLayoutEffect(() => {
@@ -28,8 +28,7 @@ export default function GameBoard({ room_id }) {
     console.log("add start tile listener");
     // setup draw listener: display 'drawnTile' when receive backend 'draw_tile' msg
     socket.addDrawListener(setDrawnTile, setSelectedTileIndex, username);
-    //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
-    socket.addDiscardListener(setDrawnTile);
+    socket.addDiscardListener(discardPile, setDiscardPile);
     socket.addPengListener(setPengPrompt, setPengTile, username);
     socket.addChiListener(setChiPrompt, setChiTile, username);
     socket.addHuListener(setHuPrompt, setHuTile, username);
@@ -37,6 +36,11 @@ export default function GameBoard({ room_id }) {
   }, []);
 
   const [hand, setHand] = useState(null);
+  const [discardPile, setDiscardPile] = useState(Array());
+  const usernames = Array(4).fill(null);
+  function handleDiscardPile() {
+    console.log("discard pile", discardPile);
+  }
 
   // select the tile that is clicked
   const [selectedTileIndex, setSelectedTileIndex] = useState(null);
@@ -203,7 +207,7 @@ export default function GameBoard({ room_id }) {
       <br />
       <OtherBoard orientation="topBoard" />
       <br />
-      {/* <MiddleSection /> */}
+      <MiddleSection discardPile={discardPile} />
     </div>
   );
 }

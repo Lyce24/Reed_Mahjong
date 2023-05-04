@@ -1,27 +1,35 @@
 import Discard from "./Discard";
 import RecentDiscard from "./RecentDiscard";
 import "../index.css";
-import { useState } from "react";
-import { useSocket } from "./SocketProvider";
 
-export default function MiddleSection() {
-  const socket = useSocket();
-
-  const [discardPile, setDiscardPile] = useState(null);
-
-  // Set up discard listener upon initial render of middle section
-  //socket.addDiscardListener(setDiscardPile);
-  console.log("add discard listener");
+export default function MiddleSection({ discardPile }) {
+  const usernames = Array(4).fill(null);
 
   return (
     <div className="middleSection">
-      <Discard orientation="playerDiscard" />
+      <Discard
+        orientation="playerDiscard"
+        discardPile={discardPile}
+        username={usernames[0]}
+      />
       <br />
-      <Discard orientation="leftDiscard" />
+      <Discard
+        orientation="leftDiscard"
+        discardPile={discardPile}
+        username={usernames[1]}
+      />
       <br />
-      <Discard orientation="rightDiscard" />
+      <Discard
+        orientation="rightDiscard"
+        discardPile={discardPile}
+        username={usernames[2]}
+      />
       <br />
-      <Discard orientation="topDiscard" />
+      <Discard
+        orientation="topDiscard"
+        discardPile={discardPile}
+        username={usernames[3]}
+      />
       <br />
       <RecentDiscard />
     </div>
