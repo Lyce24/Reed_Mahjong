@@ -30,7 +30,7 @@ export default function GameBoard({ room_id }) {
     socket.addDiscardListener(setDrawnTile);
     socket.addPengListener(setPengPrompt, setPengTile, username);
     socket.addChiListener(setChiPrompt, setChiTile, username);
-	socket.addWinListener(setWinPrompt, setWinTile, username);
+	socket.addHuListener(setHuPrompt, setHuTile, username);
   }, []);
 
   const [hand, setHand] = useState(null);
@@ -113,32 +113,32 @@ export default function GameBoard({ room_id }) {
     setPengPrompt(false);
   }
 
-  const [winPrompt, setWinPrompt] = useState(false);
-  const [winTile, setWinTile] = useState(null);
+  const [huPrompt, setHuPrompt] = useState(false);
+  const [huTile, setHuTile] = useState(null);
 
-  function handleWinReject() {
-	console.log("win reject clicked");
+  function handleHuReject() {
+	console.log("hu reject clicked");
 	socket.send({
-	  type: "performing_win",
+	  type: "performing_hu",
 	  action: "0",
-	  tile: winTile,
+	  tile: huTile,
 	  room_id: room_id,			// this might pose a problem if the backend is relying on the frontend to reliably send it a room ID
 	});							// someone could potentially modify their client and send the backend a different room ID
-	setWinTile(null);			// i'll check how the backend handles this and make sure it retuns an error if sent room ID doesn't match the user's room - El
-	setWinPrompt(false);
+	setHuTile(null);			// i'll check how the backend handles this and make sure it retuns an error if sent room ID doesn't match the user's room - El
+	setHuPrompt(false);
   }								
 
-  function handleWinAccept() {
-	console.log("win accept clicked");
+  function handleHuAccept() {
+	console.log("hu accept clicked");
 	socket.send({
-	  type: "performing_win",
+	  type: "performing_hu",
 	  action: "1",
-	  tile: winTile,
+	  tile: huTile,
 	  room_id: room_id,
 	});
-    setDrawnTile(winTile);
-    setWinTile(null);
-    setWinPrompt(false);
+    setDrawnTile(huTile);
+    setHuTile(null);
+    setHuPrompt(false);
   }
 
   const [chiTile, setChiTile] = useState(null);
@@ -181,16 +181,16 @@ export default function GameBoard({ room_id }) {
         pengTile={pengTile}
         chiPrompt={chiPrompt}
         chiTile={chiTile}
-		winPrompt={winPrompt}
-		winTile={winTile}
+		huPrompt={huPrompt}
+		huTile={huTile}
         handleTileClick={handleTileClick}
         handleDiscard={handleDiscard}
         handlePengAccept={handlePengAccept}
         handlePengReject={handlePengReject}
         handleChiAccept={handleChiAccept}
         handleChiReject={handleChiReject}
-		handleWinAccept={handleWinAccept}
-		handleWinReject={handleWinReject}
+		handleHuAccept={handleHuAccept}
+		handleHuReject={handleHuReject}
       />
       <br />
       <OtherBoard orientation="leftBoard" />
