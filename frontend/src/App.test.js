@@ -114,11 +114,34 @@ jest.mock('./components/SocketProvider', () => ({
 describe('Render with mock functions', () => {
   describe('Main Page component', () => {
     it('render main page, mock navigate', async () => {
+      const mockUseNavigate = jest.fn();
       jest.mock('react-router-dom', () => ({
         ...jest.requireActual('react-router-dom'),
-        useNavigate: jest.fn(),
+        useNavigate: mockUseNavigate,
       }));
   
+      renderWithContext(<MainPage/>);
+  
+      // Assert that the page header is rendered
+      expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
+
+      // expect(mockUseNavigate).toHaveBeenCalled();
+  
+      // Assert that the socket.addRoomListener function is called with the expected arguments
+      //expect(mockSocket.addRoomListener).toHaveBeenCalledWith(mockSetRoomNum, mockedUsedNavigate);//.toHaveBeenCalled();
+    });
+
+    it('render main page, mock use state', async () => {
+      const mockUseState = jest.fn();
+      const mockStateValue = 'mock value';
+      const mockSetState = jest.fn();
+      mockUseState.mockReturnValueOnce([mockStateValue, mockSetState]);
+
+      jest.mock('react', () => ({
+        ...jest.requireActual('react'),
+        useState: mockUseState,
+      }));
+
       renderWithContext(<MainPage/>);
   
       // Assert that the page header is rendered
