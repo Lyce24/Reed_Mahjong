@@ -179,3 +179,17 @@ img {
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+/* Game end message */
+
+.gameEndMsg {
+  position: absolute;
+  border: black 2px solid;
+  background-color: mediumaquamarine;
+  text-align: center;
+  width: 30vw;
+  height: 30vh;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

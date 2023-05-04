@@ -19,7 +19,7 @@ let temporaryDrawnTile = {
 export default function GameBoard({ room_id }) {
   const socket = useSocket();
   const username = useUsername();
-  const [gameEndStatus, setGameEndStatus] = useState(false);
+  const [gameEndStatus, setGameEndStatus] = useState(true);
 
   // setup listeners once upon initial render of game board
   useLayoutEffect(() => {
