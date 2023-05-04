@@ -4,18 +4,14 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { UsernameProvider } from './components/UsernameProvider';
 import { SocketProvider } from './components/SocketProvider';
 import { BrowserRouter, Router } from 'react-router-dom';
-import * as TestRenderer from "react-test-renderer";
-import { waitFor } from '@testing-library/react';
-//import { useSocket } from "./SocketProvider";
 import { createMemoryHistory } from 'history';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import renderer from 'react-test-renderer';
-import { useNavigate } from 'react-router-dom';
+//import { useSocket } from "./SocketProvider";
+//import { useNavigate } from 'react-router-dom';
 
 import App from './App';
 import MainPage from './components/MainPage';
 import RoomPage from './components/RoomPage';
-import CreateRoomButton from './components/CreateRoomButton';
 
 // wrapper functions to render components with context
 function renderWithinApp(component) {
