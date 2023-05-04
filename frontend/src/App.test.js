@@ -96,6 +96,16 @@ describe('Render without mock functions', () => {
       expect(container.querySelector('h1')).toHaveTextContent(`Room ${roomid}`);
       //expect(location.pathname).toBe('/room/123');
     });
+
+    xit('render from history, room id 123', async () => {
+      const history = createMemoryHistory();
+      history.push('/room/123');
+      const { container } = renderFromHistory(history);
+    
+      expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 123');
+      expect(container.querySelector('h1')).toHaveTextContent(`Room ${roomid}`);
+      //expect(location.pathname).toBe('/room/123');
+    });
   
     xit('renders with no player tiles', async () => {
       const roomid = 123;
@@ -175,7 +185,6 @@ describe('Render with mock functions', () => {
         close: jest.fn(),
       };
       jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);  
-      mockWebSocket.send.mockImplementation(() => {useNavigate('/room/000')});
 
       renderWithContext(<MainPage/>);
   
@@ -189,6 +198,46 @@ describe('Render with mock functions', () => {
       expect(mockWebSocket.send).toHaveBeenCalledTimes(0);
       fireEvent.click(createGameButton);
       expect(mockWebSocket.send).toHaveBeenCalledTimes(1);
+      expect(mockWebSocket.send).toHaveBeenCalledWith({
+        type: "create_room",
+      });
+
+      // Assert that page navigates to new room
+      //expect(mockUseNavigate).toHaveBeenCalledTimes(1);
+      //expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 000');
+    });
+
+    it('render main page, click join button', async () => {
+      // Mock use navigate
+      const mockUseNavigate = jest.fn();
+      jest.mock('react-router-dom', () => ({
+        ...jest.requireActual('react-router-dom'),
+        useNavigate: mockUseNavigate,
+      }));
+
+      // Mock the implementation of the SocketContext provider
+      const mockWebSocket = {
+        send: jest.fn(),
+        addRoomListener: jest.fn(),
+        close: jest.fn(),
+      };
+      jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);  
+
+      renderWithContext(<MainPage/>);
+  
+      // Assert that the page header is rendered
+      expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
+      expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);
+
+      // Assert that socket send is called after clicking the create game button
+      const createGameButton = screen.getByText('Create a Game!');
+      expect(createGameButton).toBeInTheDocument();
+      expect(mockWebSocket.send).toHaveBeenCalledTimes(0);
+      fireEvent.click(createGameButton);
+      expect(mockWebSocket.send).toHaveBeenCalledTimes(1);
+      expect(mockWebSocket.send).toHaveBeenCalledWith({
+        type: "create_room",
+      });
 
       // Assert that page navigates to new room
       //expect(mockUseNavigate).toHaveBeenCalledTimes(1);
@@ -293,6 +342,21 @@ function renderFromURL(route) {
             <Route path='/room/:roomid' element={<RoomPage/>}/>
           </Routes>
         </MemoryRouter>
+      </SocketProvider>
+    </UsernameProvider>
+  );
+};
+
+function renderFromHistory(history) {
+  return render(
+    <UsernameProvider>
+      <SocketProvider>
+        <Router history={history}>
+          <Routes>
+            <Route path='/' element={<MainPage />}/>
+            <Route path='/room/:roomid' element={<RoomPage/>}/>
+          </Routes>
+        </Router>
       </SocketProvider>
     </UsernameProvider>
   );
