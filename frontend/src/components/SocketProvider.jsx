@@ -134,14 +134,38 @@ class WebSocketInstance {
   // Broadcasted message, so need to check
   // If message is for this player, dislay start tiles
   // If message is not for this layer, label discard pile with username
-  addStartTileListener(setHand, username, compareTile) {
+  addStartTileListener(
+    setHand,
+    username,
+    compareTile,
+    usernameArray,
+    setUsernameArray
+  ) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
 
         // only proceed if message is about start tiles
         if (message.result_type === "start_tiles") {
+          // add username to username array
           console.log("Player listener: ", message);
+          setUsernameArray((usernameArray) => {
+            if (!usernameArray.includes(message.player)) {
+              console.log("add username");
+              let updatedArray = [...usernameArray, message.player];
+              // if username array is full (i.e. has 4 players), permute so first username is your username
+              if (updatedArray.length === 4) {
+                while (updatedArray[0] !== username) {
+                  updatedArray.push(updatedArray.shift());
+                }
+              }
+              console.log("updated username Array", updatedArray);
+              return updatedArray;
+            } else {
+              console.log("username already exists");
+              return usernameArray;
+            }
+          });
           // only proceed if message is for this player, and message is successful
           if (message.player === username && message.status === "202") {
             console.log("message is for this player", username);
@@ -201,7 +225,7 @@ class WebSocketInstance {
 
   // Broadcasted message, but all playes need to receive, so no need to check if message is for this player
   // Add listener to display tile that has been discarded (by any player)
-  addDiscardListener(discardPile, setDiscardPile) {
+  addDiscardListener(setDiscardPiles, usernameArray) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
@@ -220,9 +244,32 @@ class WebSocketInstance {
             "from",
             message.player
           );
-          let updateDiscardPile = [...discardPile, message.tile];
-          console.log("discard pile", updateDiscardPile);
-          setDiscardPile(updateDiscardPile);
+
+          if (message.player === usernameArray[0]) {
+            console.log("discard is from this player");
+            setDiscardPiles[0]((discardPile) => {
+              console.log("Discard pile", discardPile, message.tile);
+              return [...discardPile, message.tile];
+            });
+          } else if (message.player === usernameArray[1]) {
+            console.log("discard is from right player");
+            setDiscardPiles[1]((discardPile) => {
+              console.log("Discard pile", discardPile, message.tile);
+              return [...discardPile, message.tile];
+            });
+          } else if (message.player === usernameArray[2]) {
+            console.log("discard is from top player");
+            setDiscardPiles[2]((discardPile) => {
+              console.log("Discard pile", discardPile, message.tile);
+              return [...discardPile, message.tile];
+            });
+          } else if (message.player === usernameArray[3]) {
+            console.log("discard is from left player");
+            setDiscardPiles[3]((discardPile) => {
+              console.log("Discard pile", discardPile, message.tile);
+              return [...discardPile, message.tile];
+            });
+          }
         }
       }
     });

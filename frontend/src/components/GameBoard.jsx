@@ -24,11 +24,25 @@ export default function GameBoard({ room_id }) {
   // setup listeners once upon initial render of game board
   useLayoutEffect(() => {
     // setup start tiles listener: display 'hand' tiles when receive backend 'start_tiles' msg
-    socket.addStartTileListener(setHand, username, compareTile);
+    socket.addStartTileListener(
+      setHand,
+      username,
+      compareTile,
+      usernameArray,
+      setUsernameArray
+    );
     console.log("add start tile listener");
     // setup draw listener: display 'drawnTile' when receive backend 'draw_tile' msg
     socket.addDrawListener(setDrawnTile, setSelectedTileIndex, username);
-    socket.addDiscardListener(discardPile, setDiscardPile);
+    socket.addDiscardListener(
+      [
+        setPlayerDiscardPile,
+        setLeftDiscardPile,
+        setRightDiscardPile,
+        setTopDiscardPile,
+      ],
+      usernameArray
+    );
     socket.addPengListener(setPengPrompt, setPengTile, username);
     socket.addChiListener(setChiPrompt, setChiTile, username);
     socket.addHuListener(setHuPrompt, setHuTile, username);
@@ -36,11 +50,37 @@ export default function GameBoard({ room_id }) {
   }, []);
 
   const [hand, setHand] = useState(null);
-  const [discardPile, setDiscardPile] = useState(Array());
-  const usernames = Array(4).fill(null);
-  function handleDiscardPile() {
-    console.log("discard pile", discardPile);
-  }
+  const [playerDiscardPile, setPlayerDiscardPile] = useState(
+    Array(1).fill({
+      suite: "bamboo",
+      number: 2,
+    })
+  );
+  const [leftDiscardPile, setLeftDiscardPile] = useState(
+    Array(1).fill({
+      suite: "bamboo",
+      number: 3,
+    })
+  );
+  const [rightDiscardPile, setRightDiscardPile] = useState(
+    Array(1).fill({
+      suite: "bamboo",
+      number: 4,
+    })
+  );
+  const [topDiscardPile, setTopDiscardPile] = useState(
+    Array(1).fill({
+      suite: "bamboo",
+      number: 5,
+    })
+  );
+  const discardPiles = [
+    playerDiscardPile,
+    rightDiscardPile,
+    topDiscardPile,
+    leftDiscardPile,
+  ];
+  const [usernameArray, setUsernameArray] = useState(Array());
 
   // select the tile that is clicked
   const [selectedTileIndex, setSelectedTileIndex] = useState(null);
@@ -207,7 +247,10 @@ export default function GameBoard({ room_id }) {
       <br />
       <OtherBoard orientation="topBoard" />
       <br />
-      <MiddleSection discardPile={discardPile} />
+      <MiddleSection
+        discardPiles={discardPiles}
+        usernameArray={usernameArray}
+      />
     </div>
   );
 }
