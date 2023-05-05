@@ -66,7 +66,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         'room_id': `000`, //* should be set by backend, put here now for testing
         'status': '202', //* should be set by backend, put here now for testing
         '''
-        
+
         room_id = content.get('room_id')
         event_type = content.get('type')
         if event_type == 'echo':
@@ -108,13 +108,13 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     break
                 else:
                     continue
-                
+
             # create room and player models
             player = await self.create_player_model(player_id=content.get('username'))
             room = await self.create_room_model(random_room_id)
             player.room = room
             room.player1 = player.player_id
-            
+
             # save models
             await sync_to_async(room.save)()
             await sync_to_async(player.save)()
@@ -436,7 +436,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         'result_type': 'notification',
                         'status': '202'
                     })
-                
+
                 await self.start_game(room_id)
             else:
                 print("Game already started")
@@ -603,7 +603,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
             await self.check_hu(room_id, content)
 
-
         except Room.DoesNotExist:
             await self.send_json({
                 "message': 'Room doesn't exist"
@@ -638,14 +637,14 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
             players = [room.player1, room.player2, room.player3, room.player4]
             players.remove(content.get('username'))
-            
+
             print("\nStart checking wins")
             print("players remaining: ", players)
 
             # helper function - basic recurssion
             # maybe can be implement as dynamic programming, but haven't thought of a way yet
             def is_win(tiles):
-                    # checking pair (base case)
+                # checking pair (base case)
                 if len(tiles) == 2 and tiles[0] == tiles[1]:
                     return True
 
@@ -709,7 +708,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                                     'status': '202'
                         })
                     return 'successful'
-                
+
             print("No one can perform hu")
             await self.check_peng(room_id, uid=content.get('username'), suite=suite, number=number)
 
@@ -741,8 +740,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             player_result = await self.filter_player_models(content.get('username'))
             player1 = await sync_to_async(player_result.first)()
 
-
-
             suite = content.get('tile').get('suite')
             number = str(content.get('tile').get('number'))
 
@@ -761,38 +758,38 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         "type": "send_json",
                         'message': 'game ends',
                         'player': content.get('username'),
-                        'current_player' : room.current_player,
+                        'current_player': room.current_player,
                         'tile': content.get('tile'),
                         'room_id': str(room_id),
-                        'result_type': 'placeholder',
+                        'result_type': 'game_end',
                         'status': '202'
                     })
-                
+
                 await self.reset_game(room_id)
 
             else:
                 print("Player not performing hu")
-                await self.check_peng(room_id, uid = room.current_player, suite = suite,
-                number = number)
+                await self.check_peng(room_id, uid=room.current_player, suite=suite,
+                                      number=number)
 
         except Room.DoesNotExist:
-                await self.send_json({
-                            "message': 'Room doesn't exist"
-                            'status': '404'
-                        })
-                return
+            await self.send_json({
+                "message': 'Room doesn't exist"
+                'status': '404'
+            })
+            return
 
         except Player.DoesNotExist:
-                await self.send_json({
-                            "message': 'Player doesn't exist"
-                            'status': '404'
-                        })
-                return
+            await self.send_json({
+                "message': 'Player doesn't exist"
+                'status': '404'
+            })
+            return
 
     '''
     Checking peng and performing peng
     '''
-    
+
     async def check_peng(self, room_id, uid, suite, number):
         try:
             room_result = await self.filter_room_models(room_id)
@@ -827,7 +824,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         })
                     return 'successful'
 
-                
             print("No one can perform peng")
 
             await self.check_chi(room_id, uid=room.current_player, suite=suite, number=number)
@@ -905,11 +901,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             })
             return
 
-        
     '''
     Checking chi if no pengs are available
     '''
-
 
     async def check_chi(self, room_id, uid, suite, number):
         try:
@@ -931,7 +925,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             elif room.player4 == uid:
                 player_result = await self.filter_player_models(room.player4)
                 player1 = await sync_to_async(player_result.first)()
-
 
             print("\nStart checking chi")
 
@@ -1090,7 +1083,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     })
 
             else:
-                print("Player not performing chi, drawing tile for " + str(room.current_player))
+                print("Player not performing chi, drawing tile for " +
+                      str(room.current_player))
                 await self.draw_tile(room_id, room.current_player)
 
         except Room.DoesNotExist:

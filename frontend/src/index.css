@@ -51,6 +51,7 @@ img {
 .tile {
   /* This width should be some proportion of the screen */
   width: 6vh; 
+  height: 9vh;
   border: blue 1px solid;
 }
 
@@ -93,14 +94,12 @@ img {
 }
 
 .leftBoard {
-  /* position: absolute; */
   transform-origin: left top;
   transform: rotate(-90.0deg) translateX(-50%);
   top: 50%;
 }
 
 .rightBoard {
-  /* position: absolute; */
   right: 0;
   transform-origin: right top;
   transform: rotate(90.0deg) translateX(50%);
@@ -108,34 +107,35 @@ img {
 }
 
 .topBoard {
-  /* position: absolute; */
   top: 0;
   left: 50%;
   transform: translate(-50%);
 }
 
 .middleSection {
-  border: black 2px solid;
+  border: brown 10px solid;
   width: 70%;
   height: 70%;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  position: absolute;
+  position: relative;
 }
 
 .discard {
   border: green 2px solid;
   position: absolute;
+  display: flex;
+  flex-wrap: wrap;
   width: 200px;
   height: 100px;
-  /* left: 0%; */
+  overflow: auto; /* Scroll if too many tiles */
 }
 
 .playerDiscard {
   bottom: 0;
   left: 50%;
-  transform: rotate(180deg) translateX(15vw);
+  transform: rotate(0deg) translateX(-15vw);
   background-image: linear-gradient(orange, green);
   width: 49.5vw;
   height: 19vh;
@@ -144,7 +144,7 @@ img {
 .leftDiscard {
   left: 0;
   top: 50%;
-  transform: rotate(-90deg) translateX(-100%) translateX(15vh);
+  transform: rotate(90deg)  translateX(-100%) translateX(35vh) translateY(-30vh);
   transform-origin: top left;
   background-image: linear-gradient(orange, green);
   height: 19vw;
@@ -154,7 +154,7 @@ img {
 .rightDiscard {
   right: 0;
   top: 50%;
-  transform: rotate(90deg) translateX(15vh);
+  transform: rotate(-90deg) translateX(100%) translateX(-15vh) translateY(-30vh);
   transform-origin: top right;
   background-image: linear-gradient(orange, green);
   height: 19vw;
@@ -164,7 +164,7 @@ img {
 .topDiscard {
   top: 0;
   right: 50%;
-  transform: translateX(15vw);
+  transform: rotate(180deg) translateX(-15vw);
   background-image: linear-gradient(orange, green);
   width: 49.5vw;
   height: 19vh;
@@ -173,6 +173,20 @@ img {
 .recentDiscard {
   position: absolute;
   border: black 2px solid;
+  width: 30vw;
+  height: 30vh;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Game end message */
+
+.gameEndMsg {
+  position: absolute;
+  border: black 2px solid;
+  background-color: mediumaquamarine;
+  text-align: center;
   width: 30vw;
   height: 30vh;
   left: 50%;

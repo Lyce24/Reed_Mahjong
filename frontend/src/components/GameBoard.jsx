@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useSocket } from "./SocketProvider";
 import { useUsername } from "./UsernameProvider";
 import { useLayoutEffect } from "react";
+import GameEndMsg from "./GameEndMsg";
 
 /* structure of tiles:
 let temporaryDrawnTile = {
@@ -18,22 +19,50 @@ let temporaryDrawnTile = {
 export default function GameBoard({ room_id }) {
   const socket = useSocket();
   const username = useUsername();
+  const [gameEndStatus, setGameEndStatus] = useState(false);
 
   // setup listeners once upon initial render of game board
   useLayoutEffect(() => {
     // setup start tiles listener: display 'hand' tiles when receive backend 'start_tiles' msg
-    socket.addStartTileListener(setHand, username, compareTile);
+    socket.addStartTileListener(
+      setHand,
+      username,
+      compareTile,
+      setUsernameArray,
+      setDiscardPiles
+    );
     console.log("add start tile listener");
     // setup draw listener: display 'drawnTile' when receive backend 'draw_tile' msg
     socket.addDrawListener(setDrawnTile, setSelectedTileIndex, username);
-    //TODO: change this to socket.addDiscardListener(setDiscardPile) once discard pile is implemented
-    socket.addDiscardListener(setDrawnTile);
     socket.addPengListener(setPengPrompt, setPengTile, username);
     socket.addChiListener(setChiPrompt, setChiTile, username);
-	socket.addHuListener(setHuPrompt, setHuTile, username);
+    socket.addHuListener(setHuPrompt, setHuTile, username);
+    socket.addGameEndListener(setGameEndStatus);
   }, []);
 
   const [hand, setHand] = useState(null);
+  const [playerDiscardPile, setPlayerDiscardPile] = useState(
+    Array(15).fill({
+      suite: "bamboo",
+      number: 2,
+    })
+  );
+  const [leftDiscardPile, setLeftDiscardPile] = useState(Array());
+  const [rightDiscardPile, setRightDiscardPile] = useState(Array());
+  const [topDiscardPile, setTopDiscardPile] = useState(Array());
+  const discardPiles = [
+    playerDiscardPile,
+    rightDiscardPile,
+    topDiscardPile,
+    leftDiscardPile,
+  ];
+  const setDiscardPiles = [
+    setPlayerDiscardPile,
+    setRightDiscardPile,
+    setTopDiscardPile,
+    setLeftDiscardPile,
+  ];
+  const [usernameArray, setUsernameArray] = useState(Array());
 
   // select the tile that is clicked
   const [selectedTileIndex, setSelectedTileIndex] = useState(null);
@@ -117,25 +146,25 @@ export default function GameBoard({ room_id }) {
   const [huTile, setHuTile] = useState(null);
 
   function handleHuReject() {
-	console.log("hu reject clicked");
-	socket.send({
-	  type: "performing_hu",
-	  action: "0",
-	  tile: huTile,
-	  room_id: room_id,			// this might pose a problem if the backend is relying on the frontend to reliably send it a room ID
-	});							// someone could potentially modify their client and send the backend a different room ID
-	setHuTile(null);			// i'll check how the backend handles this and make sure it retuns an error if sent room ID doesn't match the user's room - El
-	setHuPrompt(false);
-  }								
+    console.log("hu reject clicked");
+    socket.send({
+      type: "performing_hu",
+      action: "0",
+      tile: huTile,
+      room_id: room_id, // this might pose a problem if the backend is relying on the frontend to reliably send it a room ID
+    }); // someone could potentially modify their client and send the backend a different room ID
+    setHuTile(null); // i'll check how the backend handles this and make sure it retuns an error if sent room ID doesn't match the user's room - El
+    setHuPrompt(false);
+  }
 
   function handleHuAccept() {
-	console.log("hu accept clicked");
-	socket.send({
-	  type: "performing_hu",
-	  action: "1",
-	  tile: huTile,
-	  room_id: room_id,
-	});
+    console.log("hu accept clicked");
+    socket.send({
+      type: "performing_hu",
+      action: "1",
+      tile: huTile,
+      room_id: room_id,
+    });
     setDrawnTile(huTile);
     setHuTile(null);
     setHuPrompt(false);
@@ -173,6 +202,7 @@ export default function GameBoard({ room_id }) {
 
   return (
     <div className="gameBoard">
+      {gameEndStatus && <GameEndMsg></GameEndMsg>}
       <PlayerBoard
         hand={hand}
         selectedTileIndex={selectedTileIndex}
@@ -181,16 +211,16 @@ export default function GameBoard({ room_id }) {
         pengTile={pengTile}
         chiPrompt={chiPrompt}
         chiTile={chiTile}
-		huPrompt={huPrompt}
-		huTile={huTile}
+        huPrompt={huPrompt}
+        huTile={huTile}
         handleTileClick={handleTileClick}
         handleDiscard={handleDiscard}
         handlePengAccept={handlePengAccept}
         handlePengReject={handlePengReject}
         handleChiAccept={handleChiAccept}
         handleChiReject={handleChiReject}
-		handleHuAccept={handleHuAccept}
-		handleHuReject={handleHuReject}
+        handleHuAccept={handleHuAccept}
+        handleHuReject={handleHuReject}
       />
       <br />
       <OtherBoard orientation="leftBoard" />
@@ -199,7 +229,10 @@ export default function GameBoard({ room_id }) {
       <br />
       <OtherBoard orientation="topBoard" />
       <br />
-      {/* <MiddleSection /> */}
+      <MiddleSection
+        discardPiles={discardPiles}
+        usernameArray={usernameArray}
+      />
     </div>
   );
 }
