@@ -42,24 +42,14 @@ export default function GameBoard({ room_id }) {
 
   const [hand, setHand] = useState(null);
   const [playerDiscardPile, setPlayerDiscardPile] = useState(
-    Array(22).fill({
+    Array(15).fill({
       suite: "bamboo",
       number: 2,
     })
   );
   const [leftDiscardPile, setLeftDiscardPile] = useState(Array());
-  const [rightDiscardPile, setRightDiscardPile] = useState(
-    Array(12).fill({
-      suite: "bamboo",
-      number: 2,
-    })
-  );
-  const [topDiscardPile, setTopDiscardPile] = useState(
-    Array(12).fill({
-      suite: "bamboo",
-      number: 2,
-    })
-  );
+  const [rightDiscardPile, setRightDiscardPile] = useState(Array());
+  const [topDiscardPile, setTopDiscardPile] = useState(Array());
   const discardPiles = [
     playerDiscardPile,
     rightDiscardPile,

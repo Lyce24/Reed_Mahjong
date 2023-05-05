@@ -125,10 +125,11 @@ img {
 .discard {
   border: green 2px solid;
   position: absolute;
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   width: 200px;
   height: 100px;
+  overflow: auto; /* Scroll if too many tiles */
 }
 
 .playerDiscard {
@@ -179,10 +180,6 @@ img {
   transform: translate(-50%, -50%);
 }
 
-div.discard > div.tile {
-  border: black 10px solid;
-  flex-shrink: 1;
-}
 /* Game end message */
 
 .gameEndMsg {
