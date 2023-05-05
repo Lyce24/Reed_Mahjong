@@ -34,7 +34,6 @@ export default function GameBoard({ room_id }) {
     console.log("add start tile listener");
     // setup draw listener: display 'drawnTile' when receive backend 'draw_tile' msg
     socket.addDrawListener(setDrawnTile, setSelectedTileIndex, username);
-
     socket.addPengListener(setPengPrompt, setPengTile, username);
     socket.addChiListener(setChiPrompt, setChiTile, username);
     socket.addHuListener(setHuPrompt, setHuTile, username);
@@ -43,27 +42,22 @@ export default function GameBoard({ room_id }) {
 
   const [hand, setHand] = useState(null);
   const [playerDiscardPile, setPlayerDiscardPile] = useState(
-    Array(1).fill({
+    Array(22).fill({
       suite: "bamboo",
       number: 2,
     })
   );
-  const [leftDiscardPile, setLeftDiscardPile] = useState(
-    Array(1).fill({
-      suite: "bamboo",
-      number: 3,
-    })
-  );
+  const [leftDiscardPile, setLeftDiscardPile] = useState(Array());
   const [rightDiscardPile, setRightDiscardPile] = useState(
-    Array(1).fill({
+    Array(12).fill({
       suite: "bamboo",
-      number: 4,
+      number: 2,
     })
   );
   const [topDiscardPile, setTopDiscardPile] = useState(
-    Array(1).fill({
+    Array(12).fill({
       suite: "bamboo",
-      number: 5,
+      number: 2,
     })
   );
   const discardPiles = [

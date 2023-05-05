@@ -158,6 +158,7 @@ class WebSocketInstance {
                 while (updatedArray[0] !== username) {
                   updatedArray.push(updatedArray.shift());
                 }
+                // add discard pile listener with array of all usernames
                 this.addDiscardListener(setDiscardPiles, updatedArray);
                 console.log("add discard listener");
               }
@@ -247,6 +248,7 @@ class WebSocketInstance {
             message.player
           );
 
+          // set the correct discard pile according to username
           if (message.player === usernameArray[0]) {
             console.log("discard is from this player");
             setDiscardPiles[0]((discardPile) => {
