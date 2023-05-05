@@ -138,8 +138,8 @@ class WebSocketInstance {
     setHand,
     username,
     compareTile,
-    usernameArray,
-    setUsernameArray
+    setUsernameArray,
+    setDiscardPiles
   ) {
     this.socketRef.addEventListener("message", (e) => {
       if (typeof e.data === "string") {
@@ -158,6 +158,8 @@ class WebSocketInstance {
                 while (updatedArray[0] !== username) {
                   updatedArray.push(updatedArray.shift());
                 }
+                this.addDiscardListener(setDiscardPiles, updatedArray);
+                console.log("add discard listener");
               }
               console.log("updated username Array", updatedArray);
               return updatedArray;
