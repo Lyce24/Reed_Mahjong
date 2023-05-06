@@ -42,6 +42,11 @@ div#root, .page{
   background-color: plum;
 }
 
+.mainPage {
+  padding:20px;
+  max-width:80%;
+}
+
 /* Style tiles */
 img {
   max-width: 100%;
@@ -144,7 +149,7 @@ img {
 .leftDiscard {
   left: 0;
   top: 50%;
-  transform: rotate(90deg)  translateX(-100%) translateX(35vh) translateY(-30vh);
+  transform: rotate(90deg)  translateX(-100%) translateX(35vh) translateY(-100%);
   transform-origin: top left;
   background-image: linear-gradient(orange, green);
   height: 19vw;
@@ -154,7 +159,7 @@ img {
 .rightDiscard {
   right: 0;
   top: 50%;
-  transform: rotate(-90deg) translateX(100%) translateX(-15vh) translateY(-30vh);
+  transform: rotate(-90deg) translateX(100%) translateX(-15vh) translateY(-100%);
   transform-origin: top right;
   background-image: linear-gradient(orange, green);
   height: 19vw;
