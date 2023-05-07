@@ -15,12 +15,15 @@
     - (**Yifang**) Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
     - (done) Remove Chi prompt from front end
 
-  - (**Louise**) After user accepts Chi/Peng prompt, isolate the three tiles to the left side
+  - (**Louise**) After user accepts Chi/Peng prompt, isolate the three tiles to the left side, display for all players
+  - (**Unclaimed**) Create a button in room page that displays the game rules when player hovers over it
   - (**Unclaimed**) Deactivate all movement after game end msg displays, display restart button
-  - (**unclaimed**) Display error message from backend on screen if join room ID is invalid format
+  - (**Unclaimed**) Implement reset game functionality
+  
 
 - Testing framwork
   - (**Louise** in progress) create room and let four players join
+  - (**unclaimed**) Display error message from backend on screen if join room ID is invalid format
 
 ## Backend TODO
 - game logic (using signals?)
