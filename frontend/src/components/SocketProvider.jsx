@@ -381,6 +381,19 @@ class WebSocketInstance {
     });
   }
 
+  //TODO: implement game reset functionality
+  addGameResetListener(setStatus) {
+    this.socketRef.addEventListener("message", (e) => {
+      if (typeof e.data === "string") {
+        const message = JSON.parse(e.data);
+        if (message.result_type == "game_reset") {
+          console.log("game reset listener", message);
+          setStatus(true);
+        }
+      }
+    });
+  }
+
   // Abandoned code
   // Don't send anything, just specify what behavior you want when receive backend response
   receive(setResult) {

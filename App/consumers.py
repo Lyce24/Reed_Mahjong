@@ -433,7 +433,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                         "type": "send_json",
                         'message': 'Game reset',
                         'room_id': str(room_id),
-                        'result_type': 'notification',
+                        'result_type': 'game_reset',
                         'status': '202'
                     })
 
