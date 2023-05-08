@@ -7,7 +7,7 @@
   - (**unclaimed**) Display a waiting message when it's not your turn: remove it after receive draw tile message, and add it back after click discard button or time is up
 - After receiving "draw_tile" json:  
     - (done) Activate discard button. 
-    - (**Yifang**) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
+    - (done) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
     - (done) Deactive discard button 
   -  (done) Design Chi/Peng prompt component
 - After receiving "chi_prompt" json:

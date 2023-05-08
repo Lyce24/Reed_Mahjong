@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-function CountdownTimer({ time }) {
+function CountdownTimer(props) {
+  const { time, handleDiscard } = props;
   // Set the initial state of seconds to the value of the time prop
   const [seconds, setSeconds] = useState(time);
   const intervalRef = React.useRef(null);
@@ -21,8 +22,9 @@ function CountdownTimer({ time }) {
     // Clear the interval when seconds reaches 0
     if (seconds === 0) {
       clearInterval(intervalRef.current);
+      handleDiscard();
     }
-  }, [seconds]);
+  }, [seconds, handleDiscard]);
 
   return (
     <div>

@@ -38,7 +38,9 @@ export default function PlayerBoard(props) {
       {/* Display discard button only if there is a drawn tile */}
       {props.drawnTile && <DiscardButton onClick={props.handleDiscard} />}
       {/* Start the Countdown timer when the tile is drawn */}
-      {props.drawnTile && <CountdownTimer time={30} />}
+      {props.drawnTile && (
+        <CountdownTimer time={10} handleDiscard={props.handleDiscard} />
+      )}
       {/* Display peng only when available */}
       {props.pengPrompt && (
         <Tile
