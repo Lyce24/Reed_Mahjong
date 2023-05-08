@@ -20,12 +20,12 @@ function renderWithinApp(component) {
   );
 }
 
-function renderWithContext(component){
+function renderWithContext(component) {
   render(
     <UsernameProvider>
       <SocketProvider>
         <BrowserRouter>
-          {component}  
+          {component}
         </BrowserRouter>
       </SocketProvider>
     </UsernameProvider>
@@ -39,8 +39,8 @@ function renderFromURL(route) {
       <SocketProvider>
         <MemoryRouter initialEntries={route}>
           <Routes>
-            <Route path='/' element={<MainPage />}/>
-            <Route path='/room/:roomid' element={<RoomPage/>}/>
+            <Route path='/' element={<MainPage />} />
+            <Route path='/room/:roomid' element={<RoomPage />} />
           </Routes>
         </MemoryRouter>
       </SocketProvider>
@@ -54,8 +54,8 @@ function renderFromHistory(history) {
       <SocketProvider>
         <Router history={history}>
           <Routes>
-            <Route path='/' element={<MainPage />}/>
-            <Route path='/room/:roomid' element={<RoomPage/>}/>
+            <Route path='/' element={<MainPage />} />
+            <Route path='/room/:roomid' element={<RoomPage />} />
           </Routes>
         </Router>
       </SocketProvider>
@@ -81,7 +81,7 @@ describe('Render without mock functions', () => {
   describe('Main Page component', () => {
     it('renders with context and router', async () => {
       renderWithContext(<MainPage />);
-  
+
       expect(screen.getByRole('heading',)).toHaveTextContent('Welcome to Reed Mahjong!')
       const createGameButton = screen.getByText('Create a Game!');
       expect(createGameButton).toBeInTheDocument();
@@ -89,10 +89,10 @@ describe('Render without mock functions', () => {
       expect(joinRoomButton).toBeInTheDocument();
       expect(location.pathname).toBe('/');
     });
-  
+
     it('renders from url', async () => {
       const { container } = renderFromURL([`/`]);
-  
+
       /* expect(screen.getByRole('heading',)).toHaveTextContent('Welcome to Reed Mahjong!')
       const createGameButton = screen.getByText('Create a Game!');
       expect(createGameButton).toBeInTheDocument();
@@ -100,36 +100,36 @@ describe('Render without mock functions', () => {
       expect(joinRoomButton).toBeInTheDocument(); */
       // Assert that the page header is rendered
       expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
-  
+
       // Assert that the CreateRoomButton component is rendered
       expect(screen.getByRole('button', { name: /Create a Game!/i })).toBeInTheDocument();
-  
+
       // Assert that the JoinRoom component is rendered
       expect(screen.getByRole('button', { name: /Submit/i })).toBeInTheDocument();
-  
+
     });
-  
+
     it('create button click, rendered from url', async () => {
       const { container } = renderFromURL([`/`]);
-  
+
       const createGameButton = screen.getByText('Create a Game!');
       expect(createGameButton).toBeInTheDocument();
       fireEvent.click(createGameButton);
       console.log(container.innerHTML)
-  
+
     });
   });
   describe('Room Page component', () => {
     it('renders with context, room id null', async () => {
       renderWithContext(<RoomPage />);
-      expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room');
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Room');
     });
-  
+
     it('renders with url, room id 123', async () => {
       const roomid = 123;
       const { container } = renderFromURL([`/room/${roomid}`]);
-    
-      expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 123');
+
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Room 123');
       expect(container.querySelector('h1')).toHaveTextContent(`Room ${roomid}`);
       //expect(location.pathname).toBe('/room/123');
     });
@@ -137,8 +137,8 @@ describe('Render without mock functions', () => {
     it('renders with redirect from main url, room id 123', async () => {
       const roomid = 123;
       const { container } = renderFromURL([`/`, `/room/${roomid}`]);
-    
-      expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 123');
+
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Room 123');
       expect(container.querySelector('h1')).toHaveTextContent(`Room ${roomid}`);
       //expect(location.pathname).toBe('/room/123');
     });
@@ -147,16 +147,16 @@ describe('Render without mock functions', () => {
       const history = createMemoryHistory();
       history.push('/room/123');
       const { container } = renderFromHistory(history);
-    
-      expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Room 123');
+
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Room 123');
       expect(container.querySelector('h1')).toHaveTextContent(`Room ${roomid}`);
       //expect(location.pathname).toBe('/room/123');
     });
-  
+
     xit('renders with no player tiles', async () => {
       const roomid = 123;
       const { container } = renderFromURL([`/room/${roomid}`]);
-    
+
       console.log('first child', container.getElementsByClassName('roomPage').length);
       //console.log('playerboard', container.querySelector('div'));
       //console.log('playerboard', container.querySelector('playerboard'));
@@ -179,7 +179,7 @@ describe('Render with mock functions', () => {
       const mockUseState = jest.fn();
       const mockRoomNum = 0;
       const mockSetRoomNum = jest.fn();
-      mockUseState.mockReturnValueOnce([mockRoomNum, mockSetRoomNum ]);
+      mockUseState.mockReturnValueOnce([mockRoomNum, mockSetRoomNum]);
       jest.mock('react', () => ({
         ...jest.requireActual('react'),
         useState: mockUseState,
@@ -191,15 +191,15 @@ describe('Render with mock functions', () => {
         addRoomListener: jest.fn(),
         close: jest.fn(),
       };
-      jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);  
-      mockWebSocket.send.mockImplementation(() => {useNavigate('/room/000')});
+      jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);
+      mockWebSocket.send.mockImplementation(() => { useNavigate('/room/000') });
       /* jest.mock('./components/SocketProvider', () => ({
         ...jest.requireActual('./components/SocketProvider'),
         useSocket: () => mockWebSocket,
       })); */
 
-      renderWithContext(<MainPage/>);
-  
+      renderWithContext(<MainPage />);
+
       // Assert that the page header is rendered
       expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
       expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);//.toHaveBeenCalledWith(mockSetRoomNum, mockUseNavigate);// Assert that the socket.addRoomListener function is called with the expected arguments
@@ -212,10 +212,10 @@ describe('Render with mock functions', () => {
         addRoomListener: jest.fn(),
         close: jest.fn(),
       };
-      jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);  
+      jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);
 
-      renderWithContext(<MainPage/>);
-  
+      renderWithContext(<MainPage />);
+
       // Assert that the page header is rendered
       expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
       expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);
@@ -236,7 +236,7 @@ describe('Render with mock functions', () => {
       const mockUseState = jest.fn();
       const mockRoomNum = 0;
       const mockSetRoomNum = jest.fn();
-      mockUseState.mockReturnValueOnce([mockRoomNum, mockSetRoomNum ]);
+      mockUseState.mockReturnValueOnce([mockRoomNum, mockSetRoomNum]);
       jest.mock('react', () => ({
         ...jest.requireActual('react'),
         useState: mockUseState,
@@ -248,10 +248,10 @@ describe('Render with mock functions', () => {
         addRoomListener: jest.fn(),
         close: jest.fn(),
       };
-      jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);  
+      jest.spyOn(require('./components/SocketProvider'), 'useSocket').mockReturnValue(mockWebSocket);
 
-      renderWithContext(<MainPage/>);
-  
+      renderWithContext(<MainPage />);
+
       // Assert that the page header is rendered
       expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
       expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);

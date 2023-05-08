@@ -10,7 +10,7 @@ function CountdownTimer({ time }) {
     // Set an interval that decrements seconds every second
     intervalRef.current = setInterval(() => {
       // Decrement seconds
-      setSeconds(seconds => seconds - 1);
+      setSeconds((seconds) => seconds - 1);
     }, 1000);
 
     // Return a function that clears the interval when the component unmounts

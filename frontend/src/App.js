@@ -4,14 +4,14 @@ import { SocketProvider } from './components/SocketProvider'
 import { UsernameProvider } from './components/UsernameProvider';
 
 export default function App() {
-    return (
-      <UsernameProvider>
-        <SocketProvider>
-          <BrowserRouter>
-            <GameRoutes/>
-          </BrowserRouter>
-        </SocketProvider>
+  return (
+    <UsernameProvider>
+      <SocketProvider>
+        <BrowserRouter>
+          <GameRoutes />
+        </BrowserRouter>
+      </SocketProvider>
     </UsernameProvider>
 
-    );
+  );
 }
