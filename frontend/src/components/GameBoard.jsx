@@ -42,14 +42,15 @@ export default function GameBoard({ room_id }) {
 
   const [hand, setHand] = useState(null);
   const [playerDiscardPile, setPlayerDiscardPile] = useState(
-    Array(15).fill({
-      suite: "bamboo",
-      number: 2,
-    })
+    // Array(15).fill({
+    //   suite: "bamboo",
+    //   number: 2,
+    // })
+    []
   );
-  const [leftDiscardPile, setLeftDiscardPile] = useState(Array());
-  const [rightDiscardPile, setRightDiscardPile] = useState(Array());
-  const [topDiscardPile, setTopDiscardPile] = useState(Array());
+  const [leftDiscardPile, setLeftDiscardPile] = useState([]);
+  const [rightDiscardPile, setRightDiscardPile] = useState([]);
+  const [topDiscardPile, setTopDiscardPile] = useState([]);
   const discardPiles = [
     playerDiscardPile,
     rightDiscardPile,
@@ -62,7 +63,7 @@ export default function GameBoard({ room_id }) {
     setTopDiscardPile,
     setLeftDiscardPile,
   ];
-  const [usernameArray, setUsernameArray] = useState(Array());
+  const [usernameArray, setUsernameArray] = useState([]);
 
   // select the tile that is clicked
   const [selectedTileIndex, setSelectedTileIndex] = useState(null);
