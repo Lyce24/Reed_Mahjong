@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 
 function CountdownTimer(props) {
+  /*   
+  This is a React component that renders a countdown timer. 
+  The component takes two props, time and eventHandler.
+  The time prop is the number of seconds to count down from.
+  The eventHandler prop is a function that is called when the timer reaches 0.
+  */
+
   const { time, eventHandler } = props;
   // Set the initial state of seconds to the value of the time prop
   const [seconds, setSeconds] = useState(time);
+
+  // A reference to store the interval ID
   const intervalRef = React.useRef(null);
 
   // Use the useEffect hook to start and stop the timer
