@@ -3,6 +3,7 @@ import "../index.css";
 import DiscardButton from "./DiscardButton";
 import PengPrompt from "./PengPrompt";
 import ChiPrompt from "./ChiPrompt";
+import CountdownTimer from "./CountdownTimer";
 
 export default function PlayerBoard(props) {
   return (
@@ -36,6 +37,8 @@ export default function PlayerBoard(props) {
       )}
       {/* Display discard button only if there is a drawn tile */}
       {props.drawnTile && <DiscardButton onClick={props.handleDiscard} />}
+      {/* Start the Countdown timer when the tile is drawn */}
+      {props.drawnTile && <CountdownTimer time={30} />}
       {/* Display peng only when available */}
       {props.pengPrompt && (
         <Tile
