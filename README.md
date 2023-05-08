@@ -12,7 +12,7 @@
   -  (done) Design Chi/Peng prompt component
 - After receiving "chi_prompt" json:
     - (done) Display Chi prompt on frontend
-    - (**Yifang**) Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
+    - (done) Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
     - (done) Remove Chi prompt from front end
 
   - (**Louise**) After user accepts Chi/Peng prompt, isolate the three tiles to the left side, display for all players
