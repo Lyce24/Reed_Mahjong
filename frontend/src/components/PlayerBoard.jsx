@@ -39,7 +39,7 @@ export default function PlayerBoard(props) {
       {props.drawnTile && <DiscardButton onClick={props.handleDiscard} />}
       {/* Start the Countdown timer when the tile is drawn */}
       {props.drawnTile && (
-        <CountdownTimer time={10} handleDiscard={props.handleDiscard} />
+        <CountdownTimer time={10} eventHandler={props.handleDiscard} />
       )}
       {/* Display peng only when available */}
       {props.pengPrompt && (
@@ -59,6 +59,10 @@ export default function PlayerBoard(props) {
           handlePengReject={props.handlePengReject}
         />
       )}
+      {/* Start to Countdown when there is a peng prompt */}
+      {props.pengPrompt && (
+        <CountdownTimer time={10} eventHandler={props.handlePengReject} />
+      )}
       {/* Display chi only when available */}
       {props.chiPrompt && (
         <Tile
@@ -76,6 +80,10 @@ export default function PlayerBoard(props) {
           handleChiAccept={props.handleChiAccept}
           handleChiReject={props.handleChiReject}
         />
+      )}
+      {/* Start to Countdown when there is a chi prompt */}
+      {props.chiPrompt && (
+        <CountdownTimer time={10} eventHandler={props.handleChiReject} />
       )}
     </div>
   );
