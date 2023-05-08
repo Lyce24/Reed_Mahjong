@@ -1,17 +1,18 @@
 from django.db import models
- 
+
+
 class Room(models.Model):
-    room_id = models.CharField(max_length=8, unique = True) 
+    room_id = models.CharField(max_length=8, unique=True)
     game_mode = models.BooleanField(default=False)
-    
+
     player1 = models.CharField(max_length=50, default="")
     player2 = models.CharField(max_length=50, default="")
     player3 = models.CharField(max_length=50, default="")
     player4 = models.CharField(max_length=50, default="")
-    
-    current_player = models.CharField(max_length = 50, default= "")
-    zhuangjia = models.CharField(max_length = 50, default= "")
-    
+
+    current_player = models.CharField(max_length=50, default="")
+    zhuangjia = models.CharField(max_length=50, default="")
+
     bamboo1 = models.SmallIntegerField(default=4)
     bamboo2 = models.SmallIntegerField(default=4)
     bamboo3 = models.SmallIntegerField(default=4)
@@ -40,13 +41,14 @@ class Room(models.Model):
     circle8 = models.SmallIntegerField(default=4)
     circle9 = models.SmallIntegerField(default=4)
 
-   
 
 class Player(models.Model):
     player_id = models.CharField(max_length=50, unique=True)
-    
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='player_set', null=True)
-    
+
+    room = models.ForeignKey(
+        Room, on_delete=models.CASCADE, related_name="player_set", null=True
+    )
+
     bamboo1 = models.SmallIntegerField(default=0)
     bamboo2 = models.SmallIntegerField(default=0)
     bamboo3 = models.SmallIntegerField(default=0)
@@ -74,4 +76,3 @@ class Player(models.Model):
     circle7 = models.SmallIntegerField(default=0)
     circle8 = models.SmallIntegerField(default=0)
     circle9 = models.SmallIntegerField(default=0)
-
