@@ -3,27 +3,32 @@
 ## Frontend TODO
 
 - Populate room page
-  - (**Louise** done) Implement discard pile at center
   - (**unclaimed**) Display a waiting message when it's not your turn: remove it after receive draw tile message, and add it back after click discard button or time is up
-- After receiving "draw_tile" json:  
-    - (done) Activate discard button. 
-    - (**Yifang** done) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
-    - (done) Deactive discard button 
-  -  (done) Design Chi/Peng prompt component
-- After receiving "chi_prompt" json:
-    - (done) Display Chi prompt on frontend
-    - (**Yifang** done) Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
-    - (done) Remove Chi prompt from front end
-
   - (**Louise**) After user accepts Chi/Peng prompt, isolate the three tiles to the left side, display for all players
   - (**Unclaimed**) Create a button in room page that displays the game rules when player hovers over it
   - (**Unclaimed**) Deactivate all movement after game end msg displays, display restart button
   - (**Unclaimed**) Implement reset game functionality
-  
 
 - Testing framwork
   - (**Louise** in progress) create room and let four players join
   - (**unclaimed**) Display error message from backend on screen if join room ID is invalid format
+
+Completed tasks
+
+- Populate room page
+  - (Louise done) Implement discard pile at center
+  - (Jacob done) Write rules
+- After receiving "draw_tile" json:  
+    - (Louise done) Activate discard button. 
+    - (Yifang done) Implement 60s wait time: if player doesn't discard, then automatically discard the drawn tile. 
+    - (Louise done) Deactive discard button 
+  -  (Louise done) Design Chi/Peng prompt component
+- After receiving "chi_prompt" json:
+    - (Louise done) Display Chi prompt on frontend
+    - (Yifang done) Implement 30s wait time, if player doesn't accept prompt, then automatically reject prompt
+    - (Louise done) Remove Chi prompt from front end
+- (El done) Implement "hu_prompt" json like above
+
 
 ## Backend TODO
 - game logic (using signals?)
