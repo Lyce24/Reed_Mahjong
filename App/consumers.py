@@ -321,7 +321,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     print("Starting game")
                     room.game_mode = 1
                     await sync_to_async(room.save)()
-                    players = [room.player1, room.player2, room.player3, room.player4]
+                    players = [room.player1, room.player2,
+                               room.player3, room.player4]
                     zhuangjia = random.choice(players)
                     room.current_player = zhuangjia
                     room.zhuangjia = zhuangjia
@@ -436,7 +437,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 print("Restarting game")
                 room.game_mode = 0
                 await sync_to_async(room.save)()
-                players = [room.player1, room.player2, room.player3, room.player4]
+                players = [room.player1, room.player2,
+                           room.player3, room.player4]
 
                 for player in players:
                     player_result = await self.filter_player_models(player)
@@ -819,11 +821,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                             "type": "send_json",
                             "message": "can_perform_peng",
                             "player": player,
-                            "tile": '{ "suite" : "'
-                            + suite
-                            + '", "number" : '
-                            + str(number)
-                            + "}",
+                            "tile": {"suite": suite, "number": str(number)},
                             "room_id": str(room_id),
                             "result_type": "peng_prompt",
                             "status": "202",
@@ -938,7 +936,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 key4 = suite + str(int(number) + 2)
 
                 if (
-                    (player1.__dict__[key1] != 0 and player1.__dict__[key2] != 0)
+                    (player1.__dict__[key1] !=
+                     0 and player1.__dict__[key2] != 0)
                     or (player1.__dict__[key3] != 0 and player1.__dict__[key4] != 0)
                     or (player1.__dict__[key2] != 0 and player1.__dict__[key3] != 0)
                 ):
