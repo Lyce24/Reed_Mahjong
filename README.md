@@ -30,14 +30,6 @@ Completed tasks
     - (Louise done) Remove Chi prompt from front end
 - (El done) Implement "hu_prompt" json like above
 
-
-## Backend TODO
-- game logic (using signals?)
-- debug all consumers functions
-- `if player.room_id is None:` around line 150 in `consumers.py`, it doesn't throw an error rn but there are some comments there since i don't understand how/ why it works
-- is serializer necessary in `consumers.py`?
-- reimplement room ID generation with a unique ID package, or our own implementation that doesn't require iterating over current rooms to make sure an ID isn't in use
-
 ## Game Logic overview 
 - (back) Player 1's turn, Backend send "draw_tile_player1" to all players
 - (front) Player1 receive "draw_tile_player1", can select a tile to discard on webpage (within 60s), and send "discard_tile" to backend
