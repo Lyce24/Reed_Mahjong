@@ -4,7 +4,7 @@
 
 - Populate room page
   - (**unclaimed**) Display a waiting message when it's not your turn: remove it after receive draw tile message, and add it back after click discard button or time is up
-  - (**Louise**) After user accepts Chi/Peng prompt, isolate the three tiles to the left side, display for all players
+  - (**Unclaimed**) After user accepts Chi/Peng prompt, isolate the three tiles to the left side, display for all players (need backend to send all three tiles)
   - (**Unclaimed**) Create a button in room page that displays the game rules when player hovers over it
   - (**Unclaimed**) Deactivate all movement after game end msg displays, display restart button
   - (**Unclaimed**) Implement reset game functionality
