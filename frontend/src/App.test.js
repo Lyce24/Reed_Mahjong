@@ -72,9 +72,9 @@ describe('Render without mock functions', () => {
     it('app renders main page', async () => {
       render(<App />);
       expect(screen.getByRole('heading')).toHaveTextContent('Welcome to Reed Mahjong!')
-      const createGameButton = screen.getByText('Create a Game!');
+      const createGameButton = screen.getByText('Create a Room!');
       expect(createGameButton).toBeInTheDocument();
-      const joinRoomButton = screen.getByText('Submit');
+      const joinRoomButton = screen.getByText('Join Room');
       expect(joinRoomButton).toBeInTheDocument();
     });
   });
@@ -83,9 +83,9 @@ describe('Render without mock functions', () => {
       renderWithContext(<MainPage />);
 
       expect(screen.getByRole('heading',)).toHaveTextContent('Welcome to Reed Mahjong!')
-      const createGameButton = screen.getByText('Create a Game!');
+      const createGameButton = screen.getByText('Create a Room!');
       expect(createGameButton).toBeInTheDocument();
-      const joinRoomButton = screen.getByText('Submit');
+      const joinRoomButton = screen.getByText('Join Room');
       expect(joinRoomButton).toBeInTheDocument();
       expect(location.pathname).toBe('/');
     });
@@ -94,25 +94,25 @@ describe('Render without mock functions', () => {
       const { container } = renderFromURL([`/`]);
 
       /* expect(screen.getByRole('heading',)).toHaveTextContent('Welcome to Reed Mahjong!')
-      const createGameButton = screen.getByText('Create a Game!');
+      const createGameButton = screen.getByText('Create a Room!');
       expect(createGameButton).toBeInTheDocument();
-      const joinRoomButton = screen.getByText('Submit');
+      const joinRoomButton = screen.getByText('Join Room');
       expect(joinRoomButton).toBeInTheDocument(); */
       // Assert that the page header is rendered
       expect(screen.getByRole('heading', { name: /Welcome to Reed Mahjong!/i })).toBeInTheDocument();
 
       // Assert that the CreateRoomButton component is rendered
-      expect(screen.getByRole('button', { name: /Create a Game!/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Create a Room!/i })).toBeInTheDocument();
 
       // Assert that the JoinRoom component is rendered
-      expect(screen.getByRole('button', { name: /Submit/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Join Room/i })).toBeInTheDocument();
 
     });
 
     it('create button click, rendered from url', async () => {
       const { container } = renderFromURL([`/`]);
 
-      const createGameButton = screen.getByText('Create a Game!');
+      const createGameButton = screen.getByText('Create a Room!');
       expect(createGameButton).toBeInTheDocument();
       fireEvent.click(createGameButton);
       console.log(container.innerHTML)
@@ -221,7 +221,7 @@ describe('Render with mock functions', () => {
       expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);
 
       // Assert that socket send is called after clicking the create game button
-      const createGameButton = screen.getByText('Create a Game!');
+      const createGameButton = screen.getByText('Create a Room!');
       expect(createGameButton).toBeInTheDocument();
       expect(mockWebSocket.send).toHaveBeenCalledTimes(0);
       fireEvent.click(createGameButton);
@@ -257,7 +257,7 @@ describe('Render with mock functions', () => {
       expect(mockWebSocket.addRoomListener).toHaveBeenCalledTimes(1);
 
       // Assert that socket send is called after clicking the create game button
-      const joinGameButton = screen.getByText('Submit');
+      const joinGameButton = screen.getByText('Join Room');
       expect(joinGameButton).toBeInTheDocument();
       expect(mockWebSocket.send).toHaveBeenCalledTimes(0);
       fireEvent.click(joinGameButton);

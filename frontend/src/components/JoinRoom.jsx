@@ -24,7 +24,7 @@ export default function JoinRoom(props) {
             pattern="[0-9]{8}"
           />
         </label>
-        <input type="submit" value="Submit" className="button" />
+        <input type="submit" value="Join Room" className="button" />
       </form>
     </div>
   );

@@ -13,7 +13,7 @@ export default function CreateRoomButton(props) {
   return (
     <div className="createRoomButton">
       <button type="button" onClick={handleClick} className="button">
-        Create a Game!
+        Create a Room!
       </button>
     </div>
   );
