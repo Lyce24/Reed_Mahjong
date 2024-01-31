@@ -1,19 +1,24 @@
-# Mahjong Web Game
+# Reedies' Mahjong Web Game
 
 This is a web-based Mahjong game developed using Django and React.
 
 ## Description
 
-The Mahjong Web Game allows players to enjoy the classic game of Mahjong online. It provides a user-friendly interface where players can create or join rooms, play against each other, and experience the excitement of this popular tile-based game.
+The Reedies' Mahjong Web Game allows players to enjoy the classic game of Mahjong online. It provides a user-friendly interface where players can create or join rooms, play against each other, and experience the excitement of this popular tile-based game.
 
 ## Features
 
 - Create and join game rooms
-- Real-time multiplayer gameplay
-- Intuitive and responsive user interface
-- Support for multiple simultaneous games
-- Automatic tile shuffling and dealing
-- Discard, declare pong, and other essential Mahjong actions
+![Demo2](https://github.com/Lyce24/Reed_Mahjong/assets/89893105/46fd1101-88ba-4a56-954d-0aa8a77b4c65)
+
+- Support for multiple simultaneous games and real-time multiplayer gameplay with an intuitive and responsive user interface
+![Demo6](https://github.com/Lyce24/Reed_Mahjong/assets/89893105/01d00655-fa55-4a3a-aacf-8f87c486dfbf)
+
+- Alerts for possible moves like 'peng' and 'chi', offering players strategic choices.
+![Demo4](https://github.com/Lyce24/Reed_Mahjong/assets/89893105/a7453db7-936f-48f3-ba8c-451ed8ea9d9a)
+
+- Discard, declare pong, chi, and other essential Mahjong actions with automatic tile shuffling and dealing
+![Demo3](https://github.com/Lyce24/Reed_Mahjong/assets/89893105/3bcaa802-1990-45a4-b0c4-eb420714de28)
 
 ## Technology Stack
 
